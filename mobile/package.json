@@ -20,5 +20,8 @@
     "@types/react": "~18.3.12",
     "typescript": "^5.3.3"
   },
-  "private": true
+  "private": true,
+  "resolutions": {
+    "tsu-visit-shared": "portal:../tsu-vizit-shared"
+  }
 }

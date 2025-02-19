@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "XUbn8AIJk0A=",
+  "success": true,
+  "projectFilePath": "G:\\tsu_vizit\\backend\\TSU.Visit.Application\\TSU.Visit.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Woopee\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.0\\microsoft.aspnetcore.openapi.9.0.0.nupkg.sha512",
+    "C:\\Users\\Woopee\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}

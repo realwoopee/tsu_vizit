@@ -1,0 +1,6 @@
+@TSU.Visit.Application_HostAddress = http://localhost:5055
+
+GET {{TSU.Visit.Application_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

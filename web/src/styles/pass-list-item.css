@@ -17,7 +17,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 12px;
+    padding: 1px 1px;
     border-radius: 4px;
     font-size: 14px;
     font-weight: 500;
@@ -26,25 +26,25 @@
   }
   
   .status-review {
-    background-color: #fff3e0;
-    color: #e65100;
-    border: 1px solid #ffcc80;
+    background-color: #fff;
+    color: #FF9500;
+    border: 1px solid #FF9500;
   }
   
   .status-accepted {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
+    background-color: #fff;
+    color: #34C759;
+    border: 1px solid #34C759;
   }
   
   .status-rejected {
-    background-color: #ffebee;
-    color: #c62828;
-    border: 1px solid #ef9a9a;
+    background-color: #fff;
+    color: #FF3B30;
+    border: 1px solid #FF3B30;
   }
   
   .pass-fullname {
-    color: #616161;
+    color: #1E1E1E;
     font-weight: 500;
     font-size: 16px;
   }
@@ -56,34 +56,34 @@
   }
   
   .pass-reason {
-    color: #616161;
+    color: #1E1E1E;
     font-size: 14px;
     min-width: 150px;
   }
   
   .pass-date,
   .pass-end-date {
-    color: #616161;
+    color: #1E1E1E;
     font-size: 14px;
     white-space: nowrap;
   }
   
   .pass-date-separator {
-    color: #9e9e9e;
+    color: #1E1E1E;
   }
   
   .pass-end-date {
-    border: 1px solid #616161;
+    border: 1px solid #1E1E1E;
     display: flex;
     align-items: center;
     gap: 4px;
     cursor: pointer;
-    padding: 4px;
+    padding: 1px 4px;
     border-radius: 4px;
   }
   
   .calendar-icon {
-    color: #616161;
+    color: #1E1E1E;
   }
   
   .pass-file-button,
@@ -94,7 +94,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #616161;
+    color: #1E1E1E;
     padding: 6px;
     border-radius: 4px;
   }

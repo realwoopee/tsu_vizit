@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Calendar, File, MoreVertical } from "lucide-react"
+import { Calendar, File, Menu } from "lucide-react"
 import "../styles/pass-list-item.css"
 
 type PassStatus = "На проверке" | "Принято" | "Отклонено"
@@ -52,7 +52,7 @@ export const PassListItem = ({ status, fullName, reason, startDate, endDate }: P
           <File size={20} />
         </button>
         <button className="pass-menu-button">
-          <MoreVertical size={20} />
+          <Menu size={20} />
         </button>
       </div>
     </div>

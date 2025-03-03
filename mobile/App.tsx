@@ -31,8 +31,8 @@ export default function App() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* <MainStcak /> */}
-      <ListOfAbsences/>
+      <MainStcak />
+      {/* <ListOfAbsences/> */}
     </ScrollView>
   );
 }

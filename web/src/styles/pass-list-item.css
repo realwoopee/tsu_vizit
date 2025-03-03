@@ -44,6 +44,11 @@
   }
   
   .pass-fullname {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 20vw;
     color: #1E1E1E;
     font-size: 16px;
   }

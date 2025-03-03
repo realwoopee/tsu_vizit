@@ -20,7 +20,7 @@ export const TestPage = () => {
         />
         <PassListItem
           status="Принято"
-          fullName="Иванов Иван Иванович"
+          fullName="Иванов Иван Ивановичччччччччччччччччччччччччччччччччччччччччччч"
           reason="Болезнь"
           startDate="01.01.2024"
           endDate="05.01.2024"

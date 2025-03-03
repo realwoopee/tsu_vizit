@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import * as Font from 'expo-font';
 import MainStcak from './Navigate';
+import ListOfAbsences from './components/ListOfAbsences';
 
 const fonts = () => Font.loadAsync({
   'inter-semi-bold': require('./assets/fonts/Inter_18pt-SemiBold.ttf'),
@@ -30,7 +31,8 @@ export default function App() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <MainStcak />
+      {/* <MainStcak /> */}
+      <ListOfAbsences/>
     </ScrollView>
   );
 }

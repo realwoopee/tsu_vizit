@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
     return(
-        <svg width="630" height="89" viewBox="0 0 630 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="300" height="60" viewBox="0 0 630 89" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clipPath="url(#clip0_12_71)">
         <mask id="mask0_12_71" style={{ maskType: 'luminance' }} maskUnits="userSpaceOnUse" x="0" y="0" width="630" height="89">
         <path d="M0 0H630V89H0V0Z" fill="white"/>

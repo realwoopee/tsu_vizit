@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, ActivityIndicator } from 'react-native';
-import Header from './components/Header';
+import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import * as Font from 'expo-font';
 import MainStcak from './Navigate';
 
@@ -23,16 +22,16 @@ export default function App() {
 
   if (!fontLoaded) {
     return (
-      <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
+      </ScrollView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <MainStcak />
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 

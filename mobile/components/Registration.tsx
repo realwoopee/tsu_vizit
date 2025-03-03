@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
@@ -17,7 +17,7 @@ export default function Registration({ navigation }: RegProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.form}>
         <Text style={{alignSelf: 'center', marginBottom: 15, fontSize: 25, fontFamily: 'inter-semi-bold'}}>Регистрация</Text>
         <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>Имя</Text>
@@ -27,12 +27,10 @@ export default function Registration({ navigation }: RegProps) {
         <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>Фамилия</Text>
           <TextInput style={styles.input}
             placeholder="Иванов"
-            secureTextEntry={true}
           />
         <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>E-mail</Text>
           <TextInput style={styles.input}
             placeholder="exapmle@email.com"
-            secureTextEntry={true}
           />
         <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>Пароль</Text>
           <TextInput style={styles.input}
@@ -47,7 +45,7 @@ export default function Registration({ navigation }: RegProps) {
       <TouchableOpacity onPress={loadScene}>
         <Text style={{color: '#366899', fontFamily: 'inter-md'}}>Войдите</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -56,7 +54,9 @@ const styles = StyleSheet.create({
       width: '80%',
       alignItems: 'center',
       flexDirection: 'column',
-      margin: 'auto'
+      margin: 'auto',
+      marginTop: 50,
+      marginBottom: 50
     },
     input: {
       height: 40,

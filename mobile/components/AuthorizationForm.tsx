@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
@@ -18,7 +18,7 @@ export default function AuthorizationForm({ navigation }: AuthFormProps) {
 
   return (
     
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.form}>
         <Text style={{alignSelf: 'center', marginBottom: 15, fontSize: 25, fontFamily: 'inter-semi-bold'}}>Вход</Text>
         <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>E-mail</Text>
@@ -36,16 +36,16 @@ export default function AuthorizationForm({ navigation }: AuthFormProps) {
         </TouchableOpacity>
       <Text style={{fontFamily: 'inter-md'}}>Еще нет аккаунта?</Text>
       <TouchableOpacity onPress={loadScene}>
-        <Text style={{color: '#366899', fontFamily: 'inter-md'}}>Зарегистрируйтесь</Text>
+        <Text style={{color: '#3478F6', fontFamily: 'inter-md'}}>Зарегистрируйтесь</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    width: '100%',
+    width: '80%',
     alignItems: 'center',
     alignSelf: 'center',
     marginTop: 50,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   form: {
-    width: '80%',
+    width: '100%',
     padding: 15,
     borderRadius: 10,
     shadowColor: "#898989",
@@ -73,10 +73,10 @@ const styles = StyleSheet.create({
     }
   },
   button: {
-    width: '80%',
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#245FA1',
+    backgroundColor: '#3478F6',
     borderRadius: 10,
     marginTop: 10,
     marginBottom: 12,

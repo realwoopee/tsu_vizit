@@ -1,4 +1,4 @@
-namespace TSU.Visit.Application;
+namespace TSU.Vizit.Application;
 
 public class WeatherForecast
 {

@@ -27,6 +27,6 @@
     "vite": "^6.1.0"
   },
   "resolutions": {
-    "tsu-visit-shared": "portal:../tsu-vizit-shared"
+    "tsu-vizit-shared": "portal:../tsu-vizit-shared"
   }
 }

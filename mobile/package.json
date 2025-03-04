@@ -18,6 +18,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "^0.76.7",
+    "react-native-gesture-handler": "^2.24.0",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
     "react-native-svg": "^15.11.2",
@@ -31,5 +32,6 @@
   "private": true,
   "resolutions": {
     "tsu-visit-shared": "portal:../tsu-vizit-shared"
-  }
+  },
+  "packageManager": "yarn@4.7.0"
 }

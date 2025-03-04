@@ -1,5 +1,5 @@
 {
-  "name": "tsu-visit-shared",
+  "name": "tsu-vizit-shared",
   "packageManager": "yarn@4.7.0",
   "private": true,
   "devDependencies": {

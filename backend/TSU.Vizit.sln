@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSU.Visit.Application", "TSU.Visit.Application\TSU.Visit.Application.csproj", "{2E6F1048-373C-4CA5-8553-5151B5160BCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSU.Vizit.Application", "TSU.Vizit.Application\TSU.Vizit.Application.csproj", "{2E6F1048-373C-4CA5-8553-5151B5160BCC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

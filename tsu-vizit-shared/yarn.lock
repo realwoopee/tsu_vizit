@@ -5,9 +5,9 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"tsu-visit-shared@workspace:.":
+"tsu-vizit-shared@workspace:.":
   version: 0.0.0-use.local
-  resolution: "tsu-visit-shared@workspace:."
+  resolution: "tsu-vizit-shared@workspace:."
   dependencies:
     typescript: "npm:^5.7.3"
   languageName: unknown

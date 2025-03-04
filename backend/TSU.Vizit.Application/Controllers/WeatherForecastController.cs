@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace TSU.Visit.Application.Controllers;
+namespace TSU.Vizit.Application.Controllers;
 
 [ApiController]
 [Route("[controller]")]

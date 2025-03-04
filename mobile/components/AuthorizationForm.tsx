@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -12,7 +12,12 @@ type AuthFormProps = {
 };
 
 export default function AuthorizationForm({ navigation }: AuthFormProps) {
-  const loadScene = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const isFormValid = email && password;
+
+  const loadReg = () => {
     navigation.navigate('Регистрация');
   }
 
@@ -24,18 +29,27 @@ export default function AuthorizationForm({ navigation }: AuthFormProps) {
         <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>E-mail</Text>
         <TextInput style={styles.input}
             placeholder="example@email.com"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
           />
         <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>Пароль</Text>
           <TextInput style={styles.input}
             placeholder="Введите пароль..."
             secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
           />
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity 
+        style={[styles.button, !isFormValid && styles.buttonDisabled]}
+        disabled={!isFormValid}
+      >
           <Text style={{color: 'white', fontFamily: 'inter-md'}}>Войти</Text>
-        </TouchableOpacity>
+      </TouchableOpacity>
+
       <Text style={{fontFamily: 'inter-md'}}>Еще нет аккаунта?</Text>
-      <TouchableOpacity onPress={loadScene}>
+      <TouchableOpacity onPress={loadReg}>
         <Text style={{color: '#3478F6', fontFamily: 'inter-md'}}>Зарегистрируйтесь</Text>
       </TouchableOpacity>
     </View>
@@ -44,11 +58,10 @@ export default function AuthorizationForm({ navigation }: AuthFormProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
     width: '80%',
     alignItems: 'center',
-    alignSelf: 'center',
-    marginTop: 50,
+    margin: 'auto',
+    marginTop: '40%',
     marginBottom: 50
   },
   input: {
@@ -62,15 +75,6 @@ const styles = StyleSheet.create({
   },
   form: {
     width: '100%',
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: "#898989",
-    shadowOpacity: 0.8,
-    shadowRadius: 7,
-    shadowOffset: {
-      height: 1,
-      width: 1
-    }
   },
   button: {
     width: '100%',
@@ -81,5 +85,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 12,
     height: 40
+  },
+  buttonDisabled: {
+    backgroundColor: '#a8a8a8'
   }
 });

@@ -9,6 +9,8 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+// import DocumentPicker from 'react-native-document-picker';
 
 type Doc = {
   name: string;
@@ -28,10 +30,14 @@ type Item = {
 
 interface AbsenceItemProps {
   item: Item;
+  onAddDocument: (id: string, docs: Doc[]) => void;
 }
 
-export default function AbsenceItem({ item }: AbsenceItemProps) {
+export default function AbsenceItem({ item, onAddDocument }: AbsenceItemProps) {
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDocsModal, setShowDocsModal] = useState(false);
+  const [endDate, setEndDate] = useState(new Date(item.end));
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -46,8 +52,49 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
     }
   };
 
-  const handleAddDocument = () => {
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || endDate;
+    setShowDatePicker(false);
+    setEndDate(currentDate);
   };
+
+
+  const handleAddDocument = async () => {
+    // try {
+    //   const res = await DocumentPicker.pick({
+    //     type: [DocumentPicker.types.allFiles],
+    //     allowMultiSelection: true, 
+    //   });
+  
+    //   if (!res || res.length === 0) return; 
+  
+    //   const newDocs: Doc[] = (Array.isArray(res) ? res : [res]).map(file => ({
+    //     name: file.name || 'Без названия',
+    //     type: file.type || 'Неизвестный',
+    //     uri: file.uri,
+    //   }));
+
+    //   onAddDocument(item.id, newDocs);
+  
+    // } catch (err) {
+    //   if (DocumentPicker.isCancel(err)) {
+    //     console.log('cancelled', err);
+    //   } else {
+    //     console.error(err);
+    //   }
+    // }
+  };
+
+  const renderDocumentItem = ({ item: doc }: { item: Doc }) => (
+    <TouchableOpacity style={styles.docItem}>
+      <Ionicons name="document-text-outline" size={20} color="#666" />
+      <View style={styles.docInfo}>
+        <Text style={styles.docName}>{doc.name}</Text>
+        <Text style={styles.docType}>{doc.type}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
 
   return (
     <TouchableOpacity style={styles.itemContainer}>
@@ -68,7 +115,12 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
           </View>
           <View style={styles.dateItem}>
             <Text style={styles.dateLabel}>Конец:</Text>
-            <Text style={styles.dateValue}>{new Date(item.end).toLocaleDateString()}</Text>
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <Text style={[styles.dateValue, styles.editableDate]}>
+                {endDate.toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+
           </View>
         </View>
 
@@ -85,6 +137,15 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
         </View>
 
       </View>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={endDate}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
 
       <Modal
         visible={showDocsModal}
@@ -108,9 +169,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
 
                 <FlatList
                   data={item.docs}
-                  renderItem={({item}) => (
-                              <Text>{item.name}</Text>
-                          )}
+                  renderItem={renderDocumentItem}
                   keyExtractor={(doc) => doc.uri}
                   ListEmptyComponent={
                     <Text style={styles.emptyText}>Документы отсутствуют</Text>
@@ -121,7 +180,6 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
                   style={styles.addDocButton}
                   onPress={() => {
                     handleAddDocument();
-                    setShowDocsModal(false);
                   }}
                 >
                   <Text style={styles.addDocButtonText}>Добавить документ</Text>
@@ -142,6 +200,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
 const baseText = {
   fontSize: 14,
   color: '#333',
+  fontFamily: 'inter-md'
 };
 
 const styles = StyleSheet.create({
@@ -182,6 +241,7 @@ const styles = StyleSheet.create({
   },
   dateItem: { flex: 1 },
   dateLabel: {
+    fontFamily: 'inter-md',
     fontSize: 12,
     color: '#666',
     marginBottom: 4,
@@ -199,6 +259,9 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     ...baseText,
     color: '#666',
+  },
+  editableDate: {
+    color: '#007AFF',
   },
   modalOverlay: {
     flex: 1,
@@ -228,6 +291,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666',
     fontSize: 14,
+    fontFamily: 'inter-md',
     padding: 16,
   },
   addDocButton: {
@@ -240,6 +304,30 @@ const styles = StyleSheet.create({
   addDocButtonText: {
     color: '#fff',
     fontSize: 16,
+    fontFamily: 'inter-md',
     fontWeight: '600',
   },
+  docItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  docInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  docName: {
+    fontSize: 14,
+    fontFamily: 'inter-md',
+    color: '#333',
+  },
+  docType: {
+    fontSize: 12,
+    fontFamily: 'inter-md',
+    color: '#666',
+    marginTop: 4,
+  },
+
 });

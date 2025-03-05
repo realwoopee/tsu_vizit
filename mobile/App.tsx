@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { StyleSheet, ActivityIndicator, ScrollView, View } from 'react-native';
 import * as Font from 'expo-font';
 import MainStcak from './Navigate';
 import ListOfAbsences from './components/ListOfAbsences';
@@ -30,10 +30,14 @@ export default function App() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <MainStcak />
-      {/* <ListOfAbsences/> */}
-    </ScrollView>
+    // <ScrollView contentContainerStyle={styles.container}>
+    //   <MainStcak />
+    //   {/* <ListOfAbsences/> */}
+    // </ScrollView>
+    <View style={styles.container}>
+       <ListOfAbsences/>
+    </View>
+
   );
 }
 

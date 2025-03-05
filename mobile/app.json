@@ -17,7 +17,7 @@
       "bundleIdentifier": "com.example.tsuVizitMobile"
     },
     "android": {
-      "package": "com.aqxzw.tsu-vizit-mobile",
+      "package": "com.aqxzw.tsu_vizit_mobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

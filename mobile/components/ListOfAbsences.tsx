@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, ScrollView, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AbsenceItem from './AbsenceItem';
 import Header from './Header';
+import { Ionicons } from '@expo/vector-icons'; // Для иконок (установите @expo/vector-icons)
+import FiltersBlock from './FiltersBlock';
 
 // type RootStackParamList = {
 //   Вход: undefined;
@@ -15,20 +17,20 @@ import Header from './Header';
 // };
 
 type Doc = {
-    name: string;
-    type: string;
-    uri: string;
-  };
-  
-  type Item = {
-    id: string;
-    status: string;
-    name: string;
-    type: string;
-    beg: string;
-    end: string;
-    docs: Doc[];
-  };
+  name: string;
+  type: string;
+  uri: string;
+};
+
+type Item = {
+  id: string;
+  status: string;
+  name: string;
+  type: string;
+  beg: string;
+  end: string;
+  docs: Doc[];
+};
 
 export default function ListOfAbsences() { //{ navigation }: AbsenceListProps
   /*const loadScene = () => {
@@ -36,36 +38,81 @@ export default function ListOfAbsences() { //{ navigation }: AbsenceListProps
   }*/
 
   const [listOfItems, setListOfItems] = useState<Item[]>([
-    {id:"1", status:"check", name:"Ivanov Ivan Ivanovich", type:"study", beg:"02.03.2025", end:"03.03.2025", docs:[]},
-    {id:"2", status:"accept", name:"Ivanov Ivan Ivanovich", type:"family", beg:"02.03.2025", end:"03.03.2025", docs:[]},
-    {id:"3", status:"check", name:"Ivanov Ivan Ivanovich", type:"study", beg:"02.03.2025", end:"03.03.2025", docs:[]},
-    {id:"4", status:"accept", name:"Ivanov Ivan Ivanovich", type:"family", beg:"02.03.2025", end:"03.03.2025", docs:[]},
-    {id:"5", status:"reject", name:"Ivanov Ivan Ivanovich", type:"illness", beg:"02.03.2025", end:"03.03.2025", docs:[]}
+    { id: "1", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+    { id: "2", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+    { id: "3", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+    { id: "4", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+    { id: "5", status: "reject", name: "Ivanov Ivan Ivanovich", type: "illness", beg: "2025-02-03", end: "2025-04-04", docs: [] }
   ]);
 
+
+  const onAddDocument = (id: string, newDocs: Doc[]) => {
+    setListOfItems(prevItems =>
+      prevItems.map(item =>
+        item.id === id ? { ...item, docs: [...item.docs, ...newDocs] } : item
+      )
+    );
+  };
+
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false); // Для модального окна
+
+ 
   return (
     <View >
-        <Header/>
-        <FlatList 
-        style={{flex: 1}}
-        data = {listOfItems} 
-        keyExtractor={item => item.id.toString()} 
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>Список пропусков</Text>
+        <TouchableOpacity onPress={() => setIsFilterModalVisible(true)}>
+          <Ionicons name="filter" size={24} color="#007AFF" />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        // style={{flex: 1}}
+        style={{marginBottom: 60}}
+        data={listOfItems}
+        keyExtractor={item => item.id.toString()}
         ListEmptyComponent={
-            <Text style={styles.emptyText}>Пропуски отсутствуют</Text>
+          <Text style={styles.emptyText}>Пропуски отсутствуют</Text>
         }
-        renderItem={({item}) => (
-            <AbsenceItem item={item}/>
+        renderItem={({ item }) => (
+          <AbsenceItem item={item} onAddDocument={onAddDocument} />
         )}
-        />
-      
+      />
+
+    <FiltersBlock
+        isVisible={isFilterModalVisible}
+        closeModal={() => setIsFilterModalVisible(false)}
+      />
+
     </View>
   );
 }
 const styles = StyleSheet.create({
-    emptyText: {
-        textAlign: 'center',
-        color: '#666',
-        fontSize: 14,
-        padding: 16,
-      }
-    })
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    fontFamily: 'inter-semi-bold'
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#666',
+    fontSize: 16,
+    padding: 20,
+    fontFamily: 'inter-md'
+  },
+})

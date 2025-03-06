@@ -27,16 +27,17 @@ public class UserService
         _userRepository = userRepository;
     }
 
-    public async Task<Result<UserDto>> GetUserById(Guid userId)
+    public async Task<UserDto> GetUserById(Guid userId)
     {
-        throw new NotImplementedException();
-        // var data = (await _db.Users.FirstOrDefaultAsync(user => user.Id == userId))?.ToDto();
-        // return data is not null ? data : CustomErrors.NotFound("User not found");
+        var user = await _userRepository.GetUserById(userId);
+        return UserDtoConverters.ToDto(user);
     }
 
     public async Task<Result<UserDto>> EditUserById(Guid userId, UserEditProfileModel model)
     {
+        // Convert model into user.
         throw new NotImplementedException();
+        // var user = await _userRepository.EditUser(userId, );
         // var user = await _db.Users.FirstOrDefaultAsync(user => user.Id == userId);
         //
         // if (user == null)

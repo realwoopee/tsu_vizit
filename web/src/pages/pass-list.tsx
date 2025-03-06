@@ -6,24 +6,29 @@ export const TestPage = () => {
       <div className="test-container">
         <PassListItem
           status="На проверке"
-          fullName="Иванов Иван Иванович"
+          fullName="Николаев Николай Николаевич"
           reason="Болезнь"
           startDate="01.01.2024"
           endDate="05.01.2024"
+          isEditable={false}
         />
         <PassListItem
           status="Отклонено"
           fullName="Иванов Иван Иванович"
-          reason="Болезнь"
+          reason="Семейные обстоятельства"
           startDate="01.01.2024"
           endDate="05.01.2024"
+          isEditable={true}
+          userRole="teacher"
         />
         <PassListItem
           status="Принято"
           fullName="Иванов Иван Ивановичччччччччччччччччччччччччччччччччччччччччччч"
-          reason="Болезнь"
+          reason="Учебная деятельность"
           startDate="01.01.2024"
           endDate="05.01.2024"
+          isEditable={true}
+          userRole="admin"
         />
       </div>
       

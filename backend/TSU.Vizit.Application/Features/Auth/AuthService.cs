@@ -29,15 +29,15 @@ public class AuthService
 
     public async Task<Result<LoginResultDto>> LoginUser(UserLoginModel userLoginModel)
     {
-        var user = await _userRepository.GetUserByEmail(userLoginModel.Email);
+        var userResult = await _userRepository.GetUserByEmail(userLoginModel.Email);
 
-        if (user == null)
-            return CustomErrors.AuthError("Invalid credentials");
+        if (userResult.IsFailed)
+            return Result.Fail(userResult.Errors);
 
-        var session = _sessionRepository.CreateNewSession(user.Id, TimeSpan.FromDays(7));
+        var session = _sessionRepository.CreateNewSession(userResult.Value.Id, TimeSpan.FromDays(7));
 
-        var accessTokenResult = _tokenService.IssueAccessToken(user, session);
-        var refreshTokenResult = _tokenService.IssueRefreshToken(user, session);
+        var accessTokenResult = _tokenService.IssueAccessToken(userResult.Value, session);
+        var refreshTokenResult = _tokenService.IssueRefreshToken(userResult.Value, session);
 
         if (accessTokenResult.IsFailed || refreshTokenResult.IsFailed)
             return CustomErrors.AuthError("Could not issue token");
@@ -61,9 +61,9 @@ public class AuthService
         if (userIdResult.IsFailed)
             return Result.Fail(new NotFoundError("User not found"));
 
-        var user = await _userRepository.GetUserById(userIdResult.Value);
-        if (user == null)
-            return Result.Fail(new NotFoundError("User not found"));
+        var userResult = await _userRepository.GetUserById(userIdResult.Value);
+        if (userIdResult.IsFailed)
+            return Result.Fail(userResult.Errors);
 
         var sessionResult = await _tokenService.GetSessionIdFromToken(refreshToken)
             .Bind(sessionId => _sessionRepository.GetSession(sessionId));
@@ -79,8 +79,8 @@ public class AuthService
         if (session.ExpiresAfter < DateTime.UtcNow)
             return Result.Fail(new ValidationError("Session has expired"));
 
-        var newAccessTokenResult = _tokenService.IssueAccessToken(user, session);
-        var newRefreshTokenResult = _tokenService.IssueRefreshToken(user, session);
+        var newAccessTokenResult = _tokenService.IssueAccessToken(userResult.Value, session);
+        var newRefreshTokenResult = _tokenService.IssueRefreshToken(userResult.Value, session);
 
         if (newAccessTokenResult.IsFailed || newRefreshTokenResult.IsFailed)
             return Result.Fail(new ValidationError("Could not refresh token"));
@@ -100,8 +100,8 @@ public class AuthService
             .Bind(async userId =>
             {
                 var user = await _userRepository.GetUserById(userId);
-                return user != null
-                    ? Result.Ok(user)
+                return user.IsSuccess
+                    ? Result.Ok(user.Value)
                     : CustomErrors.NotFound("User not found");
             });
         
@@ -129,17 +129,17 @@ public class AuthService
     
     public async Task<Result> ChangeUserPassword(UserChangePasswordModel model)
     {
-        var user = await _userRepository.GetUserByEmail(model.Email);
-        if (user is null)
-            return CustomErrors.NotFound("User not found");
+        var userResult = await _userRepository.GetUserByEmail(model.Email);
+        if (userResult.IsFailed)
+            return Result.Fail(userResult.Errors);
         
-        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.OldPassword);
+        var result = _passwordHasher.VerifyHashedPassword(userResult.Value, userResult.Value.PasswordHash, model.OldPassword);
         
         if (result == PasswordVerificationResult.Failed)
             return CustomErrors.ValidationError("Invalid password");
         
-        user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
-        _sessionRepository.ClearSessions(user.Id);
+        userResult.Value.PasswordHash = _passwordHasher.HashPassword(userResult.Value, model.NewPassword);
+        _sessionRepository.ClearSessions(userResult.Value.Id);
         
         return Result.Ok();
     }

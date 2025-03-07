@@ -5,9 +5,9 @@ namespace TSU.Vizit.Contracts;
 
 public interface IUserRepository
 {
-    public Task<User?> GetUserById(Guid id);
-    public Task<User?> GetUserByStudentCardId(string studentCardId);
-    public Task<User?> GetUserByEmail(string email);
-    public Task EditUser(Guid id, User newUser);
-    public Task<Result<User?>> RegisterUser(User user);
+    public Task<Result<User>> GetUserById(Guid id);
+    public Task<Result<User>> GetUserByStudentCardId(string studentIdNumber);
+    public Task<Result<User>> GetUserByEmail(string email);
+    public Task<Result<User>> EditUser(Guid id, User newUser);
+    public Task<Result<User>> RegisterUser(User user);
 }

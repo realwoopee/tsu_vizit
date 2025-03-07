@@ -14,10 +14,13 @@ public static class SetupServices
         IWebHostEnvironment environment
     )
     {
+        services.AddSingleton<SessionService>();
+        services.AddSingleton<ISessionRepository>(); // Singleton?
         services.AddScoped<PasswordHasher<User>>(provider => new PasswordHasher<User>());
         services.AddScoped<TokenService>();
         services.AddScoped<UserService>();
         services.AddScoped<UserAccessor>();
         services.AddScoped<IUserRepository>(provider => new object() as IUserRepository);
+        
     }
 }

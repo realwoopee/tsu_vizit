@@ -1,18 +1,17 @@
-using FluentResults;
 using TSU.Vizit.Domain;
 
-namespace TSU.Vizit.Application.Features.Dto;
+namespace TSU.Vizit.Application.Features.Users.Dto;
 
 public static class UserDtoConverters
 {
-
     public static User ToUser(this UserEditProfileModel model, User user)
     {
         if (model.FullName is not null)
             user.FullName = model.FullName;
-        
+
         return user;
     }
+
     public static User ToUser(this UserRegisterModel model)
     {
         return new User
@@ -34,6 +33,4 @@ public static class UserDtoConverters
             StudentCardId = model.StudentIdNumber
         };
     }
-    
-    
 }

@@ -1,23 +1,23 @@
+using TSU.Vizit.Application.Setup;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+SetupResults.Setup(builder);
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+SetupAspNet.AddAspNet(builder);
+SetupSwagger.AddSwagger(builder);
+SetupDatabase.AddDatabase(builder);
+SetupAuth.AddAuth(builder);
+SetupServices.AddServices(builder.Services, builder.Configuration, builder.Environment);
+SetupHangfire.AddHangfire(builder);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+SetupHangfire.UseHangfire(app);
+SetupSwagger.UseSwagger(app);
+SetupAspNet.UseAspNet(app);
+SetupAuth.UseAuth(app);
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
+await SetupDatabase.RunMigrations(app);
 
 app.Run();

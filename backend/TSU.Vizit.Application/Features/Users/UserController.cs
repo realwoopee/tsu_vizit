@@ -2,10 +2,10 @@
 using FluentResults.Extensions.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TSU.Vizit.Application.Features.Dto;
-using TSU.Vizit.Application.Services.Auth;
+using TSU.Vizit.Application.Features.Users.Dto;
+using TSU.Vizit.Application.Infrastructure.Auth;
 
-namespace TSU.Vizit.Application.Features;
+namespace TSU.Vizit.Application.Features.Users;
 
 [ApiController]
 [Route("api/account")]
@@ -18,27 +18,6 @@ public class UserController : ControllerBase
     {
         _userService = userService;
         _userAccessor = userAccessor;
-    }
-
-    [AllowAnonymous]
-    [HttpPost("register")]
-    public async Task<ActionResult<LoginResultDto>> Register([FromBody] UserRegisterModel model)
-    {
-        return await _userService.RegisterUser(model).ToActionResult();
-    }
-
-    [AllowAnonymous]
-    [HttpPost("login")]
-    public async Task<ActionResult<LoginResultDto>> Login(UserLoginModel userLoginDto)
-    {
-        return await _userService.LoginUser(userLoginDto).ToActionResult();
-    }
-
-    [AllowAnonymous]
-    [HttpPost("refresh")]
-    public async Task<ActionResult<LoginResultDto>> Refresh([FromBody] string refreshToken)
-    {
-        return await _userService.RefreshUserToken(refreshToken).ToActionResult();
     }
 
     [AllowAnonymous]

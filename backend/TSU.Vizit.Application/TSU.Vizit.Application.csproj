@@ -7,19 +7,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentResults" Version="3.16.0" />
-        <PackageReference Include="FluentResults.Extensions.AspNetCore" Version="0.1.0" />
+        <PackageReference Include="FluentResults" Version="3.16.0"/>
+        <PackageReference Include="FluentResults.Extensions.AspNetCore" Version="0.1.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.6.0" />
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.6.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.0" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.6.0"/>
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.6.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.0.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TSU.Vizit.Contracts\TSU.Vizit.Contracts.csproj" />
-      <ProjectReference Include="..\TSU.Vizit.Domain\TSU.Vizit.Domain.csproj" />
-      <ProjectReference Include="..\TSU.Vizit.Infrastructure\TSU.Vizit.Infrastructure.csproj" />
-      <ProjectReference Include="..\TSU.Vizit.Persistence\TSU.Vizit.Persistence.csproj" />
+        <ProjectReference Include="..\TSU.Vizit.Contracts\TSU.Vizit.Contracts.csproj"/>
+        <ProjectReference Include="..\TSU.Vizit.Domain\TSU.Vizit.Domain.csproj"/>
+        <ProjectReference Include="..\TSU.Vizit.Infrastructure\TSU.Vizit.Infrastructure.csproj"/>
+        <ProjectReference Include="..\TSU.Vizit.Persistence\TSU.Vizit.Persistence.csproj"/>
     </ItemGroup>
 
 </Project>

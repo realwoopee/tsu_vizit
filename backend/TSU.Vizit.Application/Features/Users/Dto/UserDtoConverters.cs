@@ -1,3 +1,4 @@
+using TSU.Vizit.Application.Features.Auth.Dto;
 using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Application.Features.Users.Dto;

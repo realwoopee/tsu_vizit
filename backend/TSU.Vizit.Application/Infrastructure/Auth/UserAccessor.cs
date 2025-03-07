@@ -3,7 +3,7 @@ using System.Security.Principal;
 using FluentResults;
 using TSU.Vizit.Infrastructure.Errors;
 
-namespace TSU.Vizit.Application.Services.Auth;
+namespace TSU.Vizit.Application.Infrastructure.Auth;
 
 public class UserAccessor
 {
@@ -29,14 +29,14 @@ public class UserAccessor
     public Result<Guid> GetUserId()
     {
         return GetUserIdentity()
-            .Bind(user => GetClaimValue(user, UserClaimTypes.UserId))
+            .Bind(user => GetClaimValue(user, VizitClaimTypes.UserId))
             .Bind(value => Result.Ok(Guid.Parse(value)));
     }
 
     public Result<Guid> GetSessionId()
     {
         return GetUserIdentity()
-            .Bind(user => GetClaimValue(user, UserClaimTypes.SessionId))
+            .Bind(user => GetClaimValue(user, VizitClaimTypes.SessionId))
             .Bind(value => Result.Ok(Guid.Parse(value)));
     }
 
@@ -53,6 +53,8 @@ public class UserAccessor
     private Result<IIdentity> GetUserIdentity()
     {
         var identity = _httpContextAccessor.HttpContext?.User?.Identity;
-        return identity == null ? CustomErrors.AuthError("Unable to get user identity from HttpContext") : Result.Ok(identity);
+        return identity == null
+            ? CustomErrors.AuthError("Unable to get user identity from HttpContext")
+            : Result.Ok(identity);
     }
 }

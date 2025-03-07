@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using TSU.Vizit.Domain;
 
-namespace TSU.Vizit.Application.Features.Dto;
+namespace TSU.Vizit.Application.Features.Users.Dto;
 
 public class UserEditProfileModel
 {

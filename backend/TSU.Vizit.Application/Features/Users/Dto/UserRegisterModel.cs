@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using TSU.Vizit.Domain;
 
-namespace TSU.Vizit.Application.Features.Dto;
+namespace TSU.Vizit.Application.Features.Users.Dto;
 
 public class UserRegisterModel
 {
@@ -11,5 +10,4 @@ public class UserRegisterModel
 
     [Required] [MinLength(6)] public string Password { get; set; }
     [StringLength(6, MinimumLength = 6)] public string StudentIdNumber { get; set; }
-
 }

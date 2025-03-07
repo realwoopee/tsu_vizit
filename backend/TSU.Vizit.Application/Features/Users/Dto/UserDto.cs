@@ -1,4 +1,4 @@
-﻿namespace TSU.Vizit.Application.Features;
+﻿namespace TSU.Vizit.Application.Features.Users.Dto;
 
 public class UserDto
 {

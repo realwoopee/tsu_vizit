@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TSU.Vizit.Application.Features.Dto;
+namespace TSU.Vizit.Application.Features.Users.Dto;
 
 public class UserChangePasswordModel : IValidatableObject
 {

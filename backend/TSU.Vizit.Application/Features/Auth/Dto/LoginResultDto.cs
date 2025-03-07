@@ -1,4 +1,4 @@
-namespace TSU.Vizit.Application.Features.Dto;
+namespace TSU.Vizit.Application.Features.Auth.Dto;
 
 public class LoginResultDto
 {

@@ -23,4 +23,5 @@ public static class CustomErrors
     {
         return Result.Fail(new AuthError(message));
     }
+
 }

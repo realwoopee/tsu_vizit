@@ -20,12 +20,6 @@ public class UserController : ControllerBase
         _userAccessor = userAccessor;
     }
 
-    [AllowAnonymous]
-    [HttpPost("change-password")]
-    public async Task<ActionResult> GetAllUsers([FromBody] UserChangePasswordModel model)
-    {
-        return await _userService.ChangeUserPassword(model).ToActionResult();
-    }
 
     [Authorize]
     [HttpGet("profile")]

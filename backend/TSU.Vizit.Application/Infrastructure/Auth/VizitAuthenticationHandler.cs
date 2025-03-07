@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using TSU.Vizit.Application.Features.Auth;
 using TSU.Vizit.Application.Features.Users;
 
 namespace TSU.Vizit.Application.Infrastructure.Auth;
@@ -10,15 +11,18 @@ namespace TSU.Vizit.Application.Infrastructure.Auth;
 public class VizitAuthenticationHandler : AuthenticationHandler<VizitAuthenticationOptions>
 {
     private readonly UserService _userService;
+    private readonly AuthService _authService;
 
     public VizitAuthenticationHandler(
         IOptionsMonitor<VizitAuthenticationOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        UserService userService)
+        UserService userService,
+        AuthService authService)
         : base(options, logger, encoder)
     {
         _userService = userService;
+        _authService = authService;
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -43,7 +47,7 @@ public class VizitAuthenticationHandler : AuthenticationHandler<VizitAuthenticat
                 ? AuthenticateResult.Fail("Invalid Token")
                 : AuthenticateResult.NoResult();
 
-        var validateAndParseResult = await _userService.ValidateAndParseAccessToken(token);
+        var validateAndParseResult = await _authService.ValidateAndParseAccessToken(token);
 
         if (!validateAndParseResult.IsSuccess)
             return AuthenticateResult.Fail(validateAndParseResult.Errors.First().Message);

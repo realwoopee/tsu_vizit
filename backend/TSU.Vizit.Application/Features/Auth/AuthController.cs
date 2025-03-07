@@ -22,4 +22,11 @@ public class AuthController(AuthService authService, ILogger<AuthController> log
     {
         return await authService.RefreshUserToken(refreshToken).ToActionResult();
     }
+    
+    [AllowAnonymous]
+    [HttpPost("change-password")]
+    public async Task<ActionResult> GetAllUsers([FromBody] UserChangePasswordModel model)
+    {
+        return await authService.ChangeUserPassword(model).ToActionResult();
+    }
 }

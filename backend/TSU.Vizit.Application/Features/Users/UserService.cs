@@ -15,22 +15,22 @@ public class UserService(IUserRepository _userRepository) // Is this IPasswordHa
     {
         var user = await _userRepository.GetUserById(userId);
 
-        if (user == null)
-            return Result.Fail(new NotFoundError("User not found"));
+        if (!user.IsSuccess)
+            return Result.Fail(user.Errors.Select(msg => new Error(msg.ToString()))); // Check how it works
 
-        return user.ToDto();
+        return user.Value.ToDto();
     }
 
     public async Task<Result<UserDto>> EditUserById(Guid userId, UserEditProfileModel model)
     {
-        var user = await _userRepository.GetUserById(userId);
+        var userResult = await _userRepository.GetUserById(userId);
 
-        if (user == null)
+        if (!userResult.IsSuccess)
             return CustomErrors.NotFound("User not found");
 
-        user = model.ToUser(user);
-        await _userRepository.EditUser(user.Id, user);
-        return Result.Ok(user.ToDto());
+        var newUser = model.ToUser(userResult.Value);
+        await _userRepository.EditUser(userId, newUser);
+        return Result.Ok(newUser.ToDto());
     }
 
 

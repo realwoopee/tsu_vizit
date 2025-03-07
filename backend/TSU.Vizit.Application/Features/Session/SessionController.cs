@@ -6,7 +6,7 @@ using TSU.Vizit.Application.Infrastructure.Auth;
 
 namespace TSU.Vizit.Application.Features;
 
-[Microsoft.AspNetCore.Components.Route("api/session")]
+[Route("api/session")]
 [Authorize]
 public class SessionController(SessionService _sessionService, UserAccessor _userAccessor) : ControllerBase
 {

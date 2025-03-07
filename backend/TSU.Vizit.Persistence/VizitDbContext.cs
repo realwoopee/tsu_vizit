@@ -3,10 +3,10 @@ using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Persistence;
 
-public class MainDbContext : DbContext
+public class VizitDbContext : DbContext
 {
-    public MainDbContext(DbContextOptions
-        <MainDbContext> options)
+    public VizitDbContext(DbContextOptions
+        <VizitDbContext> options)
         : base(options)
     {
     }

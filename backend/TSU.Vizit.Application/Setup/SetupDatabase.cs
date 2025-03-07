@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using Microsoft.EntityFrameworkCore;
+using NeinLinq;
 using Npgsql;
+using TSU.Vizit.Persistence;
 
 namespace TSU.Vizit.Application.Setup;
 
@@ -11,10 +13,10 @@ public static class SetupDatabase
     {
         using var scope = app.Services.CreateScope();
 
-        // await using var blogContext = scope.ServiceProvider.GetRequiredService<BlogDbContext>();
-        // await blogContext.Database.MigrateAsync();
-        //
-        // blogContext.ReloadTypesForEnumSupport();
+        await using var vizitContext = scope.ServiceProvider.GetRequiredService<VizitDbContext>();
+        await vizitContext.Database.MigrateAsync();
+
+        vizitContext.ReloadTypesForEnumSupport();
 
         // If you'd like to modify this class, consider adding your custom code in the SetupDatabase.partial.cs
         // This will make it easier to pull changes from Template when Template is updated
@@ -27,14 +29,10 @@ public static class SetupDatabase
         var services = builder.Services;
         IConfiguration configuration = builder.Configuration;
 
-        // services.AddDbContext<BlogDbContext>(options =>
-        //     options
-        //         .UseNpgsql(configuration.GetConnectionString("BlogDbConnection"))
-        //         .WithLambdaInjection());
-        // services.AddDbContext<GisDbContext>(options =>
-        //     options
-        //         .UseNpgsql(configuration.GetConnectionString("GisDbConnection"))
-        //         .WithLambdaInjection());
+        services.AddDbContext<VizitDbContext>(options =>
+            options
+                .UseNpgsql(configuration.GetConnectionString("VizitDbConnection"))
+                .WithLambdaInjection());
 
         // If you'd like to modify this class, consider adding your custom code in the SetupDatabase.partial.cs
         // This will make it easier to pull changes from Template when Template is updated

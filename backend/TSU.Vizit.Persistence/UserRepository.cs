@@ -7,7 +7,7 @@ using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Persistence;
 
-public class UserRepository(MainDbContext _db, PasswordHasher<User> _passwordHasher) : IUserRepository
+public class UserRepository(VizitDbContext _db, PasswordHasher<User> _passwordHasher) : IUserRepository
 {
 
     public async Task<Result<User>> GetUserById(Guid id)

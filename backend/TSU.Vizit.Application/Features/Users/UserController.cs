@@ -29,9 +29,9 @@ public class UserController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public ActionResult<LoginResultDto> Login(UserLoginModel userLoginDto)
+    public async Task<ActionResult<LoginResultDto>> Login(UserLoginModel userLoginDto)
     {
-        return _userService.LoginUser(userLoginDto).ToActionResult();
+        return await _userService.LoginUser(userLoginDto).ToActionResult();
     }
 
     [AllowAnonymous]

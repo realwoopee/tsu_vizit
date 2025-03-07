@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using FluentResults;
 using FluentResults.Extensions;
@@ -26,6 +27,29 @@ public class TokenService
     public Result<string> IssueRefreshToken(User user, Session session, string? previousRefreshToken = null)
     {
         return GenerateToken(user, session, DateTime.UtcNow.AddDays(7));
+    }
+    
+    public Result CheckRefreshToken(string refreshToken)
+    {
+        return ValidateToken(refreshToken).ToResult();
+    }
+    
+    private Result<ClaimsPrincipal> ValidateToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+            ValidateLifetime = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = _configuration["Jwt:Issuer"],
+            ValidAudience = _configuration["Jwt:Audience"]
+        };
+    
+        var tokenHandler = new JwtSecurityTokenHandler();
+        return Result.Try(() => tokenHandler.ValidateToken(token, tokenValidationParameters, out _),
+            e => new ExceptionalError(e.Message, e));
     }
 
     private Result<string> GenerateToken(User user, Session session, DateTime expirationDate)

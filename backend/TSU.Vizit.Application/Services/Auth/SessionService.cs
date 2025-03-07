@@ -1,4 +1,5 @@
 using FluentResults;
+using TSU.Vizit.Application.Infrastructure.Auth;
 using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Application.Services.Auth;
@@ -56,17 +57,4 @@ public class SessionService
         session.ExpiresAfter = expiresAt;
         return Result.Ok();
     }
-}
-
-public class Session
-{
-    public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
-
-    public string LastIp { get; set; }
-
-    public string? RefreshToken { get; set; }
-
-    public DateTime ExpiresAfter { get; set; }
 }

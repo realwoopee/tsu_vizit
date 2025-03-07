@@ -11,4 +11,5 @@ public interface IUserRepository
     public Task<User> GetUserByStudentCardId(string studentCardId);
     public Task<User> GetUserByEmail(string email);
     public Task EditUser(Guid id, User newUser);
+    public Task LoginUser(User user);
 }

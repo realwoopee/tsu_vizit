@@ -6,16 +6,12 @@ namespace TSU.Vizit.Application.Features.Dto;
 public static class UserDtoConverters
 {
 
-    public static User ToUser(this UserEditProfileModel model)
+    public static User ToUser(this UserEditProfileModel model, User user)
     {
-        throw new NotImplementedException();
-        return new User
-        {
-            FullName = model.FullName,
-            Email = model.Email,
-            // Password = model.Password,
-            // StudentIdNumber = model.StudentIdNumber
-        };
+        if (model.FullName is not null)
+            user.FullName = model.FullName;
+        
+        return user;
     }
     public static User ToUser(this UserRegisterModel model)
     {
@@ -38,4 +34,6 @@ public static class UserDtoConverters
             StudentCardId = model.StudentIdNumber
         };
     }
+    
+    
 }

@@ -3,8 +3,10 @@ using System.Security.Claims;
 using System.Text;
 using FluentResults;
 using FluentResults.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using TSU.Vizit.Application.Settings;
 using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Application.Infrastructure.Auth;
@@ -12,41 +14,41 @@ namespace TSU.Vizit.Application.Infrastructure.Auth;
 public class TokenService
 {
     // TODO: pull token lifetimes from configuration
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _settings;
 
-    public TokenService(IConfiguration configuration)
+    public TokenService(IOptions<JwtSettings> options)
     {
-        _configuration = configuration;
+        _settings = options.Value;
     }
 
     public Result<string> IssueAccessToken(User user, Session session)
     {
-        return GenerateToken(user, session, DateTime.UtcNow.AddMinutes(5));
+        return GenerateToken(user, session, DateTime.UtcNow.AddSeconds(_settings.AccessTokenLifetimeSeconds));
     }
 
     public Result<string> IssueRefreshToken(User user, Session session, string? previousRefreshToken = null)
     {
-        return GenerateToken(user, session, DateTime.UtcNow.AddDays(7));
+        return GenerateToken(user, session, DateTime.UtcNow.AddSeconds(_settings.RefreshTokenLifetimeSeconds));
     }
-    
+
     public Result CheckRefreshToken(string refreshToken)
     {
         return ValidateToken(refreshToken).ToResult();
     }
-    
+
     private Result<ClaimsPrincipal> ValidateToken(string token)
     {
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey)),
             ValidateLifetime = true,
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidIssuer = _configuration["Jwt:Issuer"],
-            ValidAudience = _configuration["Jwt:Audience"]
+            ValidIssuer = _settings.Issuer,
+            ValidAudience = _settings.Audience
         };
-    
+
         var tokenHandler = new JwtSecurityTokenHandler();
         return Result.Try(() => tokenHandler.ValidateToken(token, tokenValidationParameters, out _),
             e => new ExceptionalError(e.Message, e));
@@ -62,12 +64,12 @@ public class TokenService
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Issuer = _configuration["Jwt:Issuer"],
-            Audience = _configuration["Jwt:Audience"],
+            Issuer = _settings.Issuer,
+            Audience = _settings.Audience,
             Subject = new ClaimsIdentity(claims),
             Expires = expirationDate,
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey)),
                     SecurityAlgorithms.HmacSha256)
         };
 
@@ -103,7 +105,7 @@ public class TokenService
             ValidateAudience = false,
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey)),
             ValidateLifetime = false
         };
 

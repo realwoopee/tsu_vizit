@@ -2,9 +2,11 @@
 using FluentResults;
 using FluentResults.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using TSU.Vizit.Application.Features.Auth.Dto;
 using TSU.Vizit.Application.Features.Users.Dto;
 using TSU.Vizit.Application.Infrastructure.Auth;
+using TSU.Vizit.Application.Settings;
 using TSU.Vizit.Contracts;
 using TSU.Vizit.Domain;
 using TSU.Vizit.Infrastructure.Errors;
@@ -17,14 +19,16 @@ public class AuthService
     private readonly ISessionRepository _sessionRepository;
     private readonly TokenService _tokenService;
     private readonly IUserRepository _userRepository;
+    private readonly JwtSettings _jwtSettings;
 
     public AuthService(PasswordHasher<User> passwordHasher, ISessionRepository sessionRepository,
-        TokenService tokenService, IUserRepository userRepository)
+        TokenService tokenService, IUserRepository userRepository, IOptions<JwtSettings> jwtOptions)
     {
         _passwordHasher = passwordHasher;
         _sessionRepository = sessionRepository;
         _tokenService = tokenService;
         _userRepository = userRepository;
+        _jwtSettings = jwtOptions.Value;
     }
 
     public async Task<Result<LoginResultDto>> LoginUser(UserLoginModel userLoginModel)
@@ -34,7 +38,7 @@ public class AuthService
         if (userResult.IsFailed)
             return Result.Fail(userResult.Errors);
 
-        var session = _sessionRepository.CreateNewSession(userResult.Value.Id, TimeSpan.FromDays(7));
+        var session = _sessionRepository.CreateNewSession(userResult.Value.Id, _jwtSettings.RefreshTokenLifetime);
 
         var accessTokenResult = _tokenService.IssueAccessToken(userResult.Value, session);
         var refreshTokenResult = _tokenService.IssueRefreshToken(userResult.Value, session);
@@ -42,7 +46,7 @@ public class AuthService
         if (accessTokenResult.IsFailed || refreshTokenResult.IsFailed)
             return CustomErrors.AuthError("Could not issue token");
 
-        return _sessionRepository.UpdateRefreshToken(session.Id, refreshTokenResult.Value, DateTime.UtcNow.AddDays(7))
+        return _sessionRepository.UpdateRefreshToken(session.Id, refreshTokenResult.Value, DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifetime))
             .Bind<LoginResultDto>(
                 () => new LoginResultDto
                 {
@@ -86,7 +90,7 @@ public class AuthService
             return Result.Fail(new ValidationError("Could not refresh token"));
 
         return _sessionRepository
-            .UpdateRefreshToken(session.Id, newRefreshTokenResult.Value, DateTime.UtcNow.AddDays(7))
+            .UpdateRefreshToken(session.Id, newRefreshTokenResult.Value, DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifetime))
             .Bind<LoginResultDto>(() => new LoginResultDto
             {
                 Token = newAccessTokenResult.Value,

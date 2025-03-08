@@ -93,7 +93,7 @@ public class AuthService
                 RefreshToken = newRefreshTokenResult.Value
             });
     }
-    
+
     public async Task<Result<List<Claim>>> ValidateAndParseAccessToken(string accessToken)
     {
         var userResult = await _tokenService.GetUserIdFromToken(accessToken)
@@ -104,58 +104,55 @@ public class AuthService
                     ? Result.Ok(user.Value)
                     : CustomErrors.NotFound("User not found");
             });
-        
+
         if (userResult.IsFailed)
             return Result.Fail(new ValidationError("User fetch failed"));
-        
+
         var user = userResult.Value!;
         var sessionResult = await _tokenService.GetSessionIdFromToken(accessToken)
-            .Bind(sessionId =>  _sessionRepository.GetSession(sessionId));
-        
+            .Bind(sessionId => _sessionRepository.GetSession(sessionId));
+
         if (sessionResult.IsFailed)
             return Result.Fail(new ValidationError("Session fetch failed"));
-        
+
         var session = sessionResult.Value!;
-        
+
         if (session.ExpiresAfter < DateTime.UtcNow)
             return Result.Fail(new ValidationError("Session has expired"));
-        
+
         return Result.Ok<List<Claim>>(
         [
             new Claim(VizitClaimTypes.UserId, user.Id.ToString()),
             new Claim(VizitClaimTypes.SessionId, session.Id.ToString())
         ]);
     }
-    
+
     public async Task<Result> ChangeUserPassword(UserChangePasswordModel model)
     {
         var userResult = await _userRepository.GetUserByEmail(model.Email);
         if (userResult.IsFailed)
             return Result.Fail(userResult.Errors);
-        
-        var result = _passwordHasher.VerifyHashedPassword(userResult.Value, userResult.Value.PasswordHash, model.OldPassword);
-        
+
+        var result =
+            _passwordHasher.VerifyHashedPassword(userResult.Value, userResult.Value.PasswordHash, model.OldPassword);
+
         if (result == PasswordVerificationResult.Failed)
             return CustomErrors.ValidationError("Invalid password");
-        
+
         userResult.Value.PasswordHash = _passwordHasher.HashPassword(userResult.Value, model.NewPassword);
         _sessionRepository.ClearSessions(userResult.Value.Id);
-        
+
         return Result.Ok();
     }
-    
-    
+
+
     public async Task<Result<LoginResultDto>> RegisterUser(UserRegisterModel model)
     {
-        var registrationResult = await _userRepository.RegisterUser(model.ToUser());
+        var user = model.ToUser();
+        user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
 
-        if (registrationResult.IsFailed)
-        {
-            return Result.Fail<LoginResultDto>(registrationResult.Errors); // Is this OK?
-        }
-        
-        var user = registrationResult.Value!;
-        
-        return await LoginUser(new UserLoginModel{Email = user.Email, Password = user.Password});
+        return await _userRepository.CreateUser(user)
+            .Bind(async newUser =>
+                await LoginUser(new UserLoginModel { Email = newUser.Email, Password = model.Password }));
     }
 }

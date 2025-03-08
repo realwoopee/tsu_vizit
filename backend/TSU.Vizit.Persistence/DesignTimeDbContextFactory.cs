@@ -12,6 +12,7 @@ public class DesignTimeDbContextFactory
         IConfiguration config = new ConfigurationBuilder()
             .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../TSU.Vizit.Application/"))
             .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.local.json")
             .Build();
             
         var optionsBuilder = new DbContextOptionsBuilder<VizitDbContext>();

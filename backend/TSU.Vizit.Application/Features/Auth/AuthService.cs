@@ -149,7 +149,7 @@ public class AuthService
     {
         var registrationResult = await _userRepository.RegisterUser(model.ToUser());
 
-        if (!registrationResult.IsSuccess)
+        if (registrationResult.IsFailed)
         {
             return Result.Fail<LoginResultDto>(registrationResult.Errors); // Is this OK?
         }

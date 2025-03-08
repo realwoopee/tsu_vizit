@@ -23,12 +23,12 @@ public class TokenService
 
     public Result<string> IssueAccessToken(User user, Session session)
     {
-        return GenerateToken(user, session, DateTime.UtcNow.AddSeconds(_settings.AccessTokenLifetimeSeconds));
+        return GenerateToken(user, session, DateTime.UtcNow.Add(_settings.AccessTokenLifetime));
     }
 
     public Result<string> IssueRefreshToken(User user, Session session, string? previousRefreshToken = null)
     {
-        return GenerateToken(user, session, DateTime.UtcNow.AddSeconds(_settings.RefreshTokenLifetimeSeconds));
+        return GenerateToken(user, session, DateTime.UtcNow.Add(_settings.RefreshTokenLifetime));
     }
 
     public Result CheckRefreshToken(string refreshToken)

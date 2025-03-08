@@ -5,11 +5,15 @@ namespace TSU.Vizit.Persistence;
 
 public class VizitDbContext : DbContext
 {
+    // For runtime DI
     public VizitDbContext(DbContextOptions
         <VizitDbContext> options)
         : base(options)
     {
     }
+    
+    // For design-time migrations
+    // public VizitDbContext() {} 
 
     public virtual DbSet<User> Users { get; set; }
     

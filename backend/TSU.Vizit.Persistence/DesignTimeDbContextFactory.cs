@@ -15,7 +15,7 @@ public class DesignTimeDbContextFactory
             .Build();
             
         var optionsBuilder = new DbContextOptionsBuilder<VizitDbContext>();
-        optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));
         return new VizitDbContext(optionsBuilder.Options);
     }
 }

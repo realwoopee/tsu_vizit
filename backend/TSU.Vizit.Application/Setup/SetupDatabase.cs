@@ -31,7 +31,7 @@ public static class SetupDatabase
 
         services.AddDbContext<VizitDbContext>(options =>
             options
-                .UseNpgsql(configuration.GetConnectionString("VizitDbConnection"))
+                .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
                 .WithLambdaInjection());
 
         // If you'd like to modify this class, consider adding your custom code in the SetupDatabase.partial.cs

@@ -2,6 +2,9 @@ using TSU.Vizit.Application.Setup;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .AddJsonFile("appsettings.local.json");
+
 SetupResults.Setup(builder);
 
 SetupAspNet.AddAspNet(builder);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using TSU.Vizit.Application.Features.Auth;
 using TSU.Vizit.Application.Features.Users;
 using TSU.Vizit.Application.Infrastructure.Auth;
 using TSU.Vizit.Contracts;
@@ -19,6 +20,7 @@ public static class SetupServices
         services.AddSingleton<ISessionRepository, SessionRepository>(); // Singleton?
         services.AddScoped<PasswordHasher<User>>(provider => new PasswordHasher<User>());
         services.AddScoped<TokenService>();
+        services.AddScoped<AuthService>();
         services.AddScoped<UserService>();
         services.AddScoped<UserAccessor>();
         services.AddScoped<IUserRepository, UserRepository>();

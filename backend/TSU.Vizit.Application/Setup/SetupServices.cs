@@ -17,8 +17,7 @@ public static class SetupServices
         IWebHostEnvironment environment
     )
     {
-        services.AddSingleton<SessionService>();
-        services.AddSingleton<ISessionRepository, SessionRepository>(); // Singleton?
+        services.AddSingleton<ISessionRepository, SessionRepository>();
         services.AddScoped<PasswordHasher<User>>(provider => new PasswordHasher<User>());
         services.AddScoped<TokenService>();
         services.AddScoped<AuthService>();

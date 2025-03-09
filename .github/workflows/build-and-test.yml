@@ -24,7 +24,7 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
         env:
-          DOTNET_INSTALL_DIR: ${{ github.workspace }}/_tools/dotnet
+          DOTNET_INSTALL_DIR: ${{ runner.tool_cache }}/dotnet
 
       # Step 3: Restore dependencies
       - name: Restore Dependencies

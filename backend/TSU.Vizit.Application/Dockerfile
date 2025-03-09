@@ -14,11 +14,11 @@ COPY ["TSU.Vizit.Persistence/TSU.Vizit.Persistence.csproj", "TSU.Vizit.Persisten
 RUN dotnet restore "TSU.Vizit.Application/TSU.Vizit.Application.csproj"
 COPY . .
 WORKDIR "/src/TSU.Vizit.Application"
-RUN dotnet build "TSU.Vizit.Application.csproj" -c $BUILD_CONFIGURATION -o /app/build
+#RUN dotnet build "TSU.Vizit.Application.csproj" -c $BUILD_CONFIGURATION --no-restore -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "TSU.Vizit.Application.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "TSU.Vizit.Application.csproj" -c $BUILD_CONFIGURATION --no-restore -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

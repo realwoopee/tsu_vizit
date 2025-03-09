@@ -44,3 +44,8 @@ jobs:
       #  with:
       #    name: test-results
       #    path: '**/*.trx'
+
+      # Step 6: Deploy
+      - name: Deploy using docker compose
+        run: docker compose up -d --build
+        working-directory: /home/pi/tsu_vizit/.ci

@@ -1,6 +1,0 @@
-@TSU.Vizit.Application_HostAddress = http://localhost:5055
-
-GET {{TSU.Vizit.Application_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

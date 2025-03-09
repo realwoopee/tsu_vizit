@@ -10,6 +10,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSU.Vizit.Persistence", "TS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSU.Vizit.Infrastructure", "TSU.Vizit.Infrastructure\TSU.Vizit.Infrastructure.csproj", "{3A044425-7B43-431A-ADEA-B4ED3C73260A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1DDFC13-8BD8-4C1A-A6EB-BBD1D1284B5C}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

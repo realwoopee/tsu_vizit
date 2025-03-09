@@ -1,0 +1,13 @@
+{
+  "name": "tsu_vizit",
+  "packageManager": "yarn@4.0.2",
+  "private": true,
+  "scripts": {
+    "backend-start": "cd backend && docker compose up -d"
+  },
+  "workspaces": [
+    "mobile",
+    "web",
+    "tsu-vizit-shared"
+  ]
+}

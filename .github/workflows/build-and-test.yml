@@ -1,0 +1,46 @@
+name: Build and Test ASP.NET Core App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  DOTNET_VERSION: '9.0.x'
+
+jobs:
+  build-and-test:
+    runs-on: self-hosted
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up .NET SDK
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.tool_cache }}/dotnet
+
+      # Step 3: Restore dependencies
+      - name: Restore Dependencies
+        run: dotnet restore ./backend/
+
+      # Step 4: Build the application
+      - name: Build Application
+        run: dotnet build ./backend/ --configuration Release --no-restore
+
+      # Step 5: Run tests
+      #- name: Run Tests
+      #  run: dotnet test ./backend/ --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+
+      # Optional: Upload test results as artifacts for analysis
+      #- name: Upload Test Results
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: test-results
+      #    path: '**/*.trx'

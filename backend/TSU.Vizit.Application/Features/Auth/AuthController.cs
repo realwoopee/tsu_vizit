@@ -9,6 +9,23 @@ namespace TSU.Vizit.Application.Features.Auth;
 [ApiController]
 public class AuthController(AuthService authService, ILogger<AuthController> logger)
 {
+    
+    [AllowAnonymous]
+    [HttpPost("develop/insta_login")]
+    public async Task<ActionResult<LoginResultDto>> InstaLogin()
+    {
+        var userLoginDto = new UserLoginModel
+        {
+            Email = "use123r@example.com",
+            Password = "string123"
+            //  "fullName": "instalogin@test.com",
+            // "email": "use123r@example.com",
+            // "password": "string123",
+            // "studentIdNumber": "s2ring"
+        };
+        return await authService.LoginUser(userLoginDto).ToActionResult();
+    }
+    
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<LoginResultDto>> Login(UserLoginModel userLoginDto)

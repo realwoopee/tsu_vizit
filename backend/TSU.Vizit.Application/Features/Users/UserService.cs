@@ -26,4 +26,9 @@ public class UserService(IUserRepository userRepository)
                 return await userRepository.EditUser(userId, user);
             }).Map(u => u.ToDto());
     }
+
+    public async Task<Result<UserRolesDto>> GetUserRoles(Guid userId)
+    {
+        return await userRepository.GetUserById(userId).Map(u => u.ToRoles());
+    }
 }

@@ -3,7 +3,7 @@ name: Build and Test ASP.NET Core App
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 env:

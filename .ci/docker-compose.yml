@@ -2,7 +2,7 @@ services:
   backend:
     image: tsu.vizit.application
     build:
-      context: .
+      context: ../backend/.
       dockerfile: ../backend/TSU.Vizit.Application/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Production

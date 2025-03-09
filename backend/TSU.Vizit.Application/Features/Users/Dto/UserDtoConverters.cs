@@ -25,4 +25,15 @@ public static class UserDtoConverters
             StudentCardId = model.StudentIdNumber
         };
     }
+
+    public static UserRolesDto ToRoles(this User model)
+    {
+        return new UserRolesDto
+        {
+            CanCreate = model.CanCreate,
+            CanApprove = model.CanApprove,
+            CanCheck = model.CanCheck,
+            IsAdmin = model.IsAdmin
+        };
+    }
 }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,9 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
         if (data is null)
             return CustomErrors.NotFound("User not found");
         
+        if (newUser.FullName == data.FullName)
+            return CustomErrors.ValidationError("FullName has to change.");
+        
         dbContext.Entry(data).CurrentValues.SetValues(newUser);
         await dbContext.SaveChangesAsync();
         return Result.Ok(data);
@@ -48,6 +52,9 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
 
         if (dbContext.Users.Any(u => u.FullName == user.FullName))
             return Result.Fail(new ValidationError("FullName is already registered"));
+        
+        if (dbContext.Users.Any(u => u.StudentIdNumber == user.StudentIdNumber))
+            return Result.Fail(new ValidationError("StudentIdNumber is already registered"));
 
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();

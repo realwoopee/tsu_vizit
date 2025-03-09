@@ -20,6 +20,14 @@ public class UserController : ControllerBase
         _userAccessor = userAccessor;
     }
 
+    [Authorize]
+    [HttpGet("roles")]
+    public async Task<ActionResult<UserDto>> GetRoles()
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<UserRolesDto>> (userId) => await _userService.GetUserRoles(userId))
+            .ToActionResult();
+    }
 
     [Authorize]
     [HttpGet("profile")]

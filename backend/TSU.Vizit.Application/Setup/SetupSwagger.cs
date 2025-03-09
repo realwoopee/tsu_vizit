@@ -34,7 +34,7 @@ public static class SetupSwagger
     {
         if (!app.Environment.IsDevelopment()) return;
 
-        app.UseSwagger();
+        app.UseSwagger(options => { options.RouteTemplate = "/api/swagger/{documentName}/swagger.json"; });
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/api/swagger/v1/swagger.json", "v1");

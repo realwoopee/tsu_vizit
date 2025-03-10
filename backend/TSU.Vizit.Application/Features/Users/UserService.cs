@@ -23,6 +23,7 @@ public class UserService(IUserRepository userRepository)
             .Bind(async user =>
             {
                 user.FullName = model.FullName;
+                user.Email = model.Email;
                 return await userRepository.EditUser(userId, user);
             }).Map(u => u.ToDto());
     }

@@ -16,12 +16,14 @@ public class AuthController(AuthService authService, ILogger<AuthController> log
     {
         var userLoginDto = new UserLoginModel
         {
-            Email = "use123r@example.com",
-            Password = "string123"
-            //  "fullName": "instalogin@test.com",
-            // "email": "use123r@example.com",
-            // "password": "string123",
-            // "studentIdNumber": "s2ring"
+            Email = "user@example.com",
+            Password = "string"
+// {
+//   "fullName": "string",
+//   "email": "user@example.com",
+//   "password": "string",
+//   "studentIdNumber": "string"
+// }        
         };
         return await authService.LoginUser(userLoginDto).ToActionResult();
     }

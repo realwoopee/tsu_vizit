@@ -19,6 +19,14 @@ public class VizitDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.Email)
+            .IsUnique();
+        
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.StudentIdNumber)
+            .IsUnique();
+        
         // modelBuilder.Entity<PostLike>()
         //     .HasKey(pt => new { pt.PostId, pt.UserWhoLikedId });
     }

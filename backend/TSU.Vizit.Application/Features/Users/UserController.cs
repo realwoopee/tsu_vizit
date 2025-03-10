@@ -54,14 +54,11 @@ public class UserController : ControllerBase
     [HttpPut("{id}/profile")]
     public async Task<ActionResult<UserDto>> EditProfile(Guid id, [FromBody] UserEditProfileModel model)
     {
-        var currentUserIsAdmin = await _userAccessor.GetUserId()
+        return await _userAccessor.GetUserId()
             .Bind(async Task<Result<UserRolesDto>> (userId) => await _userService.GetUserRoles(userId))
-            .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")));
-
-        var targetIsNotAdmin = await _userService.GetUserRoles(id).Bind((userRoles) =>
-            Result.FailIf(userRoles.IsAdmin, new ForbiddenError("You can not edit admin user.")));
-        
-        return await Result.Merge(currentUserIsAdmin, targetIsNotAdmin)
+            .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
+            .Bind(async () => await _userService.GetUserRoles(id))
+            .Bind((userRoles) => Result.FailIf(userRoles.IsAdmin, new ForbiddenError("You can not edit admin user.")))
             .Bind(async Task<Result<UserDto>> () => await _userService.EditUserById(id, model))
             .ToActionResult();
     }

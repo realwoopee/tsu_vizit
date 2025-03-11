@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TSU.Vizit.Application.Features.Users.Dto;
 using TSU.Vizit.Application.Infrastructure.Auth;
+using TSU.Vizit.Domain;
 using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Application.Features.Users;
@@ -60,6 +61,17 @@ public class UserController : ControllerBase
             .Bind(async () => await _userService.GetUserRoles(id))
             .Bind((userRoles) => Result.FailIf(userRoles.IsAdmin, new ForbiddenError("You can not edit admin user.")))
             .Bind(async Task<Result<UserDto>> () => await _userService.EditUserById(id, model))
+            .ToActionResult();
+    }
+
+    [Authorize]
+    [HttpPut("{id}/profile/role")]
+    public async Task<ActionResult<UserRolesDto>> EditUserRole(Guid id, Roles role)
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<UserRolesDto>> (userId) => await _userService.GetUserRoles(userId))
+            .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
+            .Bind(async () => await _userService.EditUserRole(new UserEditRoleModel{ Id = id, Role = role }))
             .ToActionResult();
     }
     

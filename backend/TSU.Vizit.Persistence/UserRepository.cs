@@ -136,18 +136,11 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
             totalCount = totalCount
         };
     }
-    
-    public Roles GetHighestRole(User user)
+
+    public async Task<Result<User>> EditUserRole(Guid id, Roles role)
     {
-        if (user.IsAdmin)
-            return Roles.Admin;
-        
-        if (user.CanApprove)
-            return Roles.DeansEmployee;
-        
-        if (user.CanCheck)
-            return Roles.Teacher;
-        
-        return Roles.Student;
+        var user = await dbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
+        user.Role = role;
+        return user;
     }
 }

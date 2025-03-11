@@ -48,4 +48,9 @@ public class UserService(IUserRepository userRepository)
         return await userRepository.GetAllUsers(filter, model.Sorting, model.Pagination)
             .Map(u => u.ToDto());
     }
+    
+    public async Task<Result<UserRolesDto>> EditUserRole(UserEditRoleModel model)
+    {
+        return await userRepository.EditUserRole(model.Id, model.Role).Map(u => u.ToRoles());
+    }
 }

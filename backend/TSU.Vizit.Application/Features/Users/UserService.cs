@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using FluentResults;
 using FluentResults.Extensions;
+using FluentResults.Extensions.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using TSU.Vizit.Application.Features.Auth.Dto;
 using TSU.Vizit.Application.Features.Users.Dto;
@@ -31,5 +32,20 @@ public class UserService(IUserRepository userRepository)
     public async Task<Result<UserRolesDto>> GetUserRoles(Guid userId)
     {
         return await userRepository.GetUserById(userId).Map(u => u.ToRoles());
+    }
+    
+    public async Task<Result<UserPagedListDto>> GetAllUsers(GetAllUsersModel model)
+    {
+        var filter = new UserListFilter
+        {
+            Email = model.Email,
+            FullName = model.FullName,
+            Role = model.Role,
+            StudentIdNumber = model.StudentIdNumber
+        };
+        
+        
+        return await userRepository.GetAllUsers(filter, model.Sorting, model.Pagination)
+            .Map(u => u.ToDto());
     }
 }

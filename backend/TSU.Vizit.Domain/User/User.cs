@@ -12,4 +12,19 @@ public class User
     public bool CanCheck { get; set; }
     public bool CanApprove { get; set; }
     public bool IsAdmin { get; set; }
+    public Roles Role {
+        get
+        {
+            if (IsAdmin)
+                return Roles.Admin;
+            
+            if (CanApprove)
+                return Roles.DeansEmployee;
+            
+            if (CanCheck)
+                return Roles.Teacher;
+            
+            return Roles.Student;
+        }
+    }
 }

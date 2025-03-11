@@ -1,4 +1,6 @@
-﻿namespace TSU.Vizit.Application.Features.Users.Dto;
+﻿using TSU.Vizit.Domain;
+
+namespace TSU.Vizit.Application.Features.Users.Dto;
 
 public class UserDto
 {
@@ -6,4 +8,5 @@ public class UserDto
     public string FullName { get; set; }
     public string Email { get; set; }
     public string? StudentCardId { get; set; }
+    public Roles? Role { get; set; }
 }

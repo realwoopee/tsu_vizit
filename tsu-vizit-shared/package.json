@@ -1,6 +1,6 @@
 {
   "name": "tsu-visit-shared",
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.7.0",
   "private": true,
   "devDependencies": {
     "typescript": "^5.7.3"

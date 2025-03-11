@@ -62,5 +62,16 @@ public class UserController : ControllerBase
             .Bind(async Task<Result<UserDto>> () => await _userService.EditUserById(id, model))
             .ToActionResult();
     }
+    
+    [Authorize]
+    [HttpGet("profiles")]
+    public async Task<ActionResult<List<UserDto>>> GetAllUsers([FromQuery] GetAllUsersModel model)
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<UserRolesDto>> (userId) => await _userService.GetUserRoles(userId))
+            .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
+            .Bind(async () => await _userService.GetAllUsers(model))
+            .ToActionResult();
+    }
   
 }

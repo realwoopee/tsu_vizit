@@ -1,4 +1,5 @@
 using TSU.Vizit.Application.Features.Auth.Dto;
+using TSU.Vizit.Application.Utils.Pagination.Dto;
 using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Application.Features.Users.Dto;
@@ -15,14 +16,15 @@ public static class UserDtoConverters
         };
     }
 
-    public static UserDto ToDto(this User model)
+    public static UserDto ToDto(this User user)
     {
         return new UserDto
         {
-            Id = model.Id,
-            FullName = model.FullName,
-            Email = model.Email,
-            StudentCardId = model.StudentIdNumber
+            Id = user.Id,
+            FullName = user.FullName,
+            Email = user.Email,
+            StudentCardId = user.StudentIdNumber,
+            Role = user.Role
         };
     }
 
@@ -34,6 +36,19 @@ public static class UserDtoConverters
             CanApprove = model.CanApprove,
             CanCheck = model.CanCheck,
             IsAdmin = model.IsAdmin
+        };
+    }
+
+    public static UserPagedListDto ToDto(this UserPagedList userPagedList)
+    {
+        return new UserPagedListDto
+        {
+            Users = userPagedList.users.Select(u => u.ToDto()).ToList(),
+            Pagination = new PaginationDto
+            {
+                Size = userPagedList.pagination.Size, Current = userPagedList.pagination.Page,
+                Count = (int)Math.Ceiling((double)userPagedList.totalCount / userPagedList.pagination.Size) 
+            }
         };
     }
 }

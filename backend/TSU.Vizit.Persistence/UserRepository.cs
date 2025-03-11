@@ -2,9 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Npgsql;
 using TSU.Vizit.Contracts;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Domain.Paginaiton;
 using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Persistence;
@@ -73,5 +76,78 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
             };
             return CustomErrors.ValidationError(error);
         }
+    }
+
+    public async Task<Result<UserPagedList>> GetAllUsers(UserListFilter filter,
+        UserSorting? sorting,
+        PaginationModel pagination)
+    {
+        var query = dbContext.Users.AsQueryable();
+        
+        if (!string.IsNullOrWhiteSpace(filter?.Email))
+            query = query.Where(user => user.Email.Contains(filter.Email));
+        
+        if (!string.IsNullOrWhiteSpace(filter?.StudentIdNumber))
+            query = query.Where(user => user.StudentIdNumber.Contains(filter.StudentIdNumber));
+        
+        if (!string.IsNullOrWhiteSpace(filter?.FullName))
+            query = query.Where(user => user.FullName.Contains(filter.FullName));
+
+        if (filter?.Role is not null)
+        {
+            if (filter.Role == Roles.Admin)
+                query = query.Where(user => user.IsAdmin);
+            
+            if (filter.Role == Roles.DeansEmployee)
+                query = query.Where(user => user.CanApprove);
+            
+            if (filter.Role == Roles.Teacher)
+                query = query.Where(user => user.CanCheck);
+            
+            if (filter.Role == Roles.Student)
+                query = query.Where(user => user.CanCreate);
+        }
+        
+        var totalCount = await query.CountAsync();
+
+        query = sorting switch
+        {
+            UserSorting.NameAsc => query.OrderBy(user => user.FullName),
+            UserSorting.NameDesc => query.OrderByDescending(user => user.FullName),
+            UserSorting.RoleAsc => query.OrderBy(user => user.CanCreate)
+                .ThenBy(user => user.CanCheck)
+                .ThenBy(user => user.CanApprove)
+                .ThenBy(user => user.IsAdmin),
+            UserSorting.RoleDesc => query.OrderByDescending(user => user.IsAdmin)
+                .ThenBy(user => user.CanApprove)
+                .ThenBy(user => user.CanCheck)
+                .ThenBy(user => user.CanCreate),
+            null => query,
+            _ => throw new ArgumentOutOfRangeException(nameof(sorting), sorting, $"Invalid sorting value: {sorting}")
+        };
+
+        return new UserPagedList
+        {
+            users = await query
+                .Skip((pagination.Page - 1) * pagination.Size)
+                .Take(pagination.Size)
+                .ToListAsync(),
+            pagination = pagination,
+            totalCount = totalCount
+        };
+    }
+    
+    public Roles GetHighestRole(User user)
+    {
+        if (user.IsAdmin)
+            return Roles.Admin;
+        
+        if (user.CanApprove)
+            return Roles.DeansEmployee;
+        
+        if (user.CanCheck)
+            return Roles.Teacher;
+        
+        return Roles.Student;
     }
 }

@@ -12,4 +12,5 @@ public interface IUserRepository
     public Task<Result<User>> EditUser(Guid id, User newUser);
     public Task<Result<User>> CreateUser(User user);
     public Task<Result<UserPagedList>> GetAllUsers(UserListFilter filter, UserSorting? sorting, PaginationModel pagination);
+    public Task<Result<User>> EditUserRole(Guid id, Roles role);
 }

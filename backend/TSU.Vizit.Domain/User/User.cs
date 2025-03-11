@@ -12,7 +12,8 @@ public class User
     public bool CanCheck { get; set; }
     public bool CanApprove { get; set; }
     public bool IsAdmin { get; set; }
-    public Roles Role {
+    public Roles Role
+    {
         get
         {
             if (IsAdmin)
@@ -25,6 +26,31 @@ public class User
                 return Roles.Teacher;
             
             return Roles.Student;
+        }
+        set
+        {
+            if (value == Roles.Admin)
+            {
+                IsAdmin = true;
+                CanApprove = true;
+                CanCheck = true;
+                CanCreate = true;
+            }
+            if (value == Roles.DeansEmployee)
+            {
+                CanApprove = true;
+                CanCheck = true;
+                CanCreate = true;
+            }
+            if (value == Roles.Teacher)
+            {
+                CanCheck = true;
+                CanCreate = true;
+            }
+            if (value == Roles.Student)
+            {
+                CanCreate = true;
+            }
         }
     }
 }

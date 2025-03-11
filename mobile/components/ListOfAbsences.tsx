@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, ScrollView, Modal } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AbsenceItem from './AbsenceItem';
-import Header from './Header';
-import { Ionicons } from '@expo/vector-icons'; // Для иконок (установите @expo/vector-icons)
+import { Ionicons } from '@expo/vector-icons';
 import FiltersBlock from './FiltersBlock';
 
 // type RootStackParamList = {
@@ -49,12 +48,22 @@ export default function ListOfAbsences() { //{ navigation }: AbsenceListProps
   const onAddDocument = (id: string, newDocs: Doc[]) => {
     setListOfItems(prevItems =>
       prevItems.map(item =>
-        item.id === id ? { ...item, docs: [...item.docs, ...newDocs] } : item
+        item.id === id ? { ...item, docs: [ ...newDocs] } : item
       )
     );
   };
 
-  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false); // Для модального окна
+  const onRemoveDocument = (id: string, delDoc: string) => {
+    setListOfItems(prevItems =>
+      prevItems.map(item =>
+        item.id === id
+          ? { ...item, docs: item.docs.filter(doc => doc.uri !== delDoc) }
+          : item
+      )
+    );
+  };
+
+  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
  
   return (
@@ -68,14 +77,14 @@ export default function ListOfAbsences() { //{ navigation }: AbsenceListProps
 
       <FlatList
         // style={{flex: 1}}
-        style={{marginBottom: 60}}
+        style={{marginBottom: 120, top: '5%'}}
         data={listOfItems}
         keyExtractor={item => item.id.toString()}
         ListEmptyComponent={
           <Text style={styles.emptyText}>Пропуски отсутствуют</Text>
         }
         renderItem={({ item }) => (
-          <AbsenceItem item={item} onAddDocument={onAddDocument} />
+          <AbsenceItem item={item} onAddDocument={onAddDocument} onRemoveDocument={onRemoveDocument} />
         )}
       />
 
@@ -93,14 +102,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: 'none',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    top: '5%',
   },
   headerTitle: {
     fontSize: 18,

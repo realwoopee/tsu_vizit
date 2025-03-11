@@ -11,6 +11,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 // import DocumentPicker from 'react-native-document-picker';
+import * as DocumentPicker from 'expo-document-picker';
+
 
 type Doc = {
   name: string;
@@ -31,9 +33,10 @@ type Item = {
 interface AbsenceItemProps {
   item: Item;
   onAddDocument: (id: string, docs: Doc[]) => void;
+  onRemoveDocument: (itemId: string, docUri: string) => void;
 }
 
-export default function AbsenceItem({ item, onAddDocument }: AbsenceItemProps) {
+export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: AbsenceItemProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [endDate, setEndDate] = useState(new Date(item.end));
@@ -59,40 +62,74 @@ export default function AbsenceItem({ item, onAddDocument }: AbsenceItemProps) {
   };
 
 
-  const handleAddDocument = async () => {
-    // try {
-    //   const res = await DocumentPicker.pick({
-    //     type: [DocumentPicker.types.allFiles],
-    //     allowMultiSelection: true, 
-    //   });
-  
-    //   if (!res || res.length === 0) return; 
-  
-    //   const newDocs: Doc[] = (Array.isArray(res) ? res : [res]).map(file => ({
-    //     name: file.name || 'Без названия',
-    //     type: file.type || 'Неизвестный',
-    //     uri: file.uri,
-    //   }));
+  // const handleAddDocument = async () => {
+  //   try {
+  //     const res = await DocumentPicker.pick({
+  //       type: [DocumentPicker.types.allFiles],
+  //       allowMultiSelection: true,
+  //     });
 
-    //   onAddDocument(item.id, newDocs);
-  
-    // } catch (err) {
-    //   if (DocumentPicker.isCancel(err)) {
-    //     console.log('cancelled', err);
-    //   } else {
-    //     console.error(err);
-    //   }
-    // }
-  };
+  //     if (!res || res.length === 0) return;
+
+  //     const newDocs: Doc[] = (Array.isArray(res) ? res : [res]).map(file => ({
+  //       name: file.name || 'Без названия',
+  //       type: file.type || 'Неизвестный',
+  //       uri: file.uri,
+  //     }));
+
+  //     onAddDocument(item.id, newDocs);
+  //   } catch (err) {
+  //     if (DocumentPicker.isCancel(err)) {
+  //       console.log('cancelled', err);
+  //     } else {
+  //       console.error(err);
+  //     }
+  //   }
+  // };
+  const handleAddDocument = async () => {
+    try {
+      const res = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        multiple: true,
+      });
+
+      if (res.canceled) {
+        console.log('cancelled');
+        return;
+      }
+
+      const newDocs: Doc[] = res.assets.map(file => ({
+        name: file.name || 'Без названия',
+        type: file.mimeType || 'Неизвестный',
+        uri: file.uri,
+      }));
+
+      onAddDocument(item.id, newDocs);
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+
 
   const renderDocumentItem = ({ item: doc }: { item: Doc }) => (
-    <TouchableOpacity style={styles.docItem}>
-      <Ionicons name="document-text-outline" size={20} color="#666" />
-      <View style={styles.docInfo}>
-        <Text style={styles.docName}>{doc.name}</Text>
-        <Text style={styles.docType}>{doc.type}</Text>
-      </View>
-    </TouchableOpacity>
+    <View style={styles.docItemContainer}>
+      <TouchableOpacity style={styles.docItem}>
+        <Ionicons name="document-text-outline" size={20} color="#666" />
+        <View style={styles.docInfo}>
+          <Text style={styles.docName}>{doc.name}</Text>
+          <Text style={styles.docType}>{doc.type}</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => onRemoveDocument(item.id, doc.uri)}
+      >
+        <Ionicons name="trash-outline" size={20} color="#FF0000" />
+      </TouchableOpacity>
+    </View>
+
   );
 
 
@@ -125,7 +162,7 @@ export default function AbsenceItem({ item, onAddDocument }: AbsenceItemProps) {
         </View>
 
         <View style={styles.docsContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.docsButton}
             onPress={() => setShowDocsModal(true)}
           >
@@ -176,7 +213,7 @@ export default function AbsenceItem({ item, onAddDocument }: AbsenceItemProps) {
                   }
                 />
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.addDocButton}
                   onPress={() => {
                     handleAddDocument();
@@ -188,7 +225,7 @@ export default function AbsenceItem({ item, onAddDocument }: AbsenceItemProps) {
               </View>
             </TouchableWithoutFeedback>
           </View>
-          
+
         </TouchableWithoutFeedback>
 
       </Modal>
@@ -307,27 +344,35 @@ const styles = StyleSheet.create({
     fontFamily: 'inter-md',
     fontWeight: '600',
   },
+  docItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
   docItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  docInfo: {
-    marginLeft: 12,
     flex: 1,
   },
+  docInfo: {
+    marginLeft: 10,
+  },
   docName: {
-    fontSize: 14,
-    fontFamily: 'inter-md',
+    fontSize: 16,
     color: '#333',
+    fontFamily: 'inter-md',
   },
   docType: {
     fontSize: 12,
-    fontFamily: 'inter-md',
     color: '#666',
-    marginTop: 4,
+    fontFamily: 'inter-md',
   },
+  deleteButton: {
+    padding: 5,
+  },
+
 
 });

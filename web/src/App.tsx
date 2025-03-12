@@ -6,6 +6,8 @@ import reactLogo from "./assets/react.svg"
 import viteLogo from "/vite.svg"
 import "./App.css"
 import TestPage from "./pages/pass-list"
+import UsersPage from "./pages/users"
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -14,6 +16,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/test" element={<TestPage />} />
+        <Route path="/users" element={<UsersPage />} />
         <Route
           path="/"
           element={

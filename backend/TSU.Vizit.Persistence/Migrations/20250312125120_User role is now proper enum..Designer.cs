@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TSU.Vizit.Persistence;
@@ -11,9 +12,11 @@ using TSU.Vizit.Persistence;
 namespace TSU.Vizit.Persistence.Migrations
 {
     [DbContext(typeof(VizitDbContext))]
-    partial class VizitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250312125120_User role is now proper enum.")]
+    partial class Userroleisnowproperenum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

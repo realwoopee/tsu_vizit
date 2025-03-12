@@ -1,19 +1,16 @@
-using TSU.Vizit.Domain;
-using TSU.Vizit.Domain.Users;
+namespace TSU.Vizit.Domain.Users;
 
-namespace TSU.Vizit.Application.Features.Users.Dto;
-
-public class UserRolesDto
+public static class UserExtensions
 {
-    public UserRolesDto(UserPermissions userPermissions)
+    public static UserPermissions Permissions(this User user)
     {
-        CanCreate = userPermissions.CanCreate;
-        CanCheck = userPermissions.CanCheck; 
-        CanApprove = userPermissions.CanApprove;
-        IsAdmin = userPermissions.IsAdmin;
+        return new UserPermissions(user);
     }
+}
 
-    public UserRolesDto(User user)
+public class UserPermissions
+{
+    public UserPermissions(User user)
     {
         CanCreate = false;
         CanCheck = false;

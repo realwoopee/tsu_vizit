@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using TSU.Vizit.Application.Features.Users.Dto;
 using TSU.Vizit.Application.Infrastructure.Auth;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Domain.Users;
 using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Application.Features.Users;
@@ -24,8 +25,8 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("roles")]
-    public async Task<ActionResult<UserDto>> GetRoles()
+    [HttpGet("permissions")]
+    public async Task<ActionResult<UserRolesDto>> GetPermissions()
     {
         return await _userAccessor.GetUserId()
             .Bind(async Task<Result<UserRolesDto>> (userId) => await _userService.GetUserRoles(userId))

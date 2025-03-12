@@ -8,6 +8,7 @@ using Npgsql;
 using TSU.Vizit.Contracts;
 using TSU.Vizit.Domain;
 using TSU.Vizit.Domain.Paginaiton;
+using TSU.Vizit.Domain.Users;
 using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Persistence;
@@ -96,32 +97,34 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
         if (filter?.Role is not null)
         {
             if (filter.Role == Roles.Admin)
-                query = query.Where(user => user.IsAdmin);
+                query = query.Where(user => user.Role == Roles.Admin);
             
             if (filter.Role == Roles.DeansEmployee)
-                query = query.Where(user => user.CanApprove);
+                query = query.Where(user => user.Role == Roles.DeansEmployee);
             
             if (filter.Role == Roles.Teacher)
-                query = query.Where(user => user.CanCheck);
+                query = query.Where(user => user.Role == Roles.Teacher);
             
             if (filter.Role == Roles.Student)
-                query = query.Where(user => user.CanCreate);
+                query = query.Where(user => user.Role == Roles.Student);
         }
         
         var totalCount = await query.CountAsync();
-
+        
+        var roleOrder = new Dictionary<Roles, int>
+        {
+            {Roles.Admin, 0},
+            {Roles.DeansEmployee, 1},
+            {Roles.Teacher, 2},
+            {Roles.Student, 3}
+        };
+        
         query = sorting switch
         {
             UserSorting.NameAsc => query.OrderBy(user => user.FullName),
             UserSorting.NameDesc => query.OrderByDescending(user => user.FullName),
-            UserSorting.RoleAsc => query.OrderBy(user => user.CanCreate)
-                .ThenBy(user => user.CanCheck)
-                .ThenBy(user => user.CanApprove)
-                .ThenBy(user => user.IsAdmin),
-            UserSorting.RoleDesc => query.OrderByDescending(user => user.IsAdmin)
-                .ThenBy(user => user.CanApprove)
-                .ThenBy(user => user.CanCheck)
-                .ThenBy(user => user.CanCreate),
+            UserSorting.RoleAsc => query.OrderBy(u => roleOrder[u.Role]),
+            UserSorting.RoleDesc => query.OrderByDescending(u => roleOrder[u.Role]),
             null => query,
             _ => throw new ArgumentOutOfRangeException(nameof(sorting), sorting, $"Invalid sorting value: {sorting}")
         };

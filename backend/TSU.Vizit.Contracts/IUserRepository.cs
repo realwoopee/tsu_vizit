@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using TSU.Vizit.Domain;
 using TSU.Vizit.Domain.Paginaiton;
+using TSU.Vizit.Domain.Users;
 
 namespace TSU.Vizit.Contracts;
 

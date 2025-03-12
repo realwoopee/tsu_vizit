@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Domain.Users;
 
 namespace TSU.Vizit.Persistence;
 
@@ -10,6 +12,7 @@ public class VizitDbContext : DbContext
         <VizitDbContext> options)
         : base(options)
     {
+        NpgsqlConnection.GlobalTypeMapper.MapEnum<Roles>("roles");
     }
     
     // For design-time migrations
@@ -19,6 +22,12 @@ public class VizitDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresEnum<Roles>();
+        
+        modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasColumnType("roles");
+        
         modelBuilder.Entity<User>()
             .HasIndex(e => e.Email)
             .IsUnique();

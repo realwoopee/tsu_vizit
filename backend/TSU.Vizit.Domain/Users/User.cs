@@ -1,4 +1,4 @@
-﻿namespace TSU.Vizit.Domain;
+﻿namespace TSU.Vizit.Domain.Users;
 
 public class User
 {
@@ -8,8 +8,5 @@ public class User
     public string? StudentIdNumber { get; set; }
     public string FullName { get; set; }
     public string Email { get; set; }
-    public bool CanCreate { get; set; }
-    public bool CanCheck { get; set; }
-    public bool CanApprove { get; set; }
-    public bool IsAdmin { get; set; }
+    public Roles Role { get; set; }
 }

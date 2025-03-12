@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TSU.Vizit.Persistence;
@@ -11,19 +12,20 @@ using TSU.Vizit.Persistence;
 namespace TSU.Vizit.Persistence.Migrations
 {
     [DbContext(typeof(VizitDbContext))]
-    partial class VizitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250312115123_User permissions removed.")]
+    partial class Userpermissionsremoved
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "roles", new[] { "student", "teacher", "deans_employee", "admin" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TSU.Vizit.Domain.Users.User", b =>
+            modelBuilder.Entity("TSU.Vizit.Domain.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,7 +47,7 @@ namespace TSU.Vizit.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("Role")
-                        .HasColumnType("roles");
+                        .HasColumnType("integer");
 
                     b.Property<string>("StudentIdNumber")
                         .HasColumnType("text");

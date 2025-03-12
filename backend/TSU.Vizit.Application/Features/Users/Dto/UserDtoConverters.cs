@@ -1,6 +1,8 @@
 using TSU.Vizit.Application.Features.Auth.Dto;
 using TSU.Vizit.Application.Utils.Pagination.Dto;
+using TSU.Vizit.Contracts;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Domain.Users;
 
 namespace TSU.Vizit.Application.Features.Users.Dto;
 
@@ -28,15 +30,14 @@ public static class UserDtoConverters
         };
     }
 
+    public static UserRolesDto ToDto(this UserPermissions userPermissions)
+    {
+        return new UserRolesDto(userPermissions);
+    }
+
     public static UserRolesDto ToRoles(this User model)
     {
-        return new UserRolesDto
-        {
-            CanCreate = model.CanCreate,
-            CanApprove = model.CanApprove,
-            CanCheck = model.CanCheck,
-            IsAdmin = model.IsAdmin
-        };
+        return new UserRolesDto(model);
     }
 
     public static UserPagedListDto ToDto(this UserPagedList userPagedList)

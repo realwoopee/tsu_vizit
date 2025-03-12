@@ -34,11 +34,11 @@ public static class SetupSwagger
     {
         if (!app.Environment.IsDevelopment()) return;
 
-        app.UseSwagger();
+        app.UseSwagger(options => { options.RouteTemplate = "/api/swagger/{documentName}/swagger.json"; });
         app.UseSwaggerUI(options =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-            options.RoutePrefix = string.Empty;
+            options.SwaggerEndpoint("/api/swagger/v1/swagger.json", "v1");
+            options.RoutePrefix = "api";
         });
     }
 }

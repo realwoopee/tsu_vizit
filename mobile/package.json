@@ -31,7 +31,7 @@
   },
   "private": true,
   "resolutions": {
-    "tsu-visit-shared": "portal:../tsu-vizit-shared"
+    "tsu-vizit-shared": "portal:../tsu-vizit-shared"
   },
   "packageManager": "yarn@4.7.0"
 }

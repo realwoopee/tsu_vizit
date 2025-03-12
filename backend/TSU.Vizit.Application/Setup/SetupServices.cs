@@ -4,7 +4,9 @@ using TSU.Vizit.Application.Features.Users;
 using TSU.Vizit.Application.Infrastructure.Auth;
 using TSU.Vizit.Application.Settings;
 using TSU.Vizit.Contracts;
+using TSU.Vizit.Contracts.Users;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Domain.Users;
 using TSU.Vizit.Persistence;
 
 namespace TSU.Vizit.Application.Setup;

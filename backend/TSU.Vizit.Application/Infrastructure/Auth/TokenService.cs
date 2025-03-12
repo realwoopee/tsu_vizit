@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using TSU.Vizit.Application.Settings;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Domain.Users;
 
 namespace TSU.Vizit.Application.Infrastructure.Auth;
 

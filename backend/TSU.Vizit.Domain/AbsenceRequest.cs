@@ -1,4 +1,4 @@
-﻿namespace TSU.Vizit.Domain;
+namespace TSU.Vizit.Domain;
 
 public class AbsenceRequest
 {

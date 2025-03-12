@@ -4,7 +4,6 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -28,12 +27,6 @@
         <ProjectReference Include="..\TSU.Vizit.Domain\TSU.Vizit.Domain.csproj"/>
         <ProjectReference Include="..\TSU.Vizit.Infrastructure\TSU.Vizit.Infrastructure.csproj"/>
         <ProjectReference Include="..\TSU.Vizit.Persistence\TSU.Vizit.Persistence.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
     </ItemGroup>
 
 </Project>

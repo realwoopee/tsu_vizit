@@ -97,35 +97,24 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
 
         if (filter?.Role is not null)
         {
-            if (filter.Role == UserRole.Admin)
-                query = query.Where(user => user.UserRole == UserRole.Admin);
-            
-            if (filter.Role == UserRole.DeansEmployee)
-                query = query.Where(user => user.UserRole == UserRole.DeansEmployee);
-            
-            if (filter.Role == UserRole.Teacher)
-                query = query.Where(user => user.UserRole == UserRole.Teacher);
-            
-            if (filter.Role == UserRole.Student)
-                query = query.Where(user => user.UserRole == UserRole.Student);
+            query = filter.Role switch
+            {
+                UserRole.Admin => query.Where(user => user.UserRole == UserRole.Admin),
+                UserRole.DeansEmployee => query.Where(user => user.UserRole == UserRole.DeansEmployee),
+                UserRole.Teacher => query.Where(user => user.UserRole == UserRole.Teacher),
+                UserRole.Student => query.Where(user => user.UserRole == UserRole.Student),
+                _ => query
+            };
         }
         
         var totalCount = await query.CountAsync();
-        
-        var roleOrder = new Dictionary<UserRole, int>
-        {
-            {UserRole.Admin, 0},
-            {UserRole.DeansEmployee, 1},
-            {UserRole.Teacher, 2},
-            {UserRole.Student, 3}
-        };
         
         query = sorting switch
         {
             UserSorting.NameAsc => query.OrderBy(user => user.FullName),
             UserSorting.NameDesc => query.OrderByDescending(user => user.FullName),
-            UserSorting.RoleAsc => query.OrderBy(u => roleOrder[u.UserRole]),
-            UserSorting.RoleDesc => query.OrderByDescending(u => roleOrder[u.UserRole]),
+            UserSorting.RoleAsc => query.OrderBy(u => u.UserRole),
+            UserSorting.RoleDesc => query.OrderByDescending(u => u.UserRole),
             null => query,
             _ => throw new ArgumentOutOfRangeException(nameof(sorting), sorting, $"Invalid sorting value: {sorting}")
         };

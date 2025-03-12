@@ -47,7 +47,7 @@ public class UserService(IUserRepository userRepository)
         };
         
         
-        return await userRepository.GetAllUsers(filter, model.Sorting, model.Pagination ?? new PaginationModel())
+        return await userRepository.GetAllUsers(filter, model.Sorting, model.Pagination)
             .Map(u => u.ToDto());
     }
     

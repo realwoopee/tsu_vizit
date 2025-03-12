@@ -9,10 +9,6 @@ namespace TSU.Vizit.Application.Features.Users.Dto;
 
 public class GetAllUsersModel
 {
-    public GetAllUsersModel()
-    {
-        Pagination = new PaginationModel();
-    }
     public string? StudentIdNumber { get; set; }
     public string? FullName { get; set; }
     public string? Email { get; set; }

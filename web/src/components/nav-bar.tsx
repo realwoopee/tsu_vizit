@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { LogOut } from "lucide-react"
-import "./nav-bar.css"
+import "../styles/nav-bar.css"
 
 type UserRole = "guest" | "student" | "admin"
 

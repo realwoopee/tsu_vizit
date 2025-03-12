@@ -27,6 +27,7 @@
     "vite": "^6.1.0"
   },
   "resolutions": {
-    "tsu-vizit-shared": "portal:../tsu-vizit-shared"
-  }
+    "tsu-visit-shared": "portal:../tsu-vizit-shared"
+  },
+  "packageManager": "yarn@4.7.0"
 }

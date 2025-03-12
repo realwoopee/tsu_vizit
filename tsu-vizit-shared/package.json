@@ -1,8 +1,22 @@
 {
   "name": "tsu-vizit-shared",
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.7.0",
   "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc",
+    "build": "yarn run clean && yarn run compile",
+    "clean": "rimraf -rf ./dist",
+    "compile": "tsdx build --tsconfig tsconfig.build.json",
+    "generate-api-client": "react-query-swagger /tanstack /input:http://localhost:5055/api/swagger/v1/swagger.json /output:src/api/api-client.ts /template:Axios /serviceHost:. /minimal"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.8.1",
+    "@tanstack/react-query-persist-client": "5.8.1",
+    "axios": "0.27.2",
+    "react-query-swagger": "15.10.3"
+  },
   "devDependencies": {
-    "typescript": "^5.7.3"
+    "typescript": "5.8.2"
   }
 }

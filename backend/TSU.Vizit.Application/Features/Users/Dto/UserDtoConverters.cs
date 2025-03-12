@@ -30,14 +30,15 @@ public static class UserDtoConverters
         };
     }
 
-    public static UserRolesDto ToDto(this UserPermissions userPermissions)
+    public static UserPermissionsDto ToDto(this UserPermissions userPermissions)
     {
-        return new UserRolesDto(userPermissions);
-    }
-
-    public static UserRolesDto ToRoles(this User model)
-    {
-        return new UserRolesDto(model);
+        return new UserPermissionsDto()
+        {
+            CanCreate = userPermissions.CanCreate,
+            CanCheck = userPermissions.CanCheck,
+            CanApprove = userPermissions.CanApprove,
+            IsAdmin = userPermissions.IsAdmin,
+        };
     }
 
     public static UserPagedListDto ToDto(this UserPagedList userPagedList)

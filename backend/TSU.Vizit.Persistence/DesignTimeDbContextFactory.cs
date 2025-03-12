@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using TSU.Vizit.Domain.Users;
 
 namespace TSU.Vizit.Persistence;
 
@@ -16,7 +17,7 @@ public class DesignTimeDbContextFactory
             .Build();
             
         var optionsBuilder = new DbContextOptionsBuilder<VizitDbContext>();
-        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"), o => o.MapEnum<UserRole>());
         return new VizitDbContext(optionsBuilder.Options);
     }
 }

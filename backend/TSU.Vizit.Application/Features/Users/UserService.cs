@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using TSU.Vizit.Application.Features.Auth.Dto;
 using TSU.Vizit.Application.Features.Users.Dto;
 using TSU.Vizit.Contracts;
+using TSU.Vizit.Contracts.Users;
+using TSU.Vizit.Contracts.Utils;
 using TSU.Vizit.Domain;
 using TSU.Vizit.Infrastructure.Errors;
 
@@ -45,12 +47,12 @@ public class UserService(IUserRepository userRepository)
         };
         
         
-        return await userRepository.GetAllUsers(filter, model.Sorting, model.Pagination)
+        return await userRepository.GetAllUsers(filter, model.Sorting, model.Pagination ?? new PaginationModel())
             .Map(u => u.ToDto());
     }
     
     public async Task<Result<UserRolesDto>> EditUserRole(UserEditRoleModel model)
     {
-        return await userRepository.EditUserRole(model.Id, model.Role).Map(u => u.ToRoles());
+        return await userRepository.EditUserRole(model.Id, model.UserRole).Map(u => u.ToRoles());
     }
 }

@@ -8,5 +8,5 @@ public class User
     public string? StudentIdNumber { get; set; }
     public string FullName { get; set; }
     public string Email { get; set; }
-    public Roles Role { get; set; }
+    public UserRole UserRole { get; set; }
 }

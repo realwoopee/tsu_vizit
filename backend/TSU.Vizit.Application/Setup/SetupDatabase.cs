@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NeinLinq;
 using Npgsql;
+using TSU.Vizit.Domain.Users;
 using TSU.Vizit.Persistence;
 
 namespace TSU.Vizit.Application.Setup;
@@ -31,7 +32,7 @@ public static class SetupDatabase
 
         services.AddDbContext<VizitDbContext>(options =>
             options
-                .UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+                .UseNpgsql(configuration.GetConnectionString("DefaultConnection"), o => o.MapEnum<UserRole>())
                 .WithLambdaInjection());
 
         // If you'd like to modify this class, consider adding your custom code in the SetupDatabase.partial.cs

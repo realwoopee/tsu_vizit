@@ -2,47 +2,39 @@ namespace TSU.Vizit.Domain.Users;
 
 public static class UserExtensions
 {
-    public static UserPermissions Permissions(this User user)
+    public static UserPermissions ToPermissions(this UserRole userRole)
     {
-        return new UserPermissions(user);
+        return userRole switch
+        {
+            UserRole.Student => new UserPermissions
+            {
+                CanCreate = true
+            },
+            UserRole.Teacher => new UserPermissions
+            {
+                CanCheck = true
+            },
+            UserRole.DeansEmployee => new UserPermissions
+            {
+                CanCheck = true,
+                CanApprove = true
+            },
+            UserRole.Admin => new UserPermissions
+            {
+                CanCheck = true,
+                CanApprove = true,
+                CanCreate = true,
+                IsAdmin = true
+            },
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }
 
 public class UserPermissions
 {
-    public UserPermissions(User user)
-    {
-        CanCreate = false;
-        CanCheck = false;
-        CanApprove = false;
-        CanCreate = false;
-        
-        if (user.Role == Roles.Student)
-            CanCreate = true;
-
-        if (user.Role == Roles.Teacher)
-        {
-            CanCreate = true;
-            CanCheck = true;
-        }
-
-        if (user.Role == Roles.DeansEmployee)
-        {
-            CanCreate = true;
-            CanCheck = true;
-            CanApprove = true;
-        }
-
-        if (user.Role == Roles.Admin)
-        {
-            CanCreate = true;
-            CanCheck = true;
-            CanApprove = true;
-            IsAdmin = true;
-        }
-    }
-    public bool CanCreate { get; set; }
-    public bool CanCheck { get; set; }
-    public bool CanApprove { get; set; }
-    public bool IsAdmin { get; set; }
+    public bool CanCreate { get; set; } = false;
+    public bool CanCheck { get; set; } = false;
+    public bool CanApprove { get; set; } = false;
+    public bool IsAdmin { get; set; } = false;
 }

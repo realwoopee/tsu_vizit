@@ -12,32 +12,29 @@ public class VizitDbContext : DbContext
         <VizitDbContext> options)
         : base(options)
     {
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<Roles>("roles");
+        NpgsqlConnection.GlobalTypeMapper.MapEnum<UserRole>();
     }
-    
+
     // For design-time migrations
     // public VizitDbContext() {} 
 
     public virtual DbSet<User> Users { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresEnum<Roles>();
-        
-        modelBuilder.Entity<User>()
-            .Property(u => u.Role)
-            .HasColumnType("roles");
-        
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.HasPostgresEnum<UserRole>();
+
         modelBuilder.Entity<User>()
             .HasIndex(e => e.Email)
             .IsUnique();
-        
+
         modelBuilder.Entity<User>()
             .HasIndex(e => e.StudentIdNumber)
             .IsUnique();
-        
+
         // modelBuilder.Entity<PostLike>()
         //     .HasKey(pt => new { pt.PostId, pt.UserWhoLikedId });
     }
-    
 }

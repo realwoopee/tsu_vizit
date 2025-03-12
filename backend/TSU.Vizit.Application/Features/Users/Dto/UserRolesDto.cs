@@ -20,23 +20,23 @@ public class UserRolesDto
         CanApprove = false;
         CanCreate = false;
         
-        if (user.Role == Roles.Student)
+        if (user.UserRole == UserRole.Student)
             CanCreate = true;
 
-        if (user.Role == Roles.Teacher)
+        if (user.UserRole == UserRole.Teacher)
         {
             CanCreate = true;
             CanCheck = true;
         }
 
-        if (user.Role == Roles.DeansEmployee)
+        if (user.UserRole == UserRole.DeansEmployee)
         {
             CanCreate = true;
             CanCheck = true;
             CanApprove = true;
         }
 
-        if (user.Role == Roles.Admin)
+        if (user.UserRole == UserRole.Admin)
         {
             CanCreate = true;
             CanCheck = true;

@@ -7,6 +7,7 @@ using TSU.Vizit.Application.Features.Users.Dto;
 namespace TSU.Vizit.Application.Features.Auth;
 
 [ApiController]
+[Route("api/auth")]
 public class AuthController(AuthService authService, ILogger<AuthController> logger)
 {
     

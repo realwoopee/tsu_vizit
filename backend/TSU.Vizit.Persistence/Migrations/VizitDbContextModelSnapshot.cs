@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using TSU.Vizit.Domain.Users;
 using TSU.Vizit.Persistence;
 
 #nullable disable
@@ -20,7 +21,7 @@ namespace TSU.Vizit.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "roles", new[] { "student", "teacher", "deans_employee", "admin" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "user_role", new[] { "student", "teacher", "deans_employee", "admin" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("TSU.Vizit.Domain.Users.User", b =>
@@ -44,11 +45,11 @@ namespace TSU.Vizit.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("roles");
-
                     b.Property<string>("StudentIdNumber")
                         .HasColumnType("text");
+
+                    b.Property<UserRole>("UserRole")
+                        .HasColumnType("user_role");
 
                     b.HasKey("Id");
 

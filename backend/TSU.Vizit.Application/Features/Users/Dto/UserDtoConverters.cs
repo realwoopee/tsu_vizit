@@ -1,6 +1,6 @@
 using TSU.Vizit.Application.Features.Auth.Dto;
-using TSU.Vizit.Application.Utils.Pagination.Dto;
 using TSU.Vizit.Contracts;
+using TSU.Vizit.Contracts.Users;
 using TSU.Vizit.Domain;
 using TSU.Vizit.Domain.Users;
 
@@ -26,7 +26,7 @@ public static class UserDtoConverters
             FullName = user.FullName,
             Email = user.Email,
             StudentCardId = user.StudentIdNumber,
-            Role = user.Role
+            Role = user.UserRole
         };
     }
 
@@ -44,12 +44,8 @@ public static class UserDtoConverters
     {
         return new UserPagedListDto
         {
-            Users = userPagedList.users.Select(u => u.ToDto()).ToList(),
-            Pagination = new PaginationDto
-            {
-                Size = userPagedList.pagination.Size, Current = userPagedList.pagination.Page,
-                Count = (int)Math.Ceiling((double)userPagedList.totalCount / userPagedList.pagination.Size) 
-            }
+            Users = userPagedList.Users.Select(u => u.ToDto()).ToList(),
+            TotalCount = userPagedList.TotalCount
         };
     }
 }

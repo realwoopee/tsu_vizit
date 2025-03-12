@@ -1,4 +1,4 @@
-namespace TSU.Vizit.Contracts;
+namespace TSU.Vizit.Contracts.Users;
 
 public enum UserSorting
 {

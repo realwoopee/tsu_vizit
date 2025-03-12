@@ -6,8 +6,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Npgsql;
 using TSU.Vizit.Contracts;
+using TSU.Vizit.Contracts.Users;
+using TSU.Vizit.Contracts.Utils;
 using TSU.Vizit.Domain;
-using TSU.Vizit.Domain.Paginaiton;
 using TSU.Vizit.Domain.Users;
 using TSU.Vizit.Infrastructure.Errors;
 
@@ -81,7 +82,7 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
 
     public async Task<Result<UserPagedList>> GetAllUsers(UserListFilter filter,
         UserSorting? sorting,
-        PaginationModel pagination)
+        PaginationModel? pagination)
     {
         var query = dbContext.Users.AsQueryable();
         
@@ -96,54 +97,56 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
 
         if (filter?.Role is not null)
         {
-            if (filter.Role == Roles.Admin)
-                query = query.Where(user => user.Role == Roles.Admin);
+            if (filter.Role == UserRole.Admin)
+                query = query.Where(user => user.UserRole == UserRole.Admin);
             
-            if (filter.Role == Roles.DeansEmployee)
-                query = query.Where(user => user.Role == Roles.DeansEmployee);
+            if (filter.Role == UserRole.DeansEmployee)
+                query = query.Where(user => user.UserRole == UserRole.DeansEmployee);
             
-            if (filter.Role == Roles.Teacher)
-                query = query.Where(user => user.Role == Roles.Teacher);
+            if (filter.Role == UserRole.Teacher)
+                query = query.Where(user => user.UserRole == UserRole.Teacher);
             
-            if (filter.Role == Roles.Student)
-                query = query.Where(user => user.Role == Roles.Student);
+            if (filter.Role == UserRole.Student)
+                query = query.Where(user => user.UserRole == UserRole.Student);
         }
         
         var totalCount = await query.CountAsync();
         
-        var roleOrder = new Dictionary<Roles, int>
+        var roleOrder = new Dictionary<UserRole, int>
         {
-            {Roles.Admin, 0},
-            {Roles.DeansEmployee, 1},
-            {Roles.Teacher, 2},
-            {Roles.Student, 3}
+            {UserRole.Admin, 0},
+            {UserRole.DeansEmployee, 1},
+            {UserRole.Teacher, 2},
+            {UserRole.Student, 3}
         };
         
         query = sorting switch
         {
             UserSorting.NameAsc => query.OrderBy(user => user.FullName),
             UserSorting.NameDesc => query.OrderByDescending(user => user.FullName),
-            UserSorting.RoleAsc => query.OrderBy(u => roleOrder[u.Role]),
-            UserSorting.RoleDesc => query.OrderByDescending(u => roleOrder[u.Role]),
+            UserSorting.RoleAsc => query.OrderBy(u => roleOrder[u.UserRole]),
+            UserSorting.RoleDesc => query.OrderByDescending(u => roleOrder[u.UserRole]),
             null => query,
             _ => throw new ArgumentOutOfRangeException(nameof(sorting), sorting, $"Invalid sorting value: {sorting}")
         };
 
+        if (pagination is not null)
+            query = query
+                .Skip(pagination.Offset)
+                .Take(pagination.Limit);
+
         return new UserPagedList
         {
-            users = await query
-                .Skip((pagination.Page - 1) * pagination.Size)
-                .Take(pagination.Size)
+            Users = await query
                 .ToListAsync(),
-            pagination = pagination,
-            totalCount = totalCount
+            TotalCount = totalCount
         };
     }
 
-    public async Task<Result<User>> EditUserRole(Guid id, Roles role)
+    public async Task<Result<User>> EditUserRole(Guid id, UserRole userRole)
     {
         var user = await dbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
-        user.Role = role;
+        user.UserRole = userRole;
         return user;
     }
 }

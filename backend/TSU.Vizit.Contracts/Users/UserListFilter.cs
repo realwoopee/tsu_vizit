@@ -1,7 +1,6 @@
-using TSU.Vizit.Domain;
 using TSU.Vizit.Domain.Users;
 
-namespace TSU.Vizit.Contracts;
+namespace TSU.Vizit.Contracts.Users;
 
 public class UserListFilter
 {
@@ -9,5 +8,5 @@ public class UserListFilter
     public string? StudentIdNumber { get; set; }
     public string? FullName { get; set; }
     public string? Email { get; set; }
-    public Roles? Role { get; set; }
+    public UserRole? Role { get; set; }
 }

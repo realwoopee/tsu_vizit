@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using TSU.Vizit.Application.Features.Dto;
 using TSU.Vizit.Application.Infrastructure.Auth;
 
-namespace TSU.Vizit.Application.Features.Sessions;
+namespace TSU.Vizit.Application.Features;
 
+[ApiController]
 [Route("api/session")]
 [Authorize]
 public class SessionsController(ISessionRepository sessionRepository, UserAccessor userAccessor) : ControllerBase

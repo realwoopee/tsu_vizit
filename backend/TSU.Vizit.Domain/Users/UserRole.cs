@@ -1,6 +1,6 @@
 namespace TSU.Vizit.Domain.Users;
 
-public enum Roles
+public enum UserRole
 {
     Student,
     Teacher,

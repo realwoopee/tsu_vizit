@@ -5,15 +5,14 @@ import AbsenceItem from './AbsenceItem';
 import { Ionicons } from '@expo/vector-icons';
 import FiltersBlock from './FiltersBlock';
 
-// type RootStackParamList = {
-//   Вход: undefined;
-//   Регистрация: undefined;
-//   Пропуски: undefined;
-// };
+type RootStackParamList = {
+  Профиль: undefined;
+  Пропуски: undefined;
+};
 
-// type AbsenceListProps = {
-//   navigation: StackNavigationProp<RootStackParamList, 'Пропуски'>;
-// };
+type ListProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'Пропуски'>;
+};
 
 type Doc = {
   name: string;
@@ -31,10 +30,9 @@ type Item = {
   docs: Doc[];
 };
 
-export default function ListOfAbsences() { //{ navigation }: AbsenceListProps
-  /*const loadScene = () => {
-    navigation.navigate('Пропуски');
-  }*/
+export default function ListOfAbsences({navigation} : ListProps) { 
+  
+  // <Menu navigation={navigation} />
 
   const [listOfItems, setListOfItems] = useState<Item[]>([
     { id: "1", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },

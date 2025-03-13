@@ -19,10 +19,12 @@ public class AbsenceRequestController: ControllerBase
     public async Task<ActionResult<List<AbsenceRequestDto>>> GetAllAbsenceRequests([FromQuery] GetAllAbsenceRequestsModel model)
     {
         return await _absenceRequestService.GetAllAbsenceRequests(model).ToActionResult();
-        // return await _userAccessor.GetUserId()
-        //     .Bind(async () => await _absenceRequestService.GetAllAbsenceRequests(model))
-        //     .ToActionResult();
-            // .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _absencreRequestService.GetUserRoles(userId))
-            // .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
+    }
+    
+    [HttpPost("absence_request")]
+    public async Task<ActionResult<List<AbsenceRequestDto>>> CreateAbsenceRequest([FromQuery] CreateAbsenceRequestModel model)
+    {
+        var curUserIdResult = _userAccessor.GetUserId();
+        return await _absenceRequestService.CreateAbsenceRequest(model, curUserIdResult.Value).ToActionResult();
     }
 }

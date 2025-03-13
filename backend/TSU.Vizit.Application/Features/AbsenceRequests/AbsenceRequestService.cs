@@ -26,4 +26,12 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var result = await dtoConverters.AbsenceRequestPagedListToDto(temp.Value);
         return result;
     }
+    
+    public async Task<Result<AbsenceRequestDto>> CreateAbsenceRequest(CreateAbsenceRequestModel model, Guid curUserId)
+    {
+        var dtoConverters = new AbsenceRequestDtoConverters(_absenceRequestRepository, _documentRepository);
+        var createdRequestResult = await _absenceRequestRepository.CreateAbsenceRequest(dtoConverters.CreateDtoToRequest(model, curUserId));
+        var dto = await dtoConverters.RequestToDto(createdRequestResult.Value);
+        return dto;
+    }
 }

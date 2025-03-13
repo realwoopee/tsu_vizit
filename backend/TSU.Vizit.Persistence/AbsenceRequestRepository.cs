@@ -1,7 +1,5 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using NeinLinq;
-using Npgsql;
 using TSU.Vizit.Contracts.AbsenceRequests;
 using TSU.Vizit.Contracts.Utils;
 using TSU.Vizit.Domain;
@@ -59,10 +57,5 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
             AbsenceRequests = await query.ToListAsync()
         };
         return Result.Ok(test);
-    }
-
-    public Task<Result<List<Document>>> GetAllAttachments(Guid absenceRequestId)
-    {
-        throw new NotImplementedException();
     }
 }

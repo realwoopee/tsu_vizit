@@ -3,6 +3,8 @@ namespace TSU.Vizit.Domain;
 public class AbsenceRequest
 {
     public Guid Id { get; set; }
+    public DateTime AbsencePeriodStart { get; set; }
+    public DateTime AbsencePeriodFinish { get; set; }
     public DateTime TimeCreated { get; set; }
     public DateTime TimeFinalised { get; set; }
     public Guid CreatedById { get; set; }

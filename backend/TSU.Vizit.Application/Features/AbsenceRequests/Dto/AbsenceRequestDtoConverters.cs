@@ -8,11 +8,26 @@ namespace TSU.Vizit.Application.Features.AbsenceRequests.Dto;
 
 public class AbsenceRequestDtoConverters(IAbsenceRequestRepository _absenceRequestRepository, IDocumentRepository _documentRepository)
 {
+
+    public AbsenceRequest CreateDtoToRequest(CreateAbsenceRequestModel dto, Guid CreatedById)
+    {
+        return new AbsenceRequest
+        {
+            AbsencePeriodStart = dto.AbsencePeriodStart,
+            AbsencePeriodFinish = dto.AbsencePeriodFinish,
+            TimeCreated = DateTime.Now,
+            CreatedById = CreatedById,
+            FinalStatus = AbsenceRequestResult.Unknown,
+            Reason = dto.Reason
+        };
+    }
     public async Task<AbsenceRequestDto> RequestToDto(AbsenceRequest model)
     {
         var result = new AbsenceRequestDto
         {
             Id = model.Id,
+            AbsencePeriodStart = model.AbsencePeriodStart,
+            AbsencePeriodFinish = model.AbsencePeriodFinish,
             FinalisedById = model.FinalisedById,
             CreatedById = model.CreatedById,
             FinalStatus = model.FinalStatus,

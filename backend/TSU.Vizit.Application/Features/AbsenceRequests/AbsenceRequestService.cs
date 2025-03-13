@@ -5,6 +5,7 @@ using TSU.Vizit.Application.Features.AbsenceRequests.Dto;
 using TSU.Vizit.Application.Features.Users.Dto;
 using TSU.Vizit.Contracts.AbsenceRequests;
 using TSU.Vizit.Contracts.Documents;
+using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Application.Features.AbsenceRequests;
 
@@ -32,6 +33,12 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var dtoConverters = new AbsenceRequestDtoConverters(_absenceRequestRepository, _documentRepository);
         var createdRequestResult = await _absenceRequestRepository.CreateAbsenceRequest(dtoConverters.CreateDtoToRequest(model, curUserId));
         var dto = await dtoConverters.RequestToDto(createdRequestResult.Value);
+        var document = new Domain.Document
+        {
+            AbsenceRequestId = dto.Id,
+            Attachment = model.Attachment
+        };
+        await _documentRepository.CreateDocument(document);
         return dto;
     }
 }

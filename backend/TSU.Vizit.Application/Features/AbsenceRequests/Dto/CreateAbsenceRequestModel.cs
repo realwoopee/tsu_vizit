@@ -8,5 +8,5 @@ public class CreateAbsenceRequestModel
     [Required] public DateTime AbsencePeriodStart { get; set; }
     [Required] public DateTime AbsencePeriodFinish { get; set; }
     [Required] public AbsenceReason Reason { get; set; }
-    [Required] public byte[] Attachment { get; set; }
+    public byte[]? Attachment { get; set; }
 }

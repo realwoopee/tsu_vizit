@@ -15,7 +15,7 @@ public class AbsenceRequestDtoConverters(IAbsenceRequestRepository _absenceReque
         {
             AbsencePeriodStart = dto.AbsencePeriodStart,
             AbsencePeriodFinish = dto.AbsencePeriodFinish,
-            TimeCreated = DateTime.Now,
+            TimeCreated = DateTime.UtcNow,
             CreatedById = CreatedById,
             FinalStatus = AbsenceRequestResult.Unknown,
             Reason = dto.Reason

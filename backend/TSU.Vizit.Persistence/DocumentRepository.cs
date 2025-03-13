@@ -14,5 +14,12 @@ public class DocumentRepository(VizitDbContext dbContext): IDocumentRepository
         var result = await documents.ToListAsync();
         return Result.Ok(result);
     }
+
+    public async Task<Result<Document>> CreateDocument(Document document)
+    {
+        dbContext.Document.Add(document);
+        await dbContext.SaveChangesAsync();
+        return Result.Ok(document);
+    }
 }
 

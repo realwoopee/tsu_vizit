@@ -1,3 +1,4 @@
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using TSU.Vizit.Domain;
@@ -44,7 +45,7 @@ public class VizitDbContext : DbContext
             .HasKey(d => new { d.AbsenceRequestId });
         
         modelBuilder.Entity<AbsenceRequest>()
-            .HasKey(ar => new { ar.CreatedById, ar.FinalisedById });
+            .HasKey(ar => new { ar.Id });
         
         // modelBuilder.Entity<PostLike>()
         //     .HasKey(pt => new { pt.PostId, pt.UserWhoLikedId });

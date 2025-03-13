@@ -1,6 +1,6 @@
 import { PassListItem } from "../components/pass-list-item"
 import "../styles/pass-list.css"
-import { NavBar } from "../components/navigation/nav-bar"
+import { NavBar } from "../components/nav-bar"
 
 export const TestPage = () => {
     return (

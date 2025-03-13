@@ -1,214 +1,86 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { NavBar } from "../components/nav-bar"
 import { UserList } from "../components/user-list"
-import { Search } from "lucide-react"
-import { ConfirmationModal } from "../components/role-confirm"
+import { Search, ChevronDown } from "lucide-react"
 import "../styles/users.css"
-import type { User } from "../components/user-list-item"
+import type { User, UserRole } from "../components/user-list-item"
+
+type SortingOption = "NameAsc" | "NameDesc" | "RoleAsc" | "RoleDesc"
+
+interface SearchParams {
+  studentIdNumber?: string
+  fullName?: string
+  email?: string
+  role?: UserRole
+  sorting?: SortingOption
+  offset: number
+  limit: number
+}
 
 export const UsersPage = () => {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    offset: 0,
+    limit: 10,
+  })
   const [currentPage, setCurrentPage] = useState(1)
   const [users, setUsers] = useState<User[]>([])
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [showFilters, setShowFilters] = useState(false)
 
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [changedUserIds, setChangedUserIds] = useState<Set<number>>(new Set())
-
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-
-    //Искусственные данные пользователей, заменить на API-запрос
   useEffect(() => {
     const mockUsers: User[] = [
       {
         id: 1,
         fullName: "Иванов Иван Иванович",
-        roles: {
-          isStudent: true,
-          isTeacher: false,
-          isDean: false,
-          isAdmin: false,
-        },
+        email: "ivanov@edu.tsu.ru",
+        studentIdNumber: "123456",
+        role: "Student",
       },
       {
         id: 2,
         fullName: "Петров Петр Петрович",
-        roles: {
-          isStudent: true,
-          isTeacher: true,
-          isDean: false,
-          isAdmin: false,
-        },
+        email: "petrov@tsu.ru",
+        role: "Teacher",
       },
       {
         id: 3,
         fullName: "Сидоров Сидор Сидорович",
-        roles: {
-          isStudent: false,
-          isTeacher: true,
-          isDean: true,
-          isAdmin: false,
-        },
+        email: "sidorov@tsu.ru",
+        role: "DeansEmployee",
       },
       {
         id: 4,
         fullName: "Александров Александр Александрович",
-        roles: {
-          isStudent: false,
-          isTeacher: false,
-          isDean: false,
-          isAdmin: true,
-        },
-      },
-      {
-        id: 5,
-        fullName: "Николаев Николай Николаевич",
-        roles: {
-          isStudent: true,
-          isTeacher: false,
-          isDean: true,
-          isAdmin: false,
-        },
+        email: "admin@tsu.ru",
+        role: "Admin",
       },
     ]
 
-    //Искусственная задержки загрузки, удалить при подключении бэка
     setTimeout(() => {
       setUsers(mockUsers)
-      setFilteredUsers(mockUsers)
       setIsLoading(false)
     }, 500)
-  }, [])
+  }, [searchParams])
 
-  const handleRoleChange = (userId: number, role: keyof User["roles"], value: boolean) => {
-    const updatedUsers = users.map((user) => {
-      if (user.id === userId) {
-        return {
-          ...user,
-          roles: {
-            ...user.roles,
-            [role]: value,
-          },
-        }
-      }
-      return user
-    })
-
-    setUsers(updatedUsers)
-
-    setChangedUserIds((prev) => {
-      const newSet = new Set(prev)
-      newSet.add(userId)
-      return newSet
-    })
-    setHasUnsavedChanges(true)
-
-    const query = searchQuery.toLowerCase()
-    const filtered = updatedUsers.filter((user) => user.fullName.toLowerCase().includes(query))
-    setFilteredUsers(filtered)
+  const handleRoleChange = (userId: number, newRole: UserRole) => {
+    setUsers(users.map((user) => (user.id === userId ? { ...user, role: newRole } : user)))
   }
 
-  const handleSearch = () => {
-    if (searchQuery.trim() === "") {
-      setFilteredUsers(users)
-    } else {
-      const query = searchQuery.toLowerCase()
-      const filtered = users.filter((user) => user.fullName.toLowerCase().includes(query))
-      setFilteredUsers(filtered)
-    }
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    setCurrentPage(1)
+    console.log("Search params:", searchParams)
   }
 
-  const handleOpenConfirmModal = () => {
-    if (hasUnsavedChanges) {
-      setIsConfirmModalOpen(true)
-    }
+  const updateSearchParam = (param: keyof SearchParams, value: string) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      [param]: value || undefined, 
+    }))
   }
-
-  const handleSaveChanges = () => {
-    const usersToUpdate = users.filter((user) => changedUserIds.has(user.id))
-
-    console.log("Сохранение изменений для пользователей:", usersToUpdate)
-
-    setHasUnsavedChanges(false)
-    setChangedUserIds(new Set())
-    setIsConfirmModalOpen(false)
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch()
-    }
-  }
-
-  //Кол-во элементов на страницу, заменить при подключении бэка
-  const itemsPerPage = 1
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
-  const paginatedUsers = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-
-  const renderPaginationButtons = () => {
-    const buttons = []
-
-    buttons.push(
-      <button
-        key="first"
-        className={`pagination-button ${currentPage === 1 ? "active" : ""}`}
-        onClick={() => setCurrentPage(1)}
-      >
-        1
-      </button>,
-    )
-
-    if (currentPage > 3) {
-      buttons.push(
-        <span key="ellipsis-start" className="pagination-ellipsis">
-          ...
-        </span>,
-      )
-    }
-
-    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-      if (i === 1 || i === totalPages) continue
-
-      buttons.push(
-        <button
-          key={i}
-          className={`pagination-button ${currentPage === i ? "active" : ""}`}
-          onClick={() => setCurrentPage(i)}
-        >
-          {i}
-        </button>,
-      )
-    }
-
-    if (currentPage < totalPages - 2 && totalPages > 3) {
-      buttons.push(
-        <span key="ellipsis-end" className="pagination-ellipsis">
-          ...
-        </span>,
-      )
-    }
-
-    if (totalPages > 1) {
-      buttons.push(
-        <button
-          key="last"
-          className={`pagination-button ${currentPage === totalPages ? "active" : ""}`}
-          onClick={() => setCurrentPage(totalPages)}
-        >
-          {totalPages}
-        </button>,
-      )
-    }
-
-    return buttons
-  }
-
-  const changedUsersCount = changedUserIds.size
 
   return (
     <div className="users-page">
@@ -217,51 +89,90 @@ export const UsersPage = () => {
       <div className="users-container">
         <h1 className="users-title">Список пользователей</h1>
 
-        <div className="search-container">
-          <div className="search-input-wrapper">
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Поиск по ФИО"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <button className="search-icon-button" onClick={handleSearch}>
-              <Search size={20} />
+        <div className="search-section">
+          <div className="search-header">
+            <div className="search-main">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Поиск по ФИО"
+                value={searchParams.fullName || ""}
+                onChange={(e) => updateSearchParam("fullName", e.target.value)}
+              />
+              <button className="search-button" onClick={handleSearch}>
+                <Search size={20} />
+              </button>
+            </div>
+            <button className="filters-toggle" onClick={() => setShowFilters(!showFilters)}>
+              Фильтры
+              <ChevronDown size={20} className={`chevron ${showFilters ? "rotated" : ""}`} />
             </button>
           </div>
-          <button className="save-button" onClick={handleOpenConfirmModal} disabled={!hasUnsavedChanges}>
-            <span>Сохранить изменения</span>
-          </button>
+
+          {showFilters && (
+            <form className="filters-panel" onSubmit={handleSearch}>
+              <div className="filters-grid">
+                <div className="filter-group">
+                  <label>Номер студенческого:</label>
+                  <input
+                    type="text"
+                    value={searchParams.studentIdNumber || ""}
+                    onChange={(e) => updateSearchParam("studentIdNumber", e.target.value)}
+                    placeholder="Введите номер"
+                  />
+                </div>
+
+                <div className="filter-group">
+                  <label>Email:</label>
+                  <input
+                    type="email"
+                    value={searchParams.email || ""}
+                    onChange={(e) => updateSearchParam("email", e.target.value)}
+                    placeholder="Введите email"
+                  />
+                </div>
+
+                <div className="filter-group">
+                  <label>Роль:</label>
+                  <select value={searchParams.role || ""} onChange={(e) => updateSearchParam("role", e.target.value)}>
+                    <option value="">Все роли</option>
+                    <option value="Student">Студент</option>
+                    <option value="Teacher">Преподаватель</option>
+                    <option value="DeansEmployee">Сотрудник деканата</option>
+                    <option value="Admin">Администратор</option>
+                  </select>
+                </div>
+
+                <div className="filter-group">
+                  <label>Сортировка:</label>
+                  <select
+                    value={searchParams.sorting || ""}
+                    onChange={(e) => updateSearchParam("sorting", e.target.value)}
+                  >
+                    <option value="">По умолчанию</option>
+                    <option value="NameAsc">По имени (А-Я)</option>
+                    <option value="NameDesc">По имени (Я-А)</option>
+                    <option value="RoleAsc">По роли (А-Я)</option>
+                    <option value="RoleDesc">По роли (Я-А)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="filters-footer">
+                <button type="submit" className="apply-filters">
+                  Применить фильтры
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
         {isLoading ? (
           <div className="loading-indicator">Загрузка...</div>
         ) : (
-          <>
-            <UserList users={paginatedUsers} onRoleChange={handleRoleChange} />
-
-            {totalPages > 1 && <div className="pagination">{renderPaginationButtons()}</div>}
-          </>
+          <UserList users={users} onRoleChange={handleRoleChange} />
         )}
       </div>
-
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        onConfirm={handleSaveChanges}
-        title="Подтверждение изменений"
-        message={`Вы уверены, что хотите сохранить изменения ролей для ${changedUsersCount} ${
-          changedUsersCount === 1
-            ? "пользователя"
-            : changedUsersCount > 1 && changedUsersCount < 5
-              ? "пользователей"
-              : "пользователей"
-        }?`}
-        confirmText="Сохранить"
-        cancelText="Отмена"
-      />
     </div>
   )
 }

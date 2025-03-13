@@ -3,7 +3,7 @@ import "../styles/user-list.css"
 
 interface UserListProps {
   users: User[]
-  onRoleChange: (userId: number, role: keyof User["roles"], value: boolean) => void
+  onRoleChange: (userId: number, newRole: User["role"]) => void
 }
 
 export const UserList = ({ users, onRoleChange }: UserListProps) => {

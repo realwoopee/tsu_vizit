@@ -1,47 +1,59 @@
 "use client"
+import { useState } from "react"
 import "../styles/user-list-item.css"
+
+export type UserRole = "Student" | "Teacher" | "DeansEmployee" | "Admin"
 
 export interface User {
   id: number
   fullName: string
-  roles: {
-    isStudent: boolean
-    isTeacher: boolean
-    isDean: boolean
-    isAdmin: boolean
-  }
+  email: string
+  studentIdNumber?: string
+  role: UserRole
 }
 
 interface UserListItemProps {
   user: User
-  onRoleChange: (userId: number, role: keyof User["roles"], value: boolean) => void
+  onRoleChange: (userId: number, newRole: UserRole) => void
 }
 
 export const UserListItem = ({ user, onRoleChange }: UserListItemProps) => {
-  const handleRoleChange = (role: keyof User["roles"]) => {
-    onRoleChange(user.id, role, !user.roles[role])
+  const [selectedRole, setSelectedRole] = useState<UserRole>(user.role)
+  const [hasChanges, setHasChanges] = useState(false)
+
+  const handleRoleChange = (newRole: UserRole) => {
+    setSelectedRole(newRole)
+    setHasChanges(true)
+  }
+
+  const handleSave = () => {
+    onRoleChange(user.id, selectedRole)
+    setHasChanges(false)
   }
 
   return (
     <div className="user-list-item">
-      <div className="user-name">{user.fullName}</div>
-      <div className="user-roles">
-        <label className="role-checkbox">
-          <input type="checkbox" checked={user.roles.isStudent} onChange={() => handleRoleChange("isStudent")} />
-          <span className="role-label">Студент</span>
-        </label>
-        <label className="role-checkbox">
-          <input type="checkbox" checked={user.roles.isTeacher} onChange={() => handleRoleChange("isTeacher")} />
-          <span className="role-label">Преподаватель</span>
-        </label>
-        <label className="role-checkbox">
-          <input type="checkbox" checked={user.roles.isDean} onChange={() => handleRoleChange("isDean")} />
-          <span className="role-label">Деканат</span>
-        </label>
-        <label className="role-checkbox">
-          <input type="checkbox" checked={user.roles.isAdmin} onChange={() => handleRoleChange("isAdmin")} />
-          <span className="role-label">Администратор</span>
-        </label>
+      <div className="user-info">
+        <div className="user-name">{user.fullName}</div>
+        <div className="user-details">
+          {user.studentIdNumber && <span className="user-id">ID: {user.studentIdNumber}</span>}
+          <span className="user-email">{user.email}</span>
+        </div>
+      </div>
+      <div className="user-role-control">
+        <select
+          className="role-select"
+          value={selectedRole}
+          onChange={(e) => handleRoleChange(e.target.value as UserRole)}
+        >
+          <option value="Student">Студент</option>
+          <option value="Teacher">Преподаватель</option>
+          <option value="DeansEmployee">Сотрудник деканата</option>
+          <option value="Admin">Администратор</option>
+        </select>
+        <button className={`save-button ${hasChanges ? "active" : ""}`} onClick={handleSave} disabled={!hasChanges}>
+          Сохранить
+        </button>
       </div>
     </div>
   )

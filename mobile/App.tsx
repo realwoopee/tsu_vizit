@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import * as Font from 'expo-font';
 import MainStcak from './Navigate';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const fonts = () => Font.loadAsync({
   'inter-semi-bold': require('./assets/fonts/Inter_18pt-SemiBold.ttf'),
@@ -22,16 +23,16 @@ export default function App() {
 
   if (!fontLoaded) {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
-      </ScrollView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={styles.container}>
       <MainStcak />
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 

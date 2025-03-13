@@ -3,12 +3,12 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
-  Вход: undefined;
   Регистрация: undefined;
+  Профиль: undefined;
 };
 
 type AuthFormProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'Вход'>;
+  navigation: StackNavigationProp<RootStackParamList>;
 };
 
 export default function AuthorizationForm({ navigation }: AuthFormProps) {
@@ -19,39 +19,43 @@ export default function AuthorizationForm({ navigation }: AuthFormProps) {
 
   const loadReg = () => {
     navigation.navigate('Регистрация');
-  }
+  };
+  const loadProfile = () => {
+    navigation.navigate('Профиль');
+  };
 
   return (
-    
-    <View style={styles.container}>
-      <View style={styles.form}>
-        <Text style={{alignSelf: 'center', marginBottom: 15, fontSize: 25, fontFamily: 'inter-semi-bold'}}>Вход</Text>
-        <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>E-mail</Text>
-        <TextInput style={styles.input}
-            placeholder="example@email.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-          />
-        <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>Пароль</Text>
+    <View style={{backgroundColor: "#fff", height: "100%"}}>
+      <View style={styles.container}>
+        <View style={styles.form}>
+          <Text style={{alignSelf: 'center', marginBottom: 15, fontSize: 25, fontFamily: 'inter-semi-bold'}}>Вход</Text>
+          <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>E-mail</Text>
           <TextInput style={styles.input}
-            placeholder="Введите пароль..."
-            secureTextEntry={true}
-            value={password}
-            onChangeText={setPassword}
-          />
-      </View>
-      <TouchableOpacity 
-        style={[styles.button, !isFormValid && styles.buttonDisabled]}
-        disabled={!isFormValid}
-      >
-          <Text style={{color: 'white', fontFamily: 'inter-md'}}>Войти</Text>
-      </TouchableOpacity>
+              placeholder="example@email.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+          <Text style={{marginLeft: 5, fontFamily: 'inter-md'}}>Пароль</Text>
+            <TextInput style={styles.input}
+              placeholder="Введите пароль..."
+              secureTextEntry={true}
+              value={password}
+              onChangeText={setPassword}
+            />
+        </View>
+        <TouchableOpacity 
+          style={[styles.button, !isFormValid && styles.buttonDisabled]}
+          disabled={!isFormValid} onPress={loadProfile}
+        >
+            <Text style={{color: 'white', fontFamily: 'inter-md'}}>Войти</Text>
+        </TouchableOpacity>
 
-      <Text style={{fontFamily: 'inter-md'}}>Еще нет аккаунта?</Text>
-      <TouchableOpacity onPress={loadReg}>
-        <Text style={{color: '#3478F6', fontFamily: 'inter-md'}}>Зарегистрируйтесь</Text>
-      </TouchableOpacity>
+        <Text style={{fontFamily: 'inter-md'}}>Еще нет аккаунта?</Text>
+        <TouchableOpacity onPress={loadReg}>
+          <Text style={{color: '#3478F6', fontFamily: 'inter-md'}}>Зарегистрируйтесь</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -60,9 +64,7 @@ const styles = StyleSheet.create({
   container: {
     width: '80%',
     alignItems: 'center',
-    margin: 'auto',
-    marginTop: '40%',
-    marginBottom: 50
+    margin: 'auto'
   },
   input: {
     height: 40,

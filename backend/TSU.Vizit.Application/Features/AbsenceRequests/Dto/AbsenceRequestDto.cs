@@ -1,6 +1,8 @@
-namespace TSU.Vizit.Domain;
+using TSU.Vizit.Domain;
 
-public class AbsenceRequest
+namespace TSU.Vizit.Application.Features.AbsenceRequests.Dto;
+
+public class AbsenceRequestDto
 {
     public Guid Id { get; set; }
     public DateTime TimeCreated { get; set; }
@@ -9,19 +11,5 @@ public class AbsenceRequest
     public Guid? FinalisedById { get; set; }
     public AbsenceRequestResult? FinalStatus { get; set; } 
     public AbsenceReason Reason { get; set; }
-    // public List<Document> Attachments { get; set; } = [];
-}
-
-public enum AbsenceRequestResult
-{
-    Unknown,
-    Approved,
-    Declined
-}
-
-public enum AbsenceReason
-{
-    Personal,
-    Family,
-    Sick
+    public List<Document> Attachments { get; set; } = [];
 }

@@ -21,7 +21,8 @@ public class VizitDbContext : DbContext
     // public VizitDbContext() {} 
 
     public virtual DbSet<User> Users { get; set; }
-    public virtual DbSet<AbsenceRequest> AbsenceRequests { get; set; }
+    public virtual DbSet<AbsenceRequest> AbsenceRequest { get; set; }
+    public virtual DbSet<Document> Document { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +40,12 @@ public class VizitDbContext : DbContext
             .HasIndex(e => e.StudentIdNumber)
             .IsUnique();
 
+        modelBuilder.Entity<Document>()
+            .HasKey(d => new { d.AbsenceRequestId });
+        
+        modelBuilder.Entity<AbsenceRequest>()
+            .HasKey(ar => new { ar.CreatedById, ar.FinalisedById });
+        
         // modelBuilder.Entity<PostLike>()
         //     .HasKey(pt => new { pt.PostId, pt.UserWhoLikedId });
     }

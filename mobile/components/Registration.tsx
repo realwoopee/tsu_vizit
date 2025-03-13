@@ -4,11 +4,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
   Вход: undefined;
-  Регистрация: undefined;
+  Профиль: undefined;
 };
 
 type RegProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'Регистрация'>;
+  navigation: StackNavigationProp<RootStackParamList>;
 };
 
 export default function Registration({ navigation }: RegProps) {
@@ -22,58 +22,63 @@ export default function Registration({ navigation }: RegProps) {
   const loadAuthForm = () => {
     navigation.navigate('Вход');
   };
+  const loadProfile = () => {
+    navigation.navigate('Профиль');
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.form}>
-        <Text style={{ alignSelf: 'center', marginBottom: 15, fontSize: 25, fontFamily: 'inter-semi-bold' }}>Регистрация</Text>
-        
-        <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Имя</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Иван"
-          value={name}
-          onChangeText={setName}
-        />
-        
-        <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Фамилия</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Иванов"
-          value={surname}
-          onChangeText={setSurname}
-        />
-        
-        <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>E-mail</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="example@email.com"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
-        
-        <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Пароль</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Введите пароль..."
-          secureTextEntry={true}
-          value={password}
-          onChangeText={setPassword}
-        />
+    <View style={{backgroundColor: "#fff", height: "100%"}}>
+      <View style={styles.container}>
+        <View style={styles.form}>
+          <Text style={{ alignSelf: 'center', marginBottom: 15, fontSize: 25, fontFamily: 'inter-semi-bold' }}>Регистрация</Text>
+          
+          <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Имя</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Иван"
+            value={name}
+            onChangeText={setName}
+          />
+          
+          <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Фамилия</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Иванов"
+            value={surname}
+            onChangeText={setSurname}
+          />
+          
+          <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>E-mail</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="example@email.com"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
+          
+          <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Пароль</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Введите пароль..."
+            secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={[styles.button, !isFormValid && styles.buttonDisabled]}
+          disabled={!isFormValid}
+        >
+          <Text style={{ color: 'white', fontFamily: 'inter-md' }} onPress={loadProfile}>Зарегистрироваться</Text>
+        </TouchableOpacity>
+
+        <Text style={{ fontFamily: 'inter-md' }}>Уже есть аккаунт?</Text>
+        <TouchableOpacity onPress={loadAuthForm}>
+          <Text style={{ color: '#3478F6', fontFamily: 'inter-md' }}>Войдите</Text>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity
-        style={[styles.button, !isFormValid && styles.buttonDisabled]}
-        disabled={!isFormValid}
-      >
-        <Text style={{ color: 'white', fontFamily: 'inter-md' }}>Зарегистрироваться</Text>
-      </TouchableOpacity>
-
-      <Text style={{ fontFamily: 'inter-md' }}>Уже есть аккаунт?</Text>
-      <TouchableOpacity onPress={loadAuthForm}>
-        <Text style={{ color: '#3478F6', fontFamily: 'inter-md' }}>Войдите</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -83,9 +88,7 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
     flexDirection: 'column',
-    margin: 'auto',
-    marginTop: '40%',
-    marginBottom: 50
+    margin: 'auto'
   },
   input: {
     height: 40,

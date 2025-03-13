@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import * as Font from 'expo-font';
 import MainStcak from './Navigate';
-import Profile from './components/Profile';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const fonts = () => Font.loadAsync({

@@ -45,7 +45,7 @@ export default function Profile({ navigation }: ProfileProps) {
 
   const logout = async () => {
     try {
-      //await store.logout();
+      await store.logout();
       navigation.navigate('Вход');
     } catch (error: any) {
       const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";

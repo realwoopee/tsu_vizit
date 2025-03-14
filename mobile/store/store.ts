@@ -69,7 +69,8 @@ export default class Store{
 
     async logout () {
         try{
-           const response = await AuthService.logout(); 
+           const curSession = await AuthService.getCurSession(); 
+           const response = await AuthService.logout(curSession?.data?.id)
            AsyncStorage.removeItem('token');
            AsyncStorage.removeItem('refreshToken');
            this.setAuth(false);

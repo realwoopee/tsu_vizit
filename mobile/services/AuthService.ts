@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import $api from "../http";
 import { AuthResponse } from "../models/response/AuthResponse";
 import {IUser} from "../models/IUser";
+import { SessionResponse } from "../models/response/SessionResponse";
 
 export default class AuthService{
     static async login (email: string, password: string): Promise<AxiosResponse<AuthResponse>>{
@@ -12,8 +13,12 @@ export default class AuthService{
         return $api.post('/register', {fullName, email, password, studentIdNumber})
     }
 
-    static async logout (): Promise<void>{
-        return $api.post('/logout')
+    static async getCurSession (): Promise<AxiosResponse<SessionResponse>>{
+        return $api.get('/session/current')
+    }
+
+    static async logout(id: string): Promise<void> {
+        return $api.delete(`/session/${id}`);
     }
 
     static async getProfile (): Promise<AxiosResponse<IUser>>{

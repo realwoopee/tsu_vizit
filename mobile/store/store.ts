@@ -44,6 +44,7 @@ export default class Store{
            const response = await AuthService.login(email, password); 
            console.log(response);
            AsyncStorage.setItem('token', response.data.token);
+           AsyncStorage.setItem('refreshToken', response.data.refreshToken);
            this.setAuth(true);
         }
         catch(e)
@@ -54,9 +55,10 @@ export default class Store{
 
     async register (email: string, password: string, name: string, lastName: string) {
         try{
-           const response = await AuthService.register(email, password, lastName+" "+name, "123456"); 
+           const response = await AuthService.register(email, password, lastName+" "+name, "111111"); 
            console.log(response);
            AsyncStorage.setItem('token', response.data.token);
+           AsyncStorage.setItem('refreshToken', response.data.refreshToken);
            this.setAuth(true);
         }
         catch(e)
@@ -69,6 +71,7 @@ export default class Store{
         try{
            const response = await AuthService.logout(); 
            AsyncStorage.removeItem('token');
+           AsyncStorage.removeItem('refreshToken');
            this.setAuth(false);
            this.setUser({} as IUser)
         }
@@ -89,12 +92,30 @@ export default class Store{
         }
     }
 
+    async editProfile (fullName: string, email: string) {
+        try{
+           const response = await AuthService.editProfile(fullName, email); 
+           this.setUser(response.data as IUser);
+        }
+        catch(e)
+        {   
+            this.handleApiError(e);
+        }
+    }
+
     async checkAuth(){
         this.setLoading(true);
         try{
-            const response = await axios.get<AuthResponse>(`${API_URL}/auth/refresh`, {withCredentials:true})
+            const refreshToken = await AsyncStorage.getItem('refreshToken');
+            const response = await axios.post<AuthResponse>(`${API_URL}/auth/refresh`, `${refreshToken}`, {
+                withCredentials:true, 
+                headers: {
+                'Content-Type': 'application/json' 
+                
+            },})
             console.log(response);
            AsyncStorage.setItem('token', response.data.token);
+           AsyncStorage.setItem('refreshToken', response.data.refreshToken);
            this.setAuth(true);
 
         }

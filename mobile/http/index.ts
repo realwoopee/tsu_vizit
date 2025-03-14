@@ -20,8 +20,15 @@ $api.interceptors.response.use((config)=>{
     if (error.response.status == 401 && error.config && !error.config._isRetry){
         originalRequest._isRetry = true;
         try{
-            const response = await axios.get<AuthResponse>(`${API_URL}/auth/refresh`, {withCredentials:true})
+            const refreshToken = await AsyncStorage.getItem('refreshToken');
+            const response = await axios.post<AuthResponse>(`${API_URL}/auth/refresh`, `${refreshToken}`, {
+                withCredentials:true, 
+                headers: {
+                'Content-Type': 'application/json' 
+                
+            },})
             AsyncStorage.setItem('token', response.data.token);
+            AsyncStorage.setItem('refreshToken', response.data.refreshToken);
             return $api.request(originalRequest);
         }
         catch(e)
@@ -32,9 +39,11 @@ $api.interceptors.response.use((config)=>{
     throw error;
 }))
 
-$api.interceptors.request.use((config)=>{
-    config.headers.Authorization = `Bearer ${AsyncStorage.getItem('token')}`
+
+$api.interceptors.request.use(async (config) => {
+    const token = await AsyncStorage.getItem('token');
+    config.headers.Authorization = `Bearer ${token}`;
     return config;
-})
+});
 
 export default $api;

@@ -3,4 +3,5 @@ export interface IUser{
     fullName: string,
     email: string,
     studentCardId: string
+    role: string
 }

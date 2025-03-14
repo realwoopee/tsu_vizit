@@ -1,0 +1,26 @@
+using TSU.Vizit.Application.Setup;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.local.json", optional: true);
+
+SetupResults.Setup(builder);
+
+SetupAspNet.AddAspNet(builder);
+SetupSwagger.AddSwagger(builder);
+SetupDatabase.AddDatabase(builder);
+SetupAuth.AddAuth(builder);
+SetupServices.AddServices(builder.Services, builder.Configuration, builder.Environment);
+SetupHangfire.AddHangfire(builder);
+
+var app = builder.Build();
+
+SetupHangfire.UseHangfire(app);
+SetupSwagger.UseSwagger(app);
+SetupAspNet.UseAspNet(app);
+SetupAuth.UseAuth(app);
+
+await SetupDatabase.RunMigrations(app);
+
+app.Run();

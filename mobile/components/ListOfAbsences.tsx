@@ -4,10 +4,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import AbsenceItem from './AbsenceItem';
 import { Ionicons } from '@expo/vector-icons';
 import FiltersBlock from './FiltersBlock';
+import Menu from './Menu';
 
 type RootStackParamList = {
   Профиль: undefined;
   Пропуски: undefined;
+  Вход: undefined;
 };
 
 type ListProps = {
@@ -30,9 +32,7 @@ type Item = {
   docs: Doc[];
 };
 
-export default function ListOfAbsences({navigation} : ListProps) { 
-  
-  // <Menu navigation={navigation} />
+export default function ListOfAbsences({ navigation }: ListProps) {
 
   const [listOfItems, setListOfItems] = useState<Item[]>([
     { id: "1", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
@@ -46,7 +46,7 @@ export default function ListOfAbsences({navigation} : ListProps) {
   const onAddDocument = (id: string, newDocs: Doc[]) => {
     setListOfItems(prevItems =>
       prevItems.map(item =>
-        item.id === id ? { ...item, docs: [ ...newDocs] } : item
+        item.id === id ? { ...item, docs: [...newDocs] } : item
       )
     );
   };
@@ -63,7 +63,7 @@ export default function ListOfAbsences({navigation} : ListProps) {
 
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
- 
+
   return (
     <View >
       <View style={styles.headerContainer}>
@@ -75,7 +75,7 @@ export default function ListOfAbsences({navigation} : ListProps) {
 
       <FlatList
         // style={{flex: 1}}
-        style={{marginBottom: 120, top: '5%'}}
+        style={{ marginBottom: 120, top: '5%' }}
         data={listOfItems}
         keyExtractor={item => item.id.toString()}
         ListEmptyComponent={
@@ -86,12 +86,15 @@ export default function ListOfAbsences({navigation} : ListProps) {
         )}
       />
 
-    <FiltersBlock
+      <FiltersBlock
         isVisible={isFilterModalVisible}
         closeModal={() => setIsFilterModalVisible(false)}
       />
 
+      <Menu navigation={navigation} />
+
     </View>
+
   );
 }
 const styles = StyleSheet.create({

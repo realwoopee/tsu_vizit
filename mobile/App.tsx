@@ -2,9 +2,8 @@ import React, { useState, useEffect, createContext } from 'react';
 import { StyleSheet, ActivityIndicator, ScrollView, View } from 'react-native';
 import * as Font from 'expo-font';
 import MainStcak from './Navigate';
-import ListOfAbsences from './components/ListOfAbsences';
 import Store from './store/store';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const fonts = () => Font.loadAsync({
   'inter-semi-bold': require('./assets/fonts/Inter_18pt-SemiBold.ttf'),
@@ -35,22 +34,19 @@ export default function App() {
 
   if (!fontLoaded) {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
-      </ScrollView>
+      </View>
     );
   }
 
   return (
+
     <AppContext.Provider value={{ store }}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.container}>
         <MainStcak />
-        {/* <ListOfAbsences/> */}
-      </ScrollView>
+      </View>
     </AppContext.Provider>
-    // <View style={styles.container}>
-    //    <ListOfAbsences/>
-    // </View>
 
   );
 }

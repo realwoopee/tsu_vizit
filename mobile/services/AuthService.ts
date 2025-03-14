@@ -19,5 +19,9 @@ export default class AuthService{
     static async getProfile (): Promise<AxiosResponse<IUser>>{
         return $api.get<IUser>('/account/profile')
     }
+
+    static async editProfile (fullName: string, email: string): Promise<AxiosResponse<IUser>>{
+        return $api.put<IUser>('/account/profile', {fullName, email})
+    }
 }
 

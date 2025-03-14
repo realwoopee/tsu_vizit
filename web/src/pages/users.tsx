@@ -78,7 +78,7 @@ export const UsersPage = () => {
   const updateSearchParam = (param: keyof SearchParams, value: string) => {
     setSearchParams((prev) => ({
       ...prev,
-      [param]: value || undefined, 
+      [param]: value || undefined
     }))
   }
 

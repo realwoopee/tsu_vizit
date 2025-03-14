@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { ConfirmationModal } from "./role-confirm"
 import "../styles/user-list-item.css"
 
 export type UserRole = "Student" | "Teacher" | "DeansEmployee" | "Admin"
@@ -20,15 +21,25 @@ interface UserListItemProps {
 export const UserListItem = ({ user, onRoleChange }: UserListItemProps) => {
   const [selectedRole, setSelectedRole] = useState<UserRole>(user.role)
   const [hasChanges, setHasChanges] = useState(false)
+  // Добавить состояние для модального окна
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleRoleChange = (newRole: UserRole) => {
     setSelectedRole(newRole)
     setHasChanges(true)
   }
 
+  // Изменить обработчик сохранения, чтобы он открывал модальное окно
   const handleSave = () => {
+    setIsModalOpen(true)
+  }
+
+  // Добавить обработчик подтверждения
+  const handleConfirm = () => {
+    console.log(`Отправка запроса на изменение роли пользователя ${user.fullName} на ${selectedRole}`)
     onRoleChange(user.id, selectedRole)
     setHasChanges(false)
+    setIsModalOpen(false)
   }
 
   return (
@@ -55,6 +66,17 @@ export const UserListItem = ({ user, onRoleChange }: UserListItemProps) => {
           Сохранить
         </button>
       </div>
+
+      {/* Добавить модальное окно подтверждения */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirm}
+        title="Подтверждение изменения роли"
+        message={`Вы уверены, что хотите изменить роль пользователя ${user.fullName} на "${selectedRole === "Student" ? "Студент" : selectedRole === "Teacher" ? "Преподаватель" : selectedRole === "DeansEmployee" ? "Сотрудник деканата" : "Администратор"}"?`}
+        confirmText="Сохранить"
+        cancelText="Отмена"
+      />
     </div>
   )
 }

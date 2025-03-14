@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "name": "tsu-visit-shared",
-=======
   "name": "tsu-vizit-shared",
->>>>>>> 9590ac3d4dd010786c5de5bf38dd48e99d4370bb
   "packageManager": "yarn@4.7.0",
   "private": true,
   "main": "src/index.ts",

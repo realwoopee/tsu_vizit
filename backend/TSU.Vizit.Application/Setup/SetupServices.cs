@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using TSU.Vizit.Application.Features.AbsenceRequests;
 using TSU.Vizit.Application.Features.Auth;
+using TSU.Vizit.Application.Features.Documents;
 using TSU.Vizit.Application.Features.Users;
 using TSU.Vizit.Application.Infrastructure.Auth;
 using TSU.Vizit.Application.Settings;

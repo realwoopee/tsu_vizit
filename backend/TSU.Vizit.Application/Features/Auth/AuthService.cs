@@ -36,9 +36,14 @@ public class AuthService
     public async Task<Result<LoginResultDto>> LoginUser(UserLoginModel userLoginModel)
     {
         var userResult = await _userRepository.GetUserByEmail(userLoginModel.Email);
-
+        
         if (userResult.IsFailed)
             return Result.Fail(userResult.Errors);
+        
+        var passwordVerificationResult = await _userRepository.ConfirmUserPassword(userResult.Value, userLoginModel.Password);
+        
+        if (passwordVerificationResult.IsFailed)
+            return Result.Fail(passwordVerificationResult.Errors);
 
         var session = _sessionRepository.CreateNewSession(userResult.Value.Id, _jwtSettings.RefreshTokenLifetime);
 

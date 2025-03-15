@@ -35,6 +35,21 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
         return data is not null ? data : CustomErrors.NotFound("User not found");
     }
 
+    public async Task<Result> ConfirmUserPassword(User user, string providedPassword)
+    {
+        var data = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+        
+        if (data is null)
+            return CustomErrors.NotFound("User not found");
+        
+        var result = _passwordHasher.VerifyHashedPassword(user, data.PasswordHash, providedPassword);
+        
+        if (result == PasswordVerificationResult.Failed)
+            return CustomErrors.ValidationError("Invalid password");
+
+        return Result.Ok();
+    }
+
     public async Task<Result<User>> EditUser(Guid id, User newUser)
     {
         var data = await dbContext.Users.FirstOrDefaultAsync(user => user.Id == id);

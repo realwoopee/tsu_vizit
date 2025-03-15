@@ -24,6 +24,7 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var dtoConverters = new AbsenceRequestDtoConverters(_absenceRequestRepository, _documentRepository);
 
         var temp = await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination);
+        
         var result = await dtoConverters.AbsenceRequestPagedListToDto(temp.Value);
         return result;
     }
@@ -33,12 +34,15 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var dtoConverters = new AbsenceRequestDtoConverters(_absenceRequestRepository, _documentRepository);
         var createdRequestResult = await _absenceRequestRepository.CreateAbsenceRequest(dtoConverters.CreateDtoToRequest(model, curUserId));
         var dto = await dtoConverters.RequestToDto(createdRequestResult.Value);
-        var document = new Domain.Document
+        if (model.Attachment != null)
         {
-            AbsenceRequestId = dto.Id,
-            Attachment = model.Attachment
-        };
-        await _documentRepository.CreateDocument(document);
+            var document = new Document
+            {
+                AbsenceRequestId = dto.Id,
+                Attachment = model.Attachment
+            };
+            await _documentRepository.CreateDocument(document);
+        }
         return dto;
     }
 }

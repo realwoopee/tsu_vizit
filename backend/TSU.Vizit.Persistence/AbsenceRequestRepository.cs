@@ -51,11 +51,25 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
         if (filter.FinalStatus != null)
             query = query.Where(ar => ar.FinalStatus == filter.FinalStatus);
 
-        var test = new AbsenceRequestPagedList
+        query = sorting switch
         {
-            TotalCount = query.Count(),
+            AbsenceRequestSorting.TimeCreatedAsc => query.OrderBy(ar => ar.TimeCreated),
+            AbsenceRequestSorting.TimeCreatedDesc => query.OrderByDescending(ar => ar.TimeCreated),
+            AbsenceRequestSorting.TimeFinalisedAsc => query.OrderBy(ar => ar.TimeFinalised),
+            AbsenceRequestSorting.TimeFinalisedDesc => query.OrderByDescending(ar => ar.TimeFinalised),
+            null => query,
+            _ => throw new ArgumentOutOfRangeException(nameof(sorting), sorting, $"Invalid sorting value: {sorting}")
+        };
+        
+        if (pagination is not null)
+            query = query
+                .Skip(pagination.Offset)
+                .Take(pagination.Limit);
+
+        return new AbsenceRequestPagedList
+        {
+            TotalCount = await query.CountAsync(),
             AbsenceRequests = await query.ToListAsync()
         };
-        return Result.Ok(test);
     }
 }

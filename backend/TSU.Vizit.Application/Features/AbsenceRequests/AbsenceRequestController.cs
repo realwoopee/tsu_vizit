@@ -36,6 +36,9 @@ public class AbsenceRequestController: ControllerBase
     public async Task<ActionResult<List<AbsenceRequestDto>>> CreateAbsenceRequest([FromBody] CreateAbsenceRequestModel model)
     {
         var curUserIdResult = _userAccessor.GetUserId();
-        return await _absenceRequestService.CreateAbsenceRequest(model, curUserIdResult.Value).ToActionResult();
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<AbsenceRequestDto>> (userId) =>
+                await _absenceRequestService.CreateAbsenceRequest(model, userId))
+            .ToActionResult();
     }
 }

@@ -65,7 +65,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
 
 
   return (
-    <View >
+    <View style={{backgroundColor: 'white'}}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Список пропусков</Text>
         <TouchableOpacity onPress={() => setIsFilterModalVisible(true)}>
@@ -74,16 +74,28 @@ export default function ListOfAbsences({ navigation }: ListProps) {
       </View>
 
       <FlatList
-        // style={{flex: 1}}
-        style={{ marginBottom: 120, top: '5%' }}
+        style={{ top: '5%', backgroundColor: 'white' }}
         data={listOfItems}
         keyExtractor={item => item.id.toString()}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>Пропуски отсутствуют</Text>
+          <View>
+            <TouchableOpacity style={styles.button}>
+              <Text style={[styles.headerTitle, {color: 'white'}]}>Добавить пропуск</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.emptyText}>Пропуски отсутствуют</Text>
+          </View>
         }
-        renderItem={({ item }) => (
-          <AbsenceItem item={item} onAddDocument={onAddDocument} onRemoveDocument={onRemoveDocument} />
-        )}
+          renderItem={({ item, index }) => (
+            <View style={index === listOfItems.length - 1 ? styles.lastItem : null}>
+              {index === 0 && (
+                <TouchableOpacity style={styles.button}>
+                  <Text style={[styles.headerTitle, {color: 'white'}]}>Добавить пропуск</Text>
+                </TouchableOpacity>
+              )}
+              <AbsenceItem item={item} onAddDocument={onAddDocument} onRemoveDocument={onRemoveDocument} />
+            </View>
+          )}
       />
 
       <FiltersBlock
@@ -103,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'none',
+    backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
     shadowColor: '#000',
@@ -125,4 +137,16 @@ const styles = StyleSheet.create({
     padding: 20,
     fontFamily: 'inter-md'
   },
+  lastItem: {
+    marginBottom: 200
+  },
+  button: {
+    backgroundColor: '#3478F6',
+    padding: 20,
+    alignSelf: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    width: '92%',
+    marginTop: 10
+  }
 })

@@ -2,6 +2,9 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { Feather, FontAwesome6 } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Dimensions } from 'react-native';
+
+const screenHeight = Dimensions.get('window').height;
 
 type RootStackParamList = {
     Профиль: undefined;
@@ -40,7 +43,7 @@ export default function Menu({navigation} : MenuProps) {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        top: '70%',
+        top: screenHeight * 0.9,
         alignSelf: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',

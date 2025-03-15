@@ -28,6 +28,7 @@ public static class SetupServices
         services.AddScoped<TokenService>();
         services.AddScoped<AuthService>();
         services.AddScoped<UserService>();
+        services.AddScoped<DocumentService>();
         services.AddScoped<AbsenceRequestService>();
         services.AddScoped<UserAccessor>();
         services.AddScoped<IUserRepository, UserRepository>();

@@ -1,15 +1,16 @@
 using FluentResults;
 using FluentResults.Extensions;
+using TSU.Vizit.Application.Features.Documents.Dto;
 using TSU.Vizit.Contracts.AbsenceRequests;
 using TSU.Vizit.Contracts.Documents;
 using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Application.Features.AbsenceRequests.Dto;
 
-public class AbsenceRequestDtoConverters(IAbsenceRequestRepository _absenceRequestRepository, IDocumentRepository _documentRepository)
+public static class AbsenceRequestDtoConverters
 {
 
-    public AbsenceRequest CreateDtoToRequest(CreateAbsenceRequestModel dto, Guid CreatedById)
+    public static AbsenceRequest ToEntity(this CreateAbsenceRequestModel dto, Guid CreatedById)
     {
         return new AbsenceRequest
         {
@@ -21,7 +22,7 @@ public class AbsenceRequestDtoConverters(IAbsenceRequestRepository _absenceReque
             Reason = dto.Reason
         };
     }
-    public async Task<AbsenceRequestDto> RequestToDto(AbsenceRequest model)
+    public static AbsenceRequestDto ToDto(this AbsenceRequest model)
     {
         var result = new AbsenceRequestDto
         {
@@ -35,24 +36,16 @@ public class AbsenceRequestDtoConverters(IAbsenceRequestRepository _absenceReque
             TimeCreated = model.TimeCreated,
             TimeFinalised = model.TimeFinalised
         };
-        var attachmentsResult = await _documentRepository.GetAllAttachments(model.Id);
-        var attachments = attachmentsResult.Value;
-        result.Attachments = attachments;
+        result.Attachments = model.Attachments.Select(d => d.ToDto()).ToList();
         return result;
     }
 
-    public async Task<Result<AbsenceRequestPagedListDto>> AbsenceRequestPagedListToDto(AbsenceRequestPagedList model)
+    public static AbsenceRequestPagedListDto ToDto(this AbsenceRequestPagedList model)
     {
-        var result = new AbsenceRequestPagedListDto();
-        result.TotalCount = model.TotalCount;
-        var requestsConverted = new List<AbsenceRequestDto>();
-        foreach (var absRequest in model.AbsenceRequests)
+        return new AbsenceRequestPagedListDto()
         {
-            var dto = await RequestToDto(absRequest);
-            requestsConverted.Add(dto);
-        }
-
-        result.AbsenceRequests = requestsConverted;
-        return Result.Ok(result);
+            AbsenceRequests = model.AbsenceRequests.Select(ar => ar.ToDto()).ToList(),
+            TotalCount = model.TotalCount
+        };
     }
 }

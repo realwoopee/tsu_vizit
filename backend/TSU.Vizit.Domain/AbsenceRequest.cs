@@ -11,7 +11,7 @@ public class AbsenceRequest
     public Guid? FinalisedById { get; set; }
     public AbsenceRequestResult? FinalStatus { get; set; } 
     public AbsenceReason Reason { get; set; }
-    // public List<Document> Attachments { get; set; } = [];
+    public List<Document> Attachments { get; set; } = [];
 }
 
 public enum AbsenceRequestResult

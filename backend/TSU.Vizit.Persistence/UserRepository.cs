@@ -20,7 +20,7 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
     public async Task<Result<User>> GetUserById(Guid id)
     {
         var data = await dbContext.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Id == id);
-        return data is not null ? data : CustomErrors.NotFound("User not found");
+        return data is not null ? Result.Ok(data) : CustomErrors.NotFound("User not found");
     }
 
     public async Task<Result<User>> GetUserByStudentCardId(string studentIdNumber)

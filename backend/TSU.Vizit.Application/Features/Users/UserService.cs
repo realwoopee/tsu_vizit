@@ -32,7 +32,7 @@ public class UserService(IUserRepository userRepository)
             }).Map(u => u.ToDto());
     }
 
-    public async Task<Result<UserPermissionsDto>> GetUserRoles(Guid userId)
+    public async Task<Result<UserPermissionsDto>> GetUserPermissions(Guid userId)
     {
         return await userRepository.GetUserById(userId).Map(u => u.UserRole.ToPermissions().ToDto());
     }

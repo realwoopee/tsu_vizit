@@ -11,7 +11,8 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
 {
     public async Task<Result<AbsenceRequest>> GetAbsenceRequestById(Guid id)
     {
-        var data = await dbContext.AbsenceRequest.AsNoTracking().FirstOrDefaultAsync(ar => ar.Id == id);
+        var data = await dbContext.AbsenceRequest.AsNoTracking()
+            .Include(ab => ab.Attachments).FirstOrDefaultAsync(ar => ar.Id == id);
         return data is not null ? data : CustomErrors.NotFound("AbsenceRequest not found");
     }
 
@@ -71,5 +72,17 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
             TotalCount = await query.CountAsync(),
             AbsenceRequests = await query.ToListAsync()
         };
+    }
+
+    public async Task<Result> DeleteAbsenceRequest(Guid absenceRequestId)
+    {
+        var data = await dbContext.AbsenceRequest.FirstOrDefaultAsync(ar => ar.Id == absenceRequestId);
+        
+        if (data is null)
+            return CustomErrors.NotFound("AbsenceRequest not found");
+        
+        dbContext.AbsenceRequest.Remove(data);
+        await dbContext.SaveChangesAsync();
+        return Result.Ok();
     }
 }

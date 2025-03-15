@@ -12,4 +12,6 @@ public interface IAbsenceRequestRepository
     public Task<Result<AbsenceRequestPagedList>> GetAllAbsenceRequests(AbsenceRequestListFilter filter,
         AbsenceRequestSorting? sorting, PaginationModel? pagination);
     
+    public Task<Result> DeleteAbsenceRequest(Guid absenceRequestId);
+    
 }

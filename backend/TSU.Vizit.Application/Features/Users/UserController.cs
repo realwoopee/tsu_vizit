@@ -29,7 +29,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<UserPermissionsDto>> GetPermissions()
     {
         return await _userAccessor.GetUserId()
-            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserRoles(userId))
+            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserPermissions(userId))
             .ToActionResult();
     }
     
@@ -53,9 +53,9 @@ public class UserController : ControllerBase
     public async Task<ActionResult<UserDto>> EditProfile(Guid id, [FromBody] UserEditProfileModel model)
     {
         return await _userAccessor.GetUserId()
-            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserRoles(userId))
+            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserPermissions(userId))
             .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
-            .Bind(async () => await _userService.GetUserRoles(id))
+            .Bind(async () => await _userService.GetUserPermissions(id))
             .Bind((userRoles) => Result.FailIf(userRoles.IsAdmin, new ForbiddenError("You can not edit admin user.")))
             .Bind(async Task<Result<UserDto>> () => await _userService.EditUserById(id, model))
             .ToActionResult();
@@ -69,7 +69,7 @@ public class UserController : ControllerBase
     {
         //TODO: create CheckUsersRole method in service
         return await _userAccessor.GetUserId()
-            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserRoles(userId))
+            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserPermissions(userId))
             .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
             .Bind(async () => await _userService.EditUserRole(new UserEditRoleModel{ Id = id, UserRole = userRole }))
             .ToActionResult();
@@ -79,7 +79,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<List<UserDto>>> GetAllUsers([FromQuery] GetAllUsersModel model)
     {
         return await _userAccessor.GetUserId()
-            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserRoles(userId))
+            .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserPermissions(userId))
             .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
             .Bind(async () => await _userService.GetAllUsers(model))
             .ToActionResult();

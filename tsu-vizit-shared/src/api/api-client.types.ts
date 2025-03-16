@@ -1,4 +1,200 @@
 //-----Types.File-----
+export enum AbsenceReason {
+    Personal = "Personal",
+    Family = "Family",
+    Sick = "Sick",
+}
+export interface AbsenceRequestDto  {
+  id?: string;
+  absencePeriodStart?: Date;
+  absencePeriodFinish?: Date;
+  timeCreated?: Date;
+  timeFinalised?: Date;
+  createdById?: string;
+  finalisedById?: string | null;
+  finalStatus?: AbsenceRequestResult;
+  reason?: AbsenceReason;
+  attachments?: DocumentDto[] | null;
+}
+export function deserializeAbsenceRequestDto(json: string): AbsenceRequestDto {
+  const data = JSON.parse(json) as AbsenceRequestDto;
+  initAbsenceRequestDto(data);
+  return data;
+}
+export function initAbsenceRequestDto(_data: AbsenceRequestDto) {
+  if (_data) {
+    _data.absencePeriodStart = _data["absencePeriodStart"] ? parseDateOnly(_data["absencePeriodStart"].toString()) : <any>null;
+    _data.absencePeriodFinish = _data["absencePeriodFinish"] ? parseDateOnly(_data["absencePeriodFinish"].toString()) : <any>null;
+    _data.timeCreated = _data["timeCreated"] ? new Date(_data["timeCreated"].toString()) : <any>null;
+    _data.timeFinalised = _data["timeFinalised"] ? new Date(_data["timeFinalised"].toString()) : <any>null;
+    _data.finalStatus = _data["finalStatus"];
+    _data.reason = _data["reason"];
+    if (Array.isArray(_data["attachments"])) {
+      _data.attachments = _data["attachments"].map(item => 
+        initDocumentDto(item)
+      );
+    }
+  }
+  return _data;
+}
+export function serializeAbsenceRequestDto(_data: AbsenceRequestDto | undefined) {
+  if (_data) {
+    _data = prepareSerializeAbsenceRequestDto(_data as AbsenceRequestDto);
+  }
+  return JSON.stringify(_data);
+}
+export function prepareSerializeAbsenceRequestDto(_data: AbsenceRequestDto): AbsenceRequestDto {
+  const data: Record<string, any> = { ..._data };
+  data["absencePeriodStart"] = _data.absencePeriodStart && formatDate(_data.absencePeriodStart);
+  data["absencePeriodFinish"] = _data.absencePeriodFinish && formatDate(_data.absencePeriodFinish);
+  data["timeCreated"] = _data.timeCreated && _data.timeCreated.toISOString();
+  data["timeFinalised"] = _data.timeFinalised && _data.timeFinalised.toISOString();
+  if (Array.isArray(_data.attachments)) {
+    data["attachments"] = _data.attachments.map(item => 
+        prepareSerializeDocumentDto(item)
+    );
+  }
+  return data as AbsenceRequestDto;
+}
+export enum AbsenceRequestResult {
+    Unknown = "Unknown",
+    Approved = "Approved",
+    Declined = "Declined",
+}
+export enum AbsenceRequestSorting {
+    TimeCreatedAsc = "TimeCreatedAsc",
+    TimeCreatedDesc = "TimeCreatedDesc",
+    TimeFinalisedAsc = "TimeFinalisedAsc",
+    TimeFinalisedDesc = "TimeFinalisedDesc",
+}
+export interface CreateAbsenceRequestModel  {
+  absencePeriodStart: Date;
+  absencePeriodFinish: Date;
+  reason: AbsenceReason;
+}
+export function deserializeCreateAbsenceRequestModel(json: string): CreateAbsenceRequestModel {
+  const data = JSON.parse(json) as CreateAbsenceRequestModel;
+  initCreateAbsenceRequestModel(data);
+  return data;
+}
+export function initCreateAbsenceRequestModel(_data: CreateAbsenceRequestModel) {
+  if (_data) {
+    _data.absencePeriodStart = _data["absencePeriodStart"] ? parseDateOnly(_data["absencePeriodStart"].toString()) : <any>null;
+    _data.absencePeriodFinish = _data["absencePeriodFinish"] ? parseDateOnly(_data["absencePeriodFinish"].toString()) : <any>null;
+    _data.reason = _data["reason"];
+  }
+  return _data;
+}
+export function serializeCreateAbsenceRequestModel(_data: CreateAbsenceRequestModel | undefined) {
+  if (_data) {
+    _data = prepareSerializeCreateAbsenceRequestModel(_data as CreateAbsenceRequestModel);
+  }
+  return JSON.stringify(_data);
+}
+export function prepareSerializeCreateAbsenceRequestModel(_data: CreateAbsenceRequestModel): CreateAbsenceRequestModel {
+  const data: Record<string, any> = { ..._data };
+  data["absencePeriodStart"] = _data.absencePeriodStart && formatDate(_data.absencePeriodStart);
+  data["absencePeriodFinish"] = _data.absencePeriodFinish && formatDate(_data.absencePeriodFinish);
+  return data as CreateAbsenceRequestModel;
+}
+export interface Document  {
+  id?: string;
+  absenceRequestId?: string;
+  attachment?: string | null;
+}
+export function deserializeDocument(json: string): Document {
+  const data = JSON.parse(json) as Document;
+  initDocument(data);
+  return data;
+}
+export function initDocument(_data: Document) {
+    return _data;
+}
+export function serializeDocument(_data: Document | undefined) {
+  if (_data) {
+    _data = prepareSerializeDocument(_data as Document);
+  }
+  return JSON.stringify(_data);
+}
+export function prepareSerializeDocument(_data: Document): Document {
+  const data: Record<string, any> = { ..._data };
+  return data as Document;
+}
+export interface DocumentDto  {
+  id?: string;
+}
+export function deserializeDocumentDto(json: string): DocumentDto {
+  const data = JSON.parse(json) as DocumentDto;
+  initDocumentDto(data);
+  return data;
+}
+export function initDocumentDto(_data: DocumentDto) {
+    return _data;
+}
+export function serializeDocumentDto(_data: DocumentDto | undefined) {
+  if (_data) {
+    _data = prepareSerializeDocumentDto(_data as DocumentDto);
+  }
+  return JSON.stringify(_data);
+}
+export function prepareSerializeDocumentDto(_data: DocumentDto): DocumentDto {
+  const data: Record<string, any> = { ..._data };
+  return data as DocumentDto;
+}
+export interface EditAbsenceRequestModel  {
+  absencePeriodStart: Date;
+  absencePeriodFinish: Date;
+  reason: AbsenceReason;
+}
+export function deserializeEditAbsenceRequestModel(json: string): EditAbsenceRequestModel {
+  const data = JSON.parse(json) as EditAbsenceRequestModel;
+  initEditAbsenceRequestModel(data);
+  return data;
+}
+export function initEditAbsenceRequestModel(_data: EditAbsenceRequestModel) {
+  if (_data) {
+    _data.absencePeriodStart = _data["absencePeriodStart"] ? parseDateOnly(_data["absencePeriodStart"].toString()) : <any>null;
+    _data.absencePeriodFinish = _data["absencePeriodFinish"] ? parseDateOnly(_data["absencePeriodFinish"].toString()) : <any>null;
+    _data.reason = _data["reason"];
+  }
+  return _data;
+}
+export function serializeEditAbsenceRequestModel(_data: EditAbsenceRequestModel | undefined) {
+  if (_data) {
+    _data = prepareSerializeEditAbsenceRequestModel(_data as EditAbsenceRequestModel);
+  }
+  return JSON.stringify(_data);
+}
+export function prepareSerializeEditAbsenceRequestModel(_data: EditAbsenceRequestModel): EditAbsenceRequestModel {
+  const data: Record<string, any> = { ..._data };
+  data["absencePeriodStart"] = _data.absencePeriodStart && formatDate(_data.absencePeriodStart);
+  data["absencePeriodFinish"] = _data.absencePeriodFinish && formatDate(_data.absencePeriodFinish);
+  return data as EditAbsenceRequestModel;
+}
+export interface EditAbsenceRequestStatusDto  {
+  status: AbsenceRequestResult;
+}
+export function deserializeEditAbsenceRequestStatusDto(json: string): EditAbsenceRequestStatusDto {
+  const data = JSON.parse(json) as EditAbsenceRequestStatusDto;
+  initEditAbsenceRequestStatusDto(data);
+  return data;
+}
+export function initEditAbsenceRequestStatusDto(_data: EditAbsenceRequestStatusDto) {
+  if (_data) {
+    _data.status = _data["status"];
+  }
+  return _data;
+}
+export function serializeEditAbsenceRequestStatusDto(_data: EditAbsenceRequestStatusDto | undefined) {
+  if (_data) {
+    _data = prepareSerializeEditAbsenceRequestStatusDto(_data as EditAbsenceRequestStatusDto);
+  }
+  return JSON.stringify(_data);
+}
+export function prepareSerializeEditAbsenceRequestStatusDto(_data: EditAbsenceRequestStatusDto): EditAbsenceRequestStatusDto {
+  const data: Record<string, any> = { ..._data };
+  return data as EditAbsenceRequestStatusDto;
+}
 export interface LoginResultDto  {
   token?: string | null;
   refreshToken?: string | null;
@@ -102,6 +298,7 @@ export interface UserDto  {
   fullName?: string | null;
   email?: string | null;
   studentCardId?: string | null;
+  role?: UserRole;
 }
 export function deserializeUserDto(json: string): UserDto {
   const data = JSON.parse(json) as UserDto;
@@ -109,7 +306,10 @@ export function deserializeUserDto(json: string): UserDto {
   return data;
 }
 export function initUserDto(_data: UserDto) {
-    return _data;
+  if (_data) {
+    _data.role = _data["role"];
+  }
+  return _data;
 }
 export function serializeUserDto(_data: UserDto | undefined) {
   if (_data) {
@@ -123,6 +323,7 @@ export function prepareSerializeUserDto(_data: UserDto): UserDto {
 }
 export interface UserEditProfileModel  {
   fullName: string;
+  email: string;
 }
 export function deserializeUserEditProfileModel(json: string): UserEditProfileModel {
   const data = JSON.parse(json) as UserEditProfileModel;
@@ -164,6 +365,31 @@ export function prepareSerializeUserLoginModel(_data: UserLoginModel): UserLogin
   const data: Record<string, any> = { ..._data };
   return data as UserLoginModel;
 }
+export interface UserPermissionsDto  {
+  canCreate?: boolean;
+  canCheck?: boolean;
+  canApprove?: boolean;
+  isAdmin?: boolean;
+  canExportAll?: boolean;
+}
+export function deserializeUserPermissionsDto(json: string): UserPermissionsDto {
+  const data = JSON.parse(json) as UserPermissionsDto;
+  initUserPermissionsDto(data);
+  return data;
+}
+export function initUserPermissionsDto(_data: UserPermissionsDto) {
+    return _data;
+}
+export function serializeUserPermissionsDto(_data: UserPermissionsDto | undefined) {
+  if (_data) {
+    _data = prepareSerializeUserPermissionsDto(_data as UserPermissionsDto);
+  }
+  return JSON.stringify(_data);
+}
+export function prepareSerializeUserPermissionsDto(_data: UserPermissionsDto): UserPermissionsDto {
+  const data: Record<string, any> = { ..._data };
+  return data as UserPermissionsDto;
+}
 export interface UserRegisterModel  {
   fullName: string;
   email: string;
@@ -188,7 +414,33 @@ export function prepareSerializeUserRegisterModel(_data: UserRegisterModel): Use
   const data: Record<string, any> = { ..._data };
   return data as UserRegisterModel;
 }
+export enum UserRole {
+    Student = "Student",
+    Teacher = "Teacher",
+    DeansEmployee = "DeansEmployee",
+    Admin = "Admin",
+}
+export enum UserSorting {
+    NameAsc = "NameAsc",
+    NameDesc = "NameDesc",
+    RoleAsc = "RoleAsc",
+    RoleDesc = "RoleDesc",
+}
+export function formatDate(d: Date) {
+    return d.getFullYear() + '-' + 
+        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
+        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
+}
+export function parseDateOnly(s: string) {
+    const date = new Date(s);
+    return new Date(date.getTime() + 
+        date.getTimezoneOffset() * 60000);
+}
 import type { AxiosError } from 'axios'
+export interface FileParameter {
+    data: any;
+    fileName: string;
+}
 export class ApiException extends Error {
     message: string;
     status: number;

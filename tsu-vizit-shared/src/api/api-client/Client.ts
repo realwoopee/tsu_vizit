@@ -14,6 +14,439 @@ import { throwException, isAxiosError } from '../api-client.types';
 import { getAxios, getBaseUrl } from './helpers';
 
 /**
+ * @param createdById (optional) 
+ * @param finalisedById (optional) 
+ * @param finalStatus (optional) 
+ * @param reason (optional) 
+ * @param sorting (optional) 
+ * @param pagination_Offset (optional) 
+ * @param pagination_Limit (optional) 
+ * @return OK
+ */
+export function absenceAll(createdById?: string | undefined, finalisedById?: string | undefined, finalStatus?: Types.AbsenceRequestResult | undefined, reason?: Types.AbsenceReason | undefined, sorting?: Types.AbsenceRequestSorting | undefined, pagination_Offset?: number | undefined, pagination_Limit?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.AbsenceRequestDto[]> {
+    let url_ = getBaseUrl() + "/api/absence?";
+    if (createdById === null)
+        throw new Error("The parameter 'createdById' cannot be null.");
+    else if (createdById !== undefined)
+        url_ += "CreatedById=" + encodeURIComponent("" + createdById) + "&";
+    if (finalisedById === null)
+        throw new Error("The parameter 'finalisedById' cannot be null.");
+    else if (finalisedById !== undefined)
+        url_ += "FinalisedById=" + encodeURIComponent("" + finalisedById) + "&";
+    if (finalStatus === null)
+        throw new Error("The parameter 'finalStatus' cannot be null.");
+    else if (finalStatus !== undefined)
+        url_ += "FinalStatus=" + encodeURIComponent("" + finalStatus) + "&";
+    if (reason === null)
+        throw new Error("The parameter 'reason' cannot be null.");
+    else if (reason !== undefined)
+        url_ += "Reason=" + encodeURIComponent("" + reason) + "&";
+    if (sorting === null)
+        throw new Error("The parameter 'sorting' cannot be null.");
+    else if (sorting !== undefined)
+        url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+    if (pagination_Offset === null)
+        throw new Error("The parameter 'pagination_Offset' cannot be null.");
+    else if (pagination_Offset !== undefined)
+        url_ += "Pagination.Offset=" + encodeURIComponent("" + pagination_Offset) + "&";
+    if (pagination_Limit === null)
+        throw new Error("The parameter 'pagination_Limit' cannot be null.");
+    else if (pagination_Limit !== undefined)
+        url_ += "Pagination.Limit=" + encodeURIComponent("" + pagination_Limit) + "&";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigAbsenceAll,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            ..._requestConfigAbsenceAll?.headers,
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processAbsenceAll(_response);
+    });
+}
+
+function processAbsenceAll(response: AxiosResponse): Promise<Types.AbsenceRequestDto[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+              result200 = resultData200.map(item => 
+                Types.initAbsenceRequestDto(item)
+              );
+            }
+        return Promise.resolve<Types.AbsenceRequestDto[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.AbsenceRequestDto[]>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return OK
+ */
+export function absencePOST(body?: Types.CreateAbsenceRequestModel | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.AbsenceRequestDto> {
+    let url_ = getBaseUrl() + "/api/absence";
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = Types.serializeCreateAbsenceRequestModel(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigAbsencePOST,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            ..._requestConfigAbsencePOST?.headers,
+            "Content-Type": "application/json",
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processAbsencePOST(_response);
+    });
+}
+
+function processAbsencePOST(response: AxiosResponse): Promise<Types.AbsenceRequestDto> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initAbsenceRequestDto(resultData200);
+        return Promise.resolve<Types.AbsenceRequestDto>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.AbsenceRequestDto>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return OK
+ */
+export function absencePUT(id: string, body?: Types.EditAbsenceRequestModel | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.AbsenceRequestDto> {
+    let url_ = getBaseUrl() + "/api/absence/{id}";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = Types.serializeEditAbsenceRequestModel(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigAbsencePUT,
+        ...config,
+        data: content_,
+        method: "PUT",
+        url: url_,
+        headers: {
+            ..._requestConfigAbsencePUT?.headers,
+            "Content-Type": "application/json",
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processAbsencePUT(_response);
+    });
+}
+
+function processAbsencePUT(response: AxiosResponse): Promise<Types.AbsenceRequestDto> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initAbsenceRequestDto(resultData200);
+        return Promise.resolve<Types.AbsenceRequestDto>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.AbsenceRequestDto>(null as any);
+}
+
+/**
+ * @return OK
+ */
+export function absenceDELETE(id: string, config?: AxiosRequestConfig | undefined): Promise<Types.AbsenceRequestDto> {
+    let url_ = getBaseUrl() + "/api/absence/{id}";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigAbsenceDELETE,
+        ...config,
+        method: "DELETE",
+        url: url_,
+        headers: {
+            ..._requestConfigAbsenceDELETE?.headers,
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processAbsenceDELETE(_response);
+    });
+}
+
+function processAbsenceDELETE(response: AxiosResponse): Promise<Types.AbsenceRequestDto> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initAbsenceRequestDto(resultData200);
+        return Promise.resolve<Types.AbsenceRequestDto>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.AbsenceRequestDto>(null as any);
+}
+
+/**
+ * @param body (optional) 
+ * @return OK
+ */
+export function status(id: string, body?: Types.EditAbsenceRequestStatusDto | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.AbsenceRequestDto> {
+    let url_ = getBaseUrl() + "/api/absence/{id}/status";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = Types.serializeEditAbsenceRequestStatusDto(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigStatus,
+        ...config,
+        data: content_,
+        method: "PUT",
+        url: url_,
+        headers: {
+            ..._requestConfigStatus?.headers,
+            "Content-Type": "application/json",
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processStatus(_response);
+    });
+}
+
+function processStatus(response: AxiosResponse): Promise<Types.AbsenceRequestDto> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initAbsenceRequestDto(resultData200);
+        return Promise.resolve<Types.AbsenceRequestDto>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.AbsenceRequestDto>(null as any);
+}
+
+/**
  * @param body (optional) 
  * @return OK
  */
@@ -244,6 +677,266 @@ function processChangePassword(response: AxiosResponse): Promise<void> {
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
     }
     return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @param createdById (optional) 
+ * @param finalisedById (optional) 
+ * @param finalStatus (optional) 
+ * @param reason (optional) 
+ * @return OK
+ */
+export function all(createdById?: string | undefined, finalisedById?: string | undefined, finalStatus?: Types.AbsenceRequestResult | undefined, reason?: Types.AbsenceReason | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/export/absence_request/all?";
+    if (createdById === null)
+        throw new Error("The parameter 'createdById' cannot be null.");
+    else if (createdById !== undefined)
+        url_ += "CreatedById=" + encodeURIComponent("" + createdById) + "&";
+    if (finalisedById === null)
+        throw new Error("The parameter 'finalisedById' cannot be null.");
+    else if (finalisedById !== undefined)
+        url_ += "FinalisedById=" + encodeURIComponent("" + finalisedById) + "&";
+    if (finalStatus === null)
+        throw new Error("The parameter 'finalStatus' cannot be null.");
+    else if (finalStatus !== undefined)
+        url_ += "FinalStatus=" + encodeURIComponent("" + finalStatus) + "&";
+    if (reason === null)
+        throw new Error("The parameter 'reason' cannot be null.");
+    else if (reason !== undefined)
+        url_ += "Reason=" + encodeURIComponent("" + reason) + "&";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigAll,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            ..._requestConfigAll?.headers,
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processAll(_response);
+    });
+}
+
+function processAll(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @param finalisedById (optional) 
+ * @param finalStatus (optional) 
+ * @param reason (optional) 
+ * @return OK
+ */
+export function mine(finalisedById?: string | undefined, finalStatus?: Types.AbsenceRequestResult | undefined, reason?: Types.AbsenceReason | undefined, config?: AxiosRequestConfig | undefined): Promise<void> {
+    let url_ = getBaseUrl() + "/api/export/absence_request/mine?";
+    if (finalisedById === null)
+        throw new Error("The parameter 'finalisedById' cannot be null.");
+    else if (finalisedById !== undefined)
+        url_ += "FinalisedById=" + encodeURIComponent("" + finalisedById) + "&";
+    if (finalStatus === null)
+        throw new Error("The parameter 'finalStatus' cannot be null.");
+    else if (finalStatus !== undefined)
+        url_ += "FinalStatus=" + encodeURIComponent("" + finalStatus) + "&";
+    if (reason === null)
+        throw new Error("The parameter 'reason' cannot be null.");
+    else if (reason !== undefined)
+        url_ += "Reason=" + encodeURIComponent("" + reason) + "&";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigMine,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            ..._requestConfigMine?.headers,
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processMine(_response);
+    });
+}
+
+function processMine(response: AxiosResponse): Promise<void> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        return Promise.resolve<void>(null as any);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<void>(null as any);
+}
+
+/**
+ * @param file (optional) 
+ * @return OK
+ */
+export function attach(absenceId: string, file?: Types.FileParameter | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.Document> {
+    let url_ = getBaseUrl() + "/api/absence/{absenceId}/attach";
+    if (absenceId === undefined || absenceId === null)
+      throw new Error("The parameter 'absenceId' must be defined.");
+    url_ = url_.replace("{absenceId}", encodeURIComponent("" + absenceId));
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = new FormData();
+    if (file === null || file === undefined)
+        throw new Error("The parameter 'file' cannot be null.");
+    else
+        content_.append("file", file.data, file.fileName ? file.fileName : "file");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigAttach,
+        ...config,
+        data: content_,
+        method: "POST",
+        url: url_,
+        headers: {
+            ..._requestConfigAttach?.headers,
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processAttach(_response);
+    });
+}
+
+function processAttach(response: AxiosResponse): Promise<Types.Document> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initDocument(resultData200);
+        return Promise.resolve<Types.Document>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.Document>(null as any);
 }
 
 /**
@@ -557,6 +1250,80 @@ function processSession(response: AxiosResponse): Promise<void> {
 /**
  * @return OK
  */
+export function permissions(config?: AxiosRequestConfig | undefined): Promise<Types.UserPermissionsDto> {
+    let url_ = getBaseUrl() + "/api/account/permissions";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigPermissions,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            ..._requestConfigPermissions?.headers,
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processPermissions(_response);
+    });
+}
+
+function processPermissions(response: AxiosResponse): Promise<Types.UserPermissionsDto> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initUserPermissionsDto(resultData200);
+        return Promise.resolve<Types.UserPermissionsDto>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserPermissionsDto>(null as any);
+}
+
+/**
+ * @return OK
+ */
 export function profileGET(config?: AxiosRequestConfig | undefined): Promise<Types.UserDto> {
     let url_ = getBaseUrl() + "/api/account/profile";
       url_ = url_.replace(/[?&]$/, "");
@@ -706,6 +1473,338 @@ function processProfilePUT(response: AxiosResponse): Promise<Types.UserDto> {
     }
     return Promise.resolve<Types.UserDto>(null as any);
 }
+
+/**
+ * @param body (optional) 
+ * @return OK
+ */
+export function profilePUT2(id: string, body?: Types.UserEditProfileModel | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.UserDto> {
+    let url_ = getBaseUrl() + "/api/account/{id}/profile";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+      url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = Types.serializeUserEditProfileModel(body);
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigProfilePUT2,
+        ...config,
+        data: content_,
+        method: "PUT",
+        url: url_,
+        headers: {
+            ..._requestConfigProfilePUT2?.headers,
+            "Content-Type": "application/json",
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processProfilePUT2(_response);
+    });
+}
+
+function processProfilePUT2(response: AxiosResponse): Promise<Types.UserDto> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initUserDto(resultData200);
+        return Promise.resolve<Types.UserDto>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserDto>(null as any);
+}
+
+/**
+ * @param userRole (optional) 
+ * @return OK
+ */
+export function role(id: string, userRole?: Types.UserRole | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.UserPermissionsDto> {
+    let url_ = getBaseUrl() + "/api/account/{id}/profile/role?";
+    if (id === undefined || id === null)
+      throw new Error("The parameter 'id' must be defined.");
+    url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    if (userRole === null)
+        throw new Error("The parameter 'userRole' cannot be null.");
+    else if (userRole !== undefined)
+        url_ += "userRole=" + encodeURIComponent("" + userRole) + "&";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigRole,
+        ...config,
+        method: "PUT",
+        url: url_,
+        headers: {
+            ..._requestConfigRole?.headers,
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processRole(_response);
+    });
+}
+
+function processRole(response: AxiosResponse): Promise<Types.UserPermissionsDto> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        result200 = Types.initUserPermissionsDto(resultData200);
+        return Promise.resolve<Types.UserPermissionsDto>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserPermissionsDto>(null as any);
+}
+
+/**
+ * @param studentIdNumber (optional) 
+ * @param fullName (optional) 
+ * @param email (optional) 
+ * @param role (optional) 
+ * @param sorting (optional) 
+ * @param pagination_Offset (optional) 
+ * @param pagination_Limit (optional) 
+ * @return OK
+ */
+export function profiles(studentIdNumber?: string | undefined, fullName?: string | undefined, email?: string | undefined, role?: Types.UserRole | undefined, sorting?: Types.UserSorting | undefined, pagination_Offset?: number | undefined, pagination_Limit?: number | undefined, config?: AxiosRequestConfig | undefined): Promise<Types.UserDto[]> {
+    let url_ = getBaseUrl() + "/api/account/profiles?";
+    if (studentIdNumber === null)
+        throw new Error("The parameter 'studentIdNumber' cannot be null.");
+    else if (studentIdNumber !== undefined)
+        url_ += "StudentIdNumber=" + encodeURIComponent("" + studentIdNumber) + "&";
+    if (fullName === null)
+        throw new Error("The parameter 'fullName' cannot be null.");
+    else if (fullName !== undefined)
+        url_ += "FullName=" + encodeURIComponent("" + fullName) + "&";
+    if (email === null)
+        throw new Error("The parameter 'email' cannot be null.");
+    else if (email !== undefined)
+        url_ += "Email=" + encodeURIComponent("" + email) + "&";
+    if (role === null)
+        throw new Error("The parameter 'role' cannot be null.");
+    else if (role !== undefined)
+        url_ += "Role=" + encodeURIComponent("" + role) + "&";
+    if (sorting === null)
+        throw new Error("The parameter 'sorting' cannot be null.");
+    else if (sorting !== undefined)
+        url_ += "Sorting=" + encodeURIComponent("" + sorting) + "&";
+    if (pagination_Offset === null)
+        throw new Error("The parameter 'pagination_Offset' cannot be null.");
+    else if (pagination_Offset !== undefined)
+        url_ += "Pagination.Offset=" + encodeURIComponent("" + pagination_Offset) + "&";
+    if (pagination_Limit === null)
+        throw new Error("The parameter 'pagination_Limit' cannot be null.");
+    else if (pagination_Limit !== undefined)
+        url_ += "Pagination.Limit=" + encodeURIComponent("" + pagination_Limit) + "&";
+      url_ = url_.replace(/[?&]$/, "");
+
+    let options_: AxiosRequestConfig = {
+        ..._requestConfigProfiles,
+        ...config,
+        method: "GET",
+        url: url_,
+        headers: {
+            ..._requestConfigProfiles?.headers,
+            "Accept": "text/plain"
+        }
+    };
+
+    return getAxios().request(options_).catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+            return _error.response;
+        } else {
+            throw _error;
+        }
+    }).then((_response: AxiosResponse) => {
+        return processProfiles(_response);
+    });
+}
+
+function processProfiles(response: AxiosResponse): Promise<Types.UserDto[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && typeof response.headers === "object") {
+        for (let k in response.headers) {
+            if (response.headers.hasOwnProperty(k)) {
+                _headers[k] = response.headers[k];
+            }
+        }
+    }
+    if (status === 404) {
+        const _responseText = response.data;
+        let result404: any = null;
+        let resultData404  = _responseText;
+        result404 = Types.initProblemDetails(resultData404);
+        return throwException("Not Found", status, _responseText, _headers, result404);
+
+    } else if (status === 401) {
+        const _responseText = response.data;
+        let result401: any = null;
+        let resultData401  = _responseText;
+        result401 = Types.initProblemDetails(resultData401);
+        return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+    } else if (status === 400) {
+        const _responseText = response.data;
+        let result400: any = null;
+        let resultData400  = _responseText;
+        result400 = Types.initProblemDetails(resultData400);
+        return throwException("Bad Request", status, _responseText, _headers, result400);
+
+    } else if (status === 200) {
+        const _responseText = response.data;
+        let result200: any = null;
+        let resultData200  = _responseText;
+        if (Array.isArray(resultData200)) {
+              result200 = resultData200.map(item => 
+                Types.initUserDto(item)
+              );
+            }
+        return Promise.resolve<Types.UserDto[]>(result200);
+
+    } else if (status !== 200 && status !== 204) {
+        const _responseText = response.data;
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve<Types.UserDto[]>(null as any);
+}
+let _requestConfigAbsenceAll: Partial<AxiosRequestConfig> | null;
+export function getAbsenceAllRequestConfig() {
+  return _requestConfigAbsenceAll;
+}
+export function setAbsenceAllRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigAbsenceAll = value;
+}
+export function patchAbsenceAllRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigAbsenceAll = patch(_requestConfigAbsenceAll ?? {});
+}
+
+let _requestConfigAbsencePOST: Partial<AxiosRequestConfig> | null;
+export function getAbsencePOSTRequestConfig() {
+  return _requestConfigAbsencePOST;
+}
+export function setAbsencePOSTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigAbsencePOST = value;
+}
+export function patchAbsencePOSTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigAbsencePOST = patch(_requestConfigAbsencePOST ?? {});
+}
+
+let _requestConfigAbsencePUT: Partial<AxiosRequestConfig> | null;
+export function getAbsencePUTRequestConfig() {
+  return _requestConfigAbsencePUT;
+}
+export function setAbsencePUTRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigAbsencePUT = value;
+}
+export function patchAbsencePUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigAbsencePUT = patch(_requestConfigAbsencePUT ?? {});
+}
+
+let _requestConfigAbsenceDELETE: Partial<AxiosRequestConfig> | null;
+export function getAbsenceDELETERequestConfig() {
+  return _requestConfigAbsenceDELETE;
+}
+export function setAbsenceDELETERequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigAbsenceDELETE = value;
+}
+export function patchAbsenceDELETERequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigAbsenceDELETE = patch(_requestConfigAbsenceDELETE ?? {});
+}
+
+let _requestConfigStatus: Partial<AxiosRequestConfig> | null;
+export function getStatusRequestConfig() {
+  return _requestConfigStatus;
+}
+export function setStatusRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigStatus = value;
+}
+export function patchStatusRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigStatus = patch(_requestConfigStatus ?? {});
+}
+
 let _requestConfigLogin: Partial<AxiosRequestConfig> | null;
 export function getLoginRequestConfig() {
   return _requestConfigLogin;
@@ -737,6 +1836,39 @@ export function setChangePasswordRequestConfig(value: Partial<AxiosRequestConfig
 }
 export function patchChangePasswordRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigChangePassword = patch(_requestConfigChangePassword ?? {});
+}
+
+let _requestConfigAll: Partial<AxiosRequestConfig> | null;
+export function getAllRequestConfig() {
+  return _requestConfigAll;
+}
+export function setAllRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigAll = value;
+}
+export function patchAllRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigAll = patch(_requestConfigAll ?? {});
+}
+
+let _requestConfigMine: Partial<AxiosRequestConfig> | null;
+export function getMineRequestConfig() {
+  return _requestConfigMine;
+}
+export function setMineRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigMine = value;
+}
+export function patchMineRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigMine = patch(_requestConfigMine ?? {});
+}
+
+let _requestConfigAttach: Partial<AxiosRequestConfig> | null;
+export function getAttachRequestConfig() {
+  return _requestConfigAttach;
+}
+export function setAttachRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigAttach = value;
+}
+export function patchAttachRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigAttach = patch(_requestConfigAttach ?? {});
 }
 
 let _requestConfigRegister: Partial<AxiosRequestConfig> | null;
@@ -783,6 +1915,17 @@ export function patchSessionRequestConfig(patch: (value: Partial<AxiosRequestCon
   _requestConfigSession = patch(_requestConfigSession ?? {});
 }
 
+let _requestConfigPermissions: Partial<AxiosRequestConfig> | null;
+export function getPermissionsRequestConfig() {
+  return _requestConfigPermissions;
+}
+export function setPermissionsRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigPermissions = value;
+}
+export function patchPermissionsRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigPermissions = patch(_requestConfigPermissions ?? {});
+}
+
 let _requestConfigProfileGET: Partial<AxiosRequestConfig> | null;
 export function getProfileGETRequestConfig() {
   return _requestConfigProfileGET;
@@ -803,4 +1946,37 @@ export function setProfilePUTRequestConfig(value: Partial<AxiosRequestConfig>) {
 }
 export function patchProfilePUTRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
   _requestConfigProfilePUT = patch(_requestConfigProfilePUT ?? {});
+}
+
+let _requestConfigProfilePUT2: Partial<AxiosRequestConfig> | null;
+export function getProfilePUT2RequestConfig() {
+  return _requestConfigProfilePUT2;
+}
+export function setProfilePUT2RequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigProfilePUT2 = value;
+}
+export function patchProfilePUT2RequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigProfilePUT2 = patch(_requestConfigProfilePUT2 ?? {});
+}
+
+let _requestConfigRole: Partial<AxiosRequestConfig> | null;
+export function getRoleRequestConfig() {
+  return _requestConfigRole;
+}
+export function setRoleRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigRole = value;
+}
+export function patchRoleRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigRole = patch(_requestConfigRole ?? {});
+}
+
+let _requestConfigProfiles: Partial<AxiosRequestConfig> | null;
+export function getProfilesRequestConfig() {
+  return _requestConfigProfiles;
+}
+export function setProfilesRequestConfig(value: Partial<AxiosRequestConfig>) {
+  _requestConfigProfiles = value;
+}
+export function patchProfilesRequestConfig(patch: (value: Partial<AxiosRequestConfig>) => Partial<AxiosRequestConfig>) {
+  _requestConfigProfiles = patch(_requestConfigProfiles ?? {});
 }

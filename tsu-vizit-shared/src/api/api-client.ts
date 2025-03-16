@@ -20,6 +20,12 @@ export * as Query from './api-client/Query';
 
 
 
+export * as InstaClient from './api-client/InstaClient';
+
+export * as InstaQuery from './api-client/InstaQuery';
+
+
+
 
 
 import { addResultTypeFactory } from './api-client/helpers';
@@ -111,9 +117,14 @@ export function getResultTypeClassKey(queryKey: QueryKey): string {
 
 export function initPersister() {
   
+  addResultTypeFactory('Client___absenceAll', (data: any) => Types.initAbsenceRequestDto(data));
   addResultTypeFactory('Client___sessionAll', (data: any) => Types.initSessionDto(data));
   addResultTypeFactory('Client___current', (data: any) => Types.initSessionDto(data));
+  addResultTypeFactory('Client___permissions', (data: any) => Types.initUserPermissionsDto(data));
   addResultTypeFactory('Client___profileGET', (data: any) => Types.initUserDto(data));
+  addResultTypeFactory('Client___profiles', (data: any) => Types.initUserDto(data));
+
+
 
 
 }

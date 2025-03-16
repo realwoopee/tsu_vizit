@@ -3,7 +3,7 @@ using TSU.Vizit.Application.Setup;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
-    .AddJsonFile("appsettings.local.json", optional: true);
+    .AddJsonFile("appsettings.local.json", true);
 
 SetupResults.Setup(builder);
 

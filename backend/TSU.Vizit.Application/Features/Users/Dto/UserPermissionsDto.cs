@@ -9,4 +9,5 @@ public class UserPermissionsDto
     public bool CanCheck { get; set; } = false;
     public bool CanApprove { get; set; } = false;
     public bool IsAdmin { get; set; } = false;
+    public bool CanExportAll { get; set; } = false;
 }

@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using TSU.Vizit.Domain;
 using TSU.Vizit.Domain.Users;
 
 namespace TSU.Vizit.Persistence;
 
-public class DesignTimeDbContextFactory 
+public class DesignTimeDbContextFactory
     : IDesignTimeDbContextFactory<VizitDbContext>
 {
     public VizitDbContext CreateDbContext(string[] args)
@@ -15,9 +16,11 @@ public class DesignTimeDbContextFactory
             .AddJsonFile("appsettings.json")
             .AddJsonFile("appsettings.local.json")
             .Build();
-            
+
         var optionsBuilder = new DbContextOptionsBuilder<VizitDbContext>();
-        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"), o => o.MapEnum<UserRole>());
+        optionsBuilder.UseNpgsql(config.GetConnectionString("DefaultConnection"), o => o.MapEnum<UserRole>()
+            .MapEnum<AbsenceReason>()
+            .MapEnum<AbsenceRequestResult>());
         return new VizitDbContext(optionsBuilder.Options);
     }
 }

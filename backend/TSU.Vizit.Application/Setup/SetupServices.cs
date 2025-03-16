@@ -1,9 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using TSU.Vizit.Application.Features.AbsenceRequests;
 using TSU.Vizit.Application.Features.Auth;
+using TSU.Vizit.Application.Features.CsvExport;
+using TSU.Vizit.Application.Features.Documents;
 using TSU.Vizit.Application.Features.Users;
 using TSU.Vizit.Application.Infrastructure.Auth;
 using TSU.Vizit.Application.Settings;
 using TSU.Vizit.Contracts;
+using TSU.Vizit.Contracts.AbsenceRequests;
+using TSU.Vizit.Contracts.CsvExport;
+using TSU.Vizit.Contracts.Documents;
 using TSU.Vizit.Contracts.Users;
 using TSU.Vizit.Domain;
 using TSU.Vizit.Domain.Users;
@@ -24,8 +30,14 @@ public static class SetupServices
         services.AddScoped<TokenService>();
         services.AddScoped<AuthService>();
         services.AddScoped<UserService>();
+        services.AddScoped<DocumentService>();
+        services.AddScoped<CsvExportService>();
+        services.AddScoped<AbsenceRequestService>();
         services.AddScoped<UserAccessor>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAbsenceRequestRepository, AbsenceRequestRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<ICsvExportRepository, CsvExportRepository>();
 
         AddOptions(services, configuration);
     }

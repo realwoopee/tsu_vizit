@@ -8,8 +8,8 @@ public static class SetupResults
 {
     public static void Setup(WebApplicationBuilder builder)
     {
-        using var provider = builder.Services.BuildServiceProvider();
-        using var scope = provider.CreateScope();
+        var provider = builder.Services.BuildServiceProvider();
+        var scope = provider.CreateScope();
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ResultEndpointProfile>>();
 
@@ -31,7 +31,10 @@ public static class SetupResults
             var result = context.Result;
 
             if (result.HasError<ForbiddenError>(out var forbiddenErrors))
-                return new UnauthorizedObjectResult(new ProblemDetails { Detail = forbiddenErrors.First().Message });
+                return new ObjectResult(new ProblemDetails { Detail = forbiddenErrors.First().Message })
+                {
+                    StatusCode = StatusCodes.Status403Forbidden
+                };
 
             if (result.HasError<NotFoundError>(out var notFoundErrors))
                 return new NotFoundObjectResult(new ProblemDetails { Detail = notFoundErrors.First().Message });
@@ -43,7 +46,7 @@ public static class SetupResults
                 return new UnauthorizedResult();
 
             if (result.IsFailed)
-                _logger.LogError("Unhandled error result: @Result", new { Result = result });
+                _logger.LogError("Unhandled error result: {Result}", new { Result = result });
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }

@@ -40,6 +40,12 @@ public class AuthService
         if (userResult.IsFailed)
             return Result.Fail(userResult.Errors);
 
+        var passwordVerificationResult =
+            await _userRepository.VerifyUserPassword(userResult.Value, userLoginModel.Password);
+
+        if (passwordVerificationResult.IsFailed)
+            return Result.Fail(passwordVerificationResult.Errors);
+
         var session = _sessionRepository.CreateNewSession(userResult.Value.Id, _jwtSettings.RefreshTokenLifetime);
 
         var accessTokenResult = _tokenService.IssueAccessToken(userResult.Value, session);
@@ -48,7 +54,8 @@ public class AuthService
         if (accessTokenResult.IsFailed || refreshTokenResult.IsFailed)
             return CustomErrors.AuthError("Could not issue token");
 
-        return _sessionRepository.UpdateRefreshToken(session.Id, refreshTokenResult.Value, DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifetime))
+        return _sessionRepository.UpdateRefreshToken(session.Id, refreshTokenResult.Value,
+                DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifetime))
             .Bind<LoginResultDto>(
                 () => new LoginResultDto
                 {
@@ -92,7 +99,8 @@ public class AuthService
             return Result.Fail(new ValidationError("Could not refresh token"));
 
         return _sessionRepository
-            .UpdateRefreshToken(session.Id, newRefreshTokenResult.Value, DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifetime))
+            .UpdateRefreshToken(session.Id, newRefreshTokenResult.Value,
+                DateTime.UtcNow.Add(_jwtSettings.RefreshTokenLifetime))
             .Bind<LoginResultDto>(() => new LoginResultDto
             {
                 Token = newAccessTokenResult.Value,

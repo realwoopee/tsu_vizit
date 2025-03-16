@@ -14,7 +14,7 @@ public static class UserDtoConverters
         {
             FullName = model.FullName,
             Email = model.Email,
-            StudentIdNumber = model.StudentIdNumber,
+            StudentIdNumber = model.StudentIdNumber
         };
     }
 
@@ -37,7 +37,7 @@ public static class UserDtoConverters
             CanCreate = userPermissions.CanCreate,
             CanCheck = userPermissions.CanCheck,
             CanApprove = userPermissions.CanApprove,
-            IsAdmin = userPermissions.IsAdmin,
+            IsAdmin = userPermissions.IsAdmin
         };
     }
 

@@ -14,15 +14,15 @@ namespace TSU.Vizit.Persistence.Migrations
             migrationBuilder.DropColumn(
                 name: "CanApprove",
                 table: "Users");
-
+            
             migrationBuilder.DropColumn(
                 name: "CanCheck",
                 table: "Users");
-
+            
             migrationBuilder.DropColumn(
                 name: "CanCreate",
                 table: "Users");
-
+            
             migrationBuilder.DropColumn(
                 name: "IsAdmin",
                 table: "Users");

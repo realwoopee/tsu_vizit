@@ -51,7 +51,10 @@ public class AbsenceRequestService(
             .FailIf(absenceRequest.Value.CreatedById != curUserId && !userPermissions.Value.IsAdmin,
                 new ForbiddenError("User does not have permission to delete this absence request."))
             .Bind(async Task<Result> () =>
-                await _absenceRequestRepository.DeleteAbsenceRequest(absenceRequestId));
+            {
+                await _documentRepository.DeleteAttachedDocuments(absenceRequestId);
+                return await _absenceRequestRepository.DeleteAbsenceRequest(absenceRequestId);
+            });
     }
 
     public async Task<Result<AbsenceRequestDto>> EditAbsenceRequest(Guid id, EditAbsenceRequestModel model,

@@ -1,15 +1,18 @@
+using FluentResults;
 using FluentResults.Extensions.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TSU.Vizit.Application.Features.Documents.Dto;
+using TSU.Vizit.Application.Infrastructure.Auth;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Application.Features.Documents;
 
 [ApiController]
 [Authorize]
 [Route("api/document")]
-public class DocumentController(DocumentService _documentService) : ControllerBase
+public class DocumentController(DocumentService _documentService, UserAccessor _userAccessor) : ControllerBase
 {
     [HttpPost("/api/absence/{absenceId}/attach")]
     public async Task<ActionResult<Document>> AttachDocument(Guid absenceId, IFormFile file)
@@ -18,5 +21,13 @@ public class DocumentController(DocumentService _documentService) : ControllerBa
         await file.CopyToAsync(memoryStream);
         
         return await _documentService.CreateDocument(absenceId, memoryStream.ToArray()).ToActionResult();
+    }
+    
+    [HttpPost("/api/absence/{absenceId}/delete")]
+    public async Task<ActionResult> DeleteDocument(Guid docId)
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result> (userId) => await _documentService.DeleteDocument(docId, userId))
+            .ToActionResult();
     }
 }

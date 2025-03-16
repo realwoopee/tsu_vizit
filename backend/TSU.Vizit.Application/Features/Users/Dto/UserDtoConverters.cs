@@ -37,7 +37,8 @@ public static class UserDtoConverters
             CanCreate = userPermissions.CanCreate,
             CanCheck = userPermissions.CanCheck,
             CanApprove = userPermissions.CanApprove,
-            IsAdmin = userPermissions.IsAdmin
+            IsAdmin = userPermissions.IsAdmin,
+            CanExportAll = userPermissions.CanExportAll,
         };
     }
 

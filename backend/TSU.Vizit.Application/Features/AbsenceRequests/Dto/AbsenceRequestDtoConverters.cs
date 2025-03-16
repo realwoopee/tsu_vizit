@@ -48,4 +48,14 @@ public static class AbsenceRequestDtoConverters
             TotalCount = model.TotalCount
         };
     }
+
+    public static AbsenceRequest ToEntity(this EditAbsenceRequestModel model)
+    {
+        return new AbsenceRequest
+        {
+            AbsencePeriodStart = model.AbsencePeriodStart,
+            AbsencePeriodFinish = model.AbsencePeriodFinish,
+            Reason = model.Reason
+        };
+    }
 }

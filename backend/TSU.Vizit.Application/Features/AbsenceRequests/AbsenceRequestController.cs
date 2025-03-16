@@ -15,7 +15,7 @@ namespace TSU.Vizit.Application.Features.AbsenceRequests;
 
 [Authorize]
 [ApiController]
-[Route("api/absence_request")]
+[Route("api/")]
 public class AbsenceRequestController(AbsenceRequestService _absenceRequestService, UserAccessor _userAccessor, UserService _userService): ControllerBase
 {
     
@@ -26,11 +26,20 @@ public class AbsenceRequestController(AbsenceRequestService _absenceRequestServi
     }
     
     [HttpPost("absence_request")]
-    public async Task<ActionResult<List<AbsenceRequestDto>>> CreateAbsenceRequest([FromBody] CreateAbsenceRequestModel model)
+    public async Task<ActionResult<AbsenceRequestDto>> CreateAbsenceRequest([FromBody] CreateAbsenceRequestModel model)
     {
         return await _userAccessor.GetUserId()
             .Bind(async Task<Result<AbsenceRequestDto>> (userId) =>
                 await _absenceRequestService.CreateAbsenceRequest(model, userId))
+            .ToActionResult();
+    }
+    
+    [HttpPut("{id}/absence_request")]
+    public async Task<ActionResult<AbsenceRequestDto>> EditAbsenceRequest([FromBody] EditAbsenceRequestModel model, Guid id)
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<AbsenceRequestDto>> (userId) =>
+                await _absenceRequestService.EditAbsenceRequest(id, model, userId))
             .ToActionResult();
     }
     
@@ -41,6 +50,5 @@ public class AbsenceRequestController(AbsenceRequestService _absenceRequestServi
             .Bind(async Task<Result> (userId) => await _absenceRequestService.DeleteAbsenceRequestById(absenceRequestId, userId))
             .ToActionResult();
     }
-    
     
 }

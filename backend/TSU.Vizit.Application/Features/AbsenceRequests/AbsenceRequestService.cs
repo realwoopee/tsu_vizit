@@ -1,5 +1,6 @@
 using FluentResults;
 using FluentResults.Extensions;
+using FluentResults.Extensions.AspNetCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TSU.Vizit.Application.Features.AbsenceRequests.Dto;
 using TSU.Vizit.Application.Features.Users;
@@ -60,5 +61,27 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
             return CustomErrors.Forbidden("User does not have permission to delete this absence request.");
         
         return await _absenceRequestRepository.DeleteAbsenceRequest(absenceRequestId);
+    }
+
+    public async Task<Result<AbsenceRequestDto>> EditAbsenceRequest(Guid id, EditAbsenceRequestModel model, Guid curUserId)
+    {
+        var absenceRequestResult = await _absenceRequestRepository.GetAbsenceRequestById(id);
+        if (absenceRequestResult.IsFailed)
+            return Result.Fail(absenceRequestResult.Errors);
+
+        var userPermissions = await _userService.GetUserPermissions(curUserId);
+        if (userPermissions.IsFailed)
+            return Result.Fail(userPermissions.Errors);
+        
+        if (absenceRequestResult.Value.CreatedById != curUserId && !userPermissions.Value.IsAdmin)
+            return CustomErrors.Forbidden("User does not have permission to edit this absence request.");
+        
+        var absenceRequest = absenceRequestResult.Value;
+        absenceRequest.Reason = model.Reason;
+        absenceRequest.AbsencePeriodStart = model.AbsencePeriodStart;
+        absenceRequest.AbsencePeriodFinish = model.AbsencePeriodFinish;
+
+        return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
+            .Map(ar => ar.ToDto());
     }
 }

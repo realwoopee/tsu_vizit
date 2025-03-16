@@ -25,21 +25,4 @@ public class CsvExportRepository(VizitDbContext dbContext) : ICsvExportRepositor
         
         return Result.Ok(await query.ToListAsync());
     }
-
-    public async Task<Result<List<AbsenceRequest>>> ExportPersonalAbsenceRequests(Guid userId, ExportPersonalAbsenceRequestListFilter filter)
-    {
-        var query = dbContext.AbsenceRequest.AsQueryable();
-        
-        if (filter.FinalisedById == null)
-            query = query.Where(ar => ar.FinalisedById == filter.FinalisedById);
-        
-        if (filter.Reason == null)
-            query = query.Where(ar => ar.Reason == filter.Reason);
-        
-        if (filter.FinalStatus == null)
-            query = query.Where(ar => ar.FinalStatus == filter.FinalStatus);
-        
-        query = query.Where(ar => ar.CreatedById == userId);
-        return Result.Ok(await query.ToListAsync());
-    }
 }

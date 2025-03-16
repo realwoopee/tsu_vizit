@@ -33,15 +33,4 @@ public class CsvExportService(ICsvExportRepository _csvExportRepository, UserSer
             .Map(list => list.Select(ar => ar.ToDto()).ToList());
     }
     
-    public async Task<Result<List<AbsenceRequestDto>>> ExportPersonalAbsenceRequests(Guid curUserId, ExportPersonalAbsenceRequestModel model)
-    {
-        var filter = new ExportPersonalAbsenceRequestListFilter
-        {
-            FinalisedById = model.FinalisedById,
-            FinalStatus = model.FinalStatus,
-            Reason = model.Reason
-        };
-        return await _csvExportRepository.ExportPersonalAbsenceRequests(curUserId, filter)
-            .Map(list => list.Select(ar => ar.ToDto()).ToList());
-    }
 }

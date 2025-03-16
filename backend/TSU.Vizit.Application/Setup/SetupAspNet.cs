@@ -15,6 +15,14 @@ public class SetupAspNet
             .AddControllers(AddGlobalFilters)
             .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); }
             );
+        
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", config =>
+                config.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
+        });
     }
 
     private static void AddGlobalFilters(MvcOptions options)

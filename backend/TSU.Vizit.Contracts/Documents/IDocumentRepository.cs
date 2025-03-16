@@ -1,4 +1,3 @@
-
 using FluentResults;
 using TSU.Vizit.Domain;
 

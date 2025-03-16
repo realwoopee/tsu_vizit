@@ -43,6 +43,5 @@ public class VizitDbContext : DbContext
 
         modelBuilder.Entity<AbsenceRequest>()
             .HasKey(ar => new { ar.Id });
-        
     }
 }

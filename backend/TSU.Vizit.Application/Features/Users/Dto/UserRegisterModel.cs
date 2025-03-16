@@ -9,6 +9,6 @@ public class UserRegisterModel
     [Required] [EmailAddress] public string Email { get; set; }
 
     [Required] [MinLength(6)] public string Password { get; set; }
-    
+
     [StringLength(6, MinimumLength = 6)] public string StudentIdNumber { get; set; }
 }

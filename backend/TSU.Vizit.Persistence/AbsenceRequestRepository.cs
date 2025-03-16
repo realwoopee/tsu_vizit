@@ -7,7 +7,7 @@ using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Persistence;
 
-public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequestRepository
+public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceRequestRepository
 {
     public async Task<Result<AbsenceRequest>> GetAbsenceRequestById(Guid id)
     {
@@ -26,7 +26,7 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
     public async Task<Result<AbsenceRequest>> EditAbsenceRequest(AbsenceRequest newAbsenceRequest)
     {
         var data = await dbContext.AbsenceRequest.FirstOrDefaultAsync(ar => ar.Id == newAbsenceRequest.Id);
-        
+
         if (data is null)
             return CustomErrors.NotFound("AbsenceRequest not found");
 
@@ -35,20 +35,21 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
         return Result.Ok(data);
     }
 
-    public async Task<Result<AbsenceRequestPagedList>> GetAllAbsenceRequests(AbsenceRequestListFilter filter, AbsenceRequestSorting? sorting,
+    public async Task<Result<AbsenceRequestPagedList>> GetAllAbsenceRequests(AbsenceRequestListFilter filter,
+        AbsenceRequestSorting? sorting,
         PaginationModel? pagination)
     {
-        var query = dbContext.AbsenceRequest.AsQueryable();
+        var query = dbContext.AbsenceRequest.AsNoTracking().AsQueryable();
 
         if (filter.CreatedById != null)
             query = query.Where(ar => ar.CreatedById == filter.CreatedById);
-        
+
         if (filter.FinalisedById != null)
             query = query.Where(ar => ar.FinalisedById == filter.FinalisedById);
-        
+
         if (filter.Reason != null)
             query = query.Where(ar => ar.Reason == filter.Reason);
-        
+
         if (filter.FinalStatus != null)
             query = query.Where(ar => ar.FinalStatus == filter.FinalStatus);
 
@@ -61,7 +62,7 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
             null => query,
             _ => throw new ArgumentOutOfRangeException(nameof(sorting), sorting, $"Invalid sorting value: {sorting}")
         };
-        
+
         if (pagination is not null)
             query = query
                 .Skip(pagination.Offset)
@@ -77,10 +78,10 @@ public class AbsenceRequestRepository(VizitDbContext dbContext): IAbsenceRequest
     public async Task<Result> DeleteAbsenceRequest(Guid absenceRequestId)
     {
         var data = await dbContext.AbsenceRequest.FirstOrDefaultAsync(ar => ar.Id == absenceRequestId);
-        
+
         if (data is null)
             return CustomErrors.NotFound("AbsenceRequest not found");
-        
+
         dbContext.AbsenceRequest.Remove(data);
         await dbContext.SaveChangesAsync();
         return Result.Ok();

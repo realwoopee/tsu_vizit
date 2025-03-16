@@ -16,16 +16,16 @@ namespace TSU.Vizit.Persistence;
 
 public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _passwordHasher) : IUserRepository
 {
-
     public async Task<Result<User>> GetUserById(Guid id)
     {
         var data = await dbContext.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Id == id);
-        return data is not null ? Result.Ok(data) : CustomErrors.NotFound("User not found");
+        return data is not null ? data : CustomErrors.NotFound("User not found");
     }
 
     public async Task<Result<User>> GetUserByStudentCardId(string studentIdNumber)
     {
-        var data = await dbContext.Users.AsNoTracking().FirstOrDefaultAsync(user => user.StudentIdNumber == studentIdNumber);
+        var data = await dbContext.Users.AsNoTracking()
+            .FirstOrDefaultAsync(user => user.StudentIdNumber == studentIdNumber);
         return data is not null ? data : CustomErrors.NotFound("User not found");
     }
 
@@ -35,15 +35,15 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
         return data is not null ? data : CustomErrors.NotFound("User not found");
     }
 
-    public async Task<Result> ConfirmUserPassword(User user, string providedPassword)
+    public async Task<Result> VerifyUserPassword(User user, string providedPassword)
     {
-        var data = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
-        
+        var data = await dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == user.Email);
+
         if (data is null)
             return CustomErrors.NotFound("User not found");
-        
+
         var result = _passwordHasher.VerifyHashedPassword(user, data.PasswordHash, providedPassword);
-        
+
         if (result == PasswordVerificationResult.Failed)
             return CustomErrors.ValidationError("Invalid password");
 
@@ -53,7 +53,7 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
     public async Task<Result<User>> EditUser(Guid id, User newUser)
     {
         var data = await dbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
-        
+
         if (data is null)
             return CustomErrors.NotFound("User not found");
 
@@ -99,19 +99,18 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
         UserSorting? sorting,
         PaginationModel? pagination)
     {
-        var query = dbContext.Users.AsQueryable();
-        
+        var query = dbContext.Users.AsNoTracking().AsQueryable();
+
         if (!string.IsNullOrWhiteSpace(filter?.Email))
             query = query.Where(user => user.Email.Contains(filter.Email));
-        
+
         if (!string.IsNullOrWhiteSpace(filter?.StudentIdNumber))
             query = query.Where(user => user.StudentIdNumber.Contains(filter.StudentIdNumber));
-        
+
         if (!string.IsNullOrWhiteSpace(filter?.FullName))
             query = query.Where(user => user.FullName.Contains(filter.FullName));
 
         if (filter?.Role is not null)
-        {
             query = filter.Role switch
             {
                 UserRole.Admin => query.Where(user => user.UserRole == UserRole.Admin),
@@ -120,10 +119,9 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
                 UserRole.Student => query.Where(user => user.UserRole == UserRole.Student),
                 _ => query
             };
-        }
-        
+
         var totalCount = await query.CountAsync();
-        
+
         query = sorting switch
         {
             UserSorting.NameAsc => query.OrderBy(user => user.FullName),

@@ -7,21 +7,22 @@ using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Application.Features.Documents;
 
-public class DocumentService(IDocumentRepository _documentRepository, IAbsenceRequestRepository _absenceRequestRepository)
+public class DocumentService(
+    IDocumentRepository _documentRepository,
+    IAbsenceRequestRepository _absenceRequestRepository)
 {
-    public async Task<Result<Document>> CreateDocument(AttachDocumentDto dto)
+    public async Task<Result<Document>> CreateDocument(Guid absenceRequestId, byte[] data)
     {
-        var absenceRequest = await _absenceRequestRepository.GetAbsenceRequestById(dto.AbsenceRequestId);
-        
+        var absenceRequest = await _absenceRequestRepository.GetAbsenceRequestById(absenceRequestId);
+
         if (absenceRequest.IsFailed)
             return Result.Fail(absenceRequest.Errors);
-        
+
         var document = new Document
         {
-            AbsenceRequestId = dto.AbsenceRequestId,
-            Attachment = dto.Attachment
+            AbsenceRequestId = absenceRequestId,
+            Attachment = data
         };
         return await _documentRepository.CreateDocument(document);
     }
-
 }

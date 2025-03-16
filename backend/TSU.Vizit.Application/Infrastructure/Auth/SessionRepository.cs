@@ -55,5 +55,5 @@ public class SessionRepository : ISessionRepository
         session.RefreshToken = refreshToken;
         session.ExpiresAfter = expiresAt;
         return Result.Ok();
-    } 
+    }
 }

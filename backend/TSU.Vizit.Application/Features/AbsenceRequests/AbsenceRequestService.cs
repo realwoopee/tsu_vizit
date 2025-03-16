@@ -12,7 +12,10 @@ using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Application.Features.AbsenceRequests;
 
-public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepository, IDocumentRepository _documentRepository, UserService _userService)
+public class AbsenceRequestService(
+    IAbsenceRequestRepository _absenceRequestRepository,
+    IDocumentRepository _documentRepository,
+    UserService _userService)
 {
     public async Task<Result<AbsenceRequestPagedListDto>> GetAllAbsenceRequests(GetAllAbsenceRequestsModel model)
     {
@@ -24,27 +27,14 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
             Reason = model.Reason
         };
 
-        var temp = await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination);
-        
-        var result = temp.Value.ToDto();
-        return result;
+        return await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination)
+            .Bind(Result<AbsenceRequestPagedListDto> (x) => x.ToDto());
     }
-    
+
     public async Task<Result<AbsenceRequestDto>> CreateAbsenceRequest(CreateAbsenceRequestModel model, Guid curUserId)
     {
-        var createdRequestResult = await _absenceRequestRepository.CreateAbsenceRequest(model.ToEntity(curUserId));
-        
-        var dto = createdRequestResult.Value.ToDto();
-        // if (model.Attachment != null)
-        // {
-        //     var document = new Document
-        //     {
-        //         AbsenceRequestId = dto.Id,
-        //         Attachment = model.Attachment
-        //     };
-        //     await _documentRepository.CreateDocument(document);
-        // }
-        return dto;
+        return await _absenceRequestRepository.CreateAbsenceRequest(model.ToEntity(curUserId))
+            .Bind(Result<AbsenceRequestDto> (data) => data.ToDto());
     }
 
     public async Task<Result> DeleteAbsenceRequestById(Guid absenceRequestId, Guid curUserId)
@@ -56,14 +46,16 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
-        
-        if (absenceRequest.Value.CreatedById != curUserId && !userPermissions.Value.IsAdmin)
-            return CustomErrors.Forbidden("User does not have permission to delete this absence request.");
-        
-        return await _absenceRequestRepository.DeleteAbsenceRequest(absenceRequestId);
+
+        return await Result
+            .FailIf(absenceRequest.Value.CreatedById != curUserId && !userPermissions.Value.IsAdmin,
+                new ForbiddenError("User does not have permission to delete this absence request."))
+            .Bind(async Task<Result> () =>
+                await _absenceRequestRepository.DeleteAbsenceRequest(absenceRequestId));
     }
 
-    public async Task<Result<AbsenceRequestDto>> EditAbsenceRequest(Guid id, EditAbsenceRequestModel model, Guid curUserId)
+    public async Task<Result<AbsenceRequestDto>> EditAbsenceRequest(Guid id, EditAbsenceRequestModel model,
+        Guid curUserId)
     {
         var absenceRequestResult = await _absenceRequestRepository.GetAbsenceRequestById(id);
         if (absenceRequestResult.IsFailed)
@@ -72,10 +64,10 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
-        
+
         if (absenceRequestResult.Value.CreatedById != curUserId && !userPermissions.Value.IsAdmin)
             return CustomErrors.Forbidden("User does not have permission to edit this absence request.");
-        
+
         var absenceRequest = absenceRequestResult.Value;
         absenceRequest.Reason = model.Reason;
         absenceRequest.AbsencePeriodStart = model.AbsencePeriodStart;
@@ -88,7 +80,6 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
     public async Task<Result<AbsenceRequestDto>> EditAbsenceRequestStatus(Guid absenceRequestId,
         EditAbsenceRequestStatusDto dto, Guid curUserId)
     {
-        
         var absenceRequestResult = await _absenceRequestRepository.GetAbsenceRequestById(absenceRequestId);
         if (absenceRequestResult.IsFailed)
             return Result.Fail(absenceRequestResult.Errors);
@@ -96,10 +87,10 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
-        
+
         if (!(userPermissions.Value.IsAdmin || userPermissions.Value.CanApprove))
             return CustomErrors.Forbidden("User does not have permission to edit the result of this absence request.");
-        
+
         var absenceRequest = absenceRequestResult.Value;
         absenceRequest.FinalStatus = dto.status;
 

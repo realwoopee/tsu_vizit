@@ -12,15 +12,16 @@ namespace TSU.Vizit.Application.Features.CsvExport;
 
 public class CsvExportService(ICsvExportRepository _csvExportRepository, UserService _userService)
 {
-    public async Task<Result<List<AbsenceRequestDto>>> ExportAbsenceRequests(Guid curUserId, ExportAllAbsenceRequestsModel model)
+    public async Task<Result<List<AbsenceRequestDto>>> ExportAbsenceRequests(Guid curUserId,
+        ExportAllAbsenceRequestsModel model)
     {
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
-        
+
         if (!userPermissions.Value.CanExportAll)
             return CustomErrors.Forbidden("You do not have permission to export all absence requests.");
-        
+
         var filter = new ExportAllAbsenceRequestListFilter
         {
             CreatedById = model.CreatedById,
@@ -28,9 +29,8 @@ public class CsvExportService(ICsvExportRepository _csvExportRepository, UserSer
             FinalStatus = model.FinalStatus,
             Reason = model.Reason
         };
-        
+
         return await _csvExportRepository.ExportAbsenceRequests(filter)
             .Map(list => list.Select(ar => ar.ToDto()).ToList());
     }
-    
 }

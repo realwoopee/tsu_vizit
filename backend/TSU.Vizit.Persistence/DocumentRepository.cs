@@ -5,11 +5,11 @@ using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Persistence;
 
-public class DocumentRepository(VizitDbContext dbContext): IDocumentRepository
+public class DocumentRepository(VizitDbContext dbContext) : IDocumentRepository
 {
     public async Task<Result<List<Document>>> GetAllAttachments(Guid AbsenceRequestId)
     {
-        var documents = dbContext.Document.AsQueryable();
+        var documents = dbContext.Document.AsNoTracking().AsQueryable();
         documents = documents.Where(d => d.AbsenceRequestId == AbsenceRequestId);
         var result = await documents.ToListAsync();
         return Result.Ok(result);
@@ -22,4 +22,3 @@ public class DocumentRepository(VizitDbContext dbContext): IDocumentRepository
         return Result.Ok(document);
     }
 }
-

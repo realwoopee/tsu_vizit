@@ -34,8 +34,8 @@ public static class SetupResults
                 return new ObjectResult(new ProblemDetails { Detail = forbiddenErrors.First().Message })
                 {
                     StatusCode = StatusCodes.Status403Forbidden
-                };            
-            
+                };
+
             if (result.HasError<NotFoundError>(out var notFoundErrors))
                 return new NotFoundObjectResult(new ProblemDetails { Detail = notFoundErrors.First().Message });
 

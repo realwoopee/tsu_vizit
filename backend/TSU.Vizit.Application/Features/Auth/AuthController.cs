@@ -10,7 +10,6 @@ namespace TSU.Vizit.Application.Features.Auth;
 [Route("api/auth")]
 public class AuthController(AuthService authService, ILogger<AuthController> logger)
 {
-    
     [AllowAnonymous]
     [HttpPost("develop/insta_login")]
     public async Task<ActionResult<LoginResultDto>> InstaLogin()
@@ -28,7 +27,7 @@ public class AuthController(AuthService authService, ILogger<AuthController> log
         };
         return await authService.LoginUser(userLoginDto).ToActionResult();
     }
-    
+
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<LoginResultDto>> Login(UserLoginModel userLoginDto)
@@ -42,7 +41,7 @@ public class AuthController(AuthService authService, ILogger<AuthController> log
     {
         return await authService.RefreshUserToken(refreshToken).ToActionResult();
     }
-    
+
     [AllowAnonymous]
     [HttpPost("change-password")]
     public async Task<ActionResult> GetAllUsers([FromBody] UserChangePasswordModel model)

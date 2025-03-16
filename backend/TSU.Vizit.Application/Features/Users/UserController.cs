@@ -16,7 +16,6 @@ namespace TSU.Vizit.Application.Features.Users;
 [Route("api/account")]
 public class UserController(UserAccessor _userAccessor, UserService _userService) : ControllerBase
 {
-    
     [HttpGet("permissions")]
     public async Task<ActionResult<UserPermissionsDto>> GetPermissions()
     {
@@ -24,7 +23,7 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
             .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserPermissions(userId))
             .ToActionResult();
     }
-    
+
     [HttpGet("profile")]
     public async Task<ActionResult<UserDto>> GetProfile()
     {
@@ -32,15 +31,16 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
             .Bind(async Task<Result<UserDto>> (userId) => await _userService.GetUserById(userId))
             .ToActionResult();
     }
-    
+
     [HttpPut("profile")]
     public async Task<ActionResult<UserDto>> EditProfile([FromBody] UserEditProfileModel model)
-    {// Does this require extra authentication?
+    {
+        // Does this require extra authentication?
         return await _userAccessor.GetUserId()
             .Bind(async Task<Result<UserDto>> (userId) => await _userService.EditUserById(userId, model))
             .ToActionResult();
     }
-    
+
     [HttpPut("{id}/profile")]
     public async Task<ActionResult<UserDto>> EditProfile(Guid id, [FromBody] UserEditProfileModel model)
     {
@@ -52,10 +52,10 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
             .Bind(async Task<Result<UserDto>> () => await _userService.EditUserById(id, model))
             .ToActionResult();
     }
-    
+
     //TODO: return user's role
-    
-    
+
+
     [HttpPut("{id}/profile/role")]
     public async Task<ActionResult<UserPermissionsDto>> EditUserRole(Guid id, UserRole userRole)
     {
@@ -63,10 +63,10 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
         return await _userAccessor.GetUserId()
             .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserPermissions(userId))
             .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
-            .Bind(async () => await _userService.EditUserRole(new UserEditRoleModel{ Id = id, UserRole = userRole }))
+            .Bind(async () => await _userService.EditUserRole(new UserEditRoleModel { Id = id, UserRole = userRole }))
             .ToActionResult();
     }
-    
+
     [HttpGet("profiles")]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers([FromQuery] GetAllUsersModel model)
     {
@@ -76,5 +76,4 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
             .Bind(async () => await _userService.GetAllUsers(model))
             .ToActionResult();
     }
-  
 }

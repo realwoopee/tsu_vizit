@@ -36,7 +36,7 @@ public class UserService(IUserRepository userRepository)
     {
         return await userRepository.GetUserById(userId).Map(u => u.UserRole.ToPermissions().ToDto());
     }
-    
+
     public async Task<Result<UserPagedListDto>> GetAllUsers(GetAllUsersModel model)
     {
         var filter = new UserListFilter
@@ -46,12 +46,12 @@ public class UserService(IUserRepository userRepository)
             Role = model.Role,
             StudentIdNumber = model.StudentIdNumber
         };
-        
-        
+
+
         return await userRepository.GetAllUsers(filter, model.Sorting, model.Pagination)
             .Map(u => u.ToDto());
     }
-    
+
     public async Task<Result<UserPermissionsDto>> EditUserRole(UserEditRoleModel model)
     {
         return await userRepository.EditUserRole(model.Id, model.UserRole).Map(u => u.UserRole.ToPermissions().ToDto());

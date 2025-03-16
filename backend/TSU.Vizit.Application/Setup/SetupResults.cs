@@ -30,9 +30,9 @@ public static class SetupResults
         {
             var result = context.Result;
 
-            if (result.HasError<ForbiddenError>(out var forbiddenErrors))
-                return new UnauthorizedObjectResult(new ProblemDetails { Detail = forbiddenErrors.First().Message });
-
+            if (result.HasError<ForbiddenError>())
+                return new StatusCodeResult(StatusCodes.Status403Forbidden);
+            
             if (result.HasError<NotFoundError>(out var notFoundErrors))
                 return new NotFoundObjectResult(new ProblemDetails { Detail = notFoundErrors.First().Message });
 

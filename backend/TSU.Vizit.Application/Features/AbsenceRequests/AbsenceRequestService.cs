@@ -35,15 +35,15 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         var createdRequestResult = await _absenceRequestRepository.CreateAbsenceRequest(model.ToEntity(curUserId));
         
         var dto = createdRequestResult.Value.ToDto();
-        if (model.Attachment != null)
-        {
-            var document = new Document
-            {
-                AbsenceRequestId = dto.Id,
-                Attachment = model.Attachment
-            };
-            await _documentRepository.CreateDocument(document);
-        }
+        // if (model.Attachment != null)
+        // {
+        //     var document = new Document
+        //     {
+        //         AbsenceRequestId = dto.Id,
+        //         Attachment = model.Attachment
+        //     };
+        //     await _documentRepository.CreateDocument(document);
+        // }
         return dto;
     }
 

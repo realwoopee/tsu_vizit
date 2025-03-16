@@ -1,10 +1,8 @@
 "use client"
 
-import type React from "react"
-
-import { useEffect, useRef } from "react"
+import React, { useEffect, useRef } from "react"
 import { Check, FileUp, Trash2, X } from "lucide-react"
-import "../styles/dropdown-menu.css"
+import { Dropdown } from "react-bootstrap"
 
 type UserRole = "student" | "teacher" | "admin"
 
@@ -12,7 +10,7 @@ interface DropdownMenuProps {
   isOpen: boolean
   onClose: () => void
   userRole: UserRole
-  toggleRef?: React.RefObject<HTMLButtonElement> // Добавляем ref для кнопки-переключателя
+  toggleRef?: React.RefObject<HTMLButtonElement>
 }
 
 export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef }: DropdownMenuProps) => {
@@ -20,7 +18,6 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef }: DropdownM
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Проверяем, что клик не по меню И не по кнопке-переключателю
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target as Node) &&
@@ -51,44 +48,44 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef }: DropdownM
       case "student":
         return (
           <>
-            <button className="dropdown-item" onClick={() => handleAction("attach")}>
+            <Dropdown.Item onClick={() => handleAction("attach")}>
               <span>Прикрепить файл</span>
               <FileUp size={16} className="icon-right" />
-            </button>
-            <button className="dropdown-item delete" onClick={() => handleAction("delete-file")}>
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleAction("delete-file")} className="delete">
               <span>Удалить файл</span>
               <Trash2 size={16} className="icon-right" />
-            </button>
+            </Dropdown.Item>
           </>
         )
       case "teacher":
         return (
           <>
-            <button className="dropdown-item" onClick={() => handleAction("confirm")}>
+            <Dropdown.Item onClick={() => handleAction("confirm")}>
               <span>Подтвердить</span>
               <Check size={16} className="icon-right" />
-            </button>
-            <button className="dropdown-item" onClick={() => handleAction("reject")}>
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleAction("reject")}>
               <span>Отклонить</span>
               <X size={16} className="icon-right" />
-            </button>
+            </Dropdown.Item>
           </>
         )
       case "admin":
         return (
           <>
-            <button className="dropdown-item" onClick={() => handleAction("confirm")}>
+            <Dropdown.Item onClick={() => handleAction("confirm")}>
               <span>Подтвердить</span>
               <Check size={16} className="icon-right" />
-            </button>
-            <button className="dropdown-item" onClick={() => handleAction("reject")}>
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleAction("reject")}>
               <span>Отклонить</span>
               <X size={16} className="icon-right" />
-            </button>
-            <button className="dropdown-item delete" onClick={() => handleAction("delete-record")}>
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleAction("delete-record")} className="delete">
               <span>Удалить запись</span>
               <Trash2 size={16} className="icon-right" />
-            </button>
+            </Dropdown.Item>
           </>
         )
       default:
@@ -97,9 +94,8 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef }: DropdownM
   }
 
   return (
-    <div className="dropdown-menu" ref={menuRef}>
+    <Dropdown.Menu show={isOpen} ref={menuRef} className="dropdown-menu">
       {renderMenuItems()}
-    </div>
+    </Dropdown.Menu>
   )
 }
-

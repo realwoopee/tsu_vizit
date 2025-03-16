@@ -5,12 +5,14 @@
   padding: 3px 0;
   border-bottom: 1px solid #e0e0e0;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .pass-left-section {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 1;
 }
 
 .pass-status {
@@ -48,7 +50,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
-  max-width: 20vw;
+  max-width: 50%;
   color: #1e1e1e;
   font-size: 16px;
 }
@@ -57,6 +59,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 .pass-reason {
@@ -129,4 +133,71 @@
 
 .menu-container {
   position: relative;
+}
+
+@media (max-width: 768px) {
+  .pass-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .pass-left-section,
+  .pass-right-section {
+    width: 100%; 
+    justify-content: flex-start; 
+  }
+
+  .pass-fullname {
+    max-width: 100%; 
+  }
+
+  .pass-reason {
+    text-align: left; 
+  }
+}
+
+@media (max-width: 620px) {
+  .pass-status {
+    min-width: 80px;
+    font-size: 12px; 
+  }
+
+  .pass-fullname,
+  .pass-reason,
+  .pass-date {
+    font-size: 12px; 
+  }
+
+  .pass-right-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .pass-reason {
+    text-align: left;
+    min-width: auto;
+  }
+
+  .pass-date {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 320px) {
+  .pass-status {
+    min-width: 70px;
+    font-size: 10px;
+  }
+
+  .pass-fullname,
+  .pass-reason,
+  .pass-date {
+    font-size: 10px;
+  }
+
+  .pass-right-section {
+    gap: 5px;
+  }
 }

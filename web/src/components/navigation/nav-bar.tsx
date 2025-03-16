@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { LogOut } from "lucide-react"
-import "./nav-bar.css"
+import { Navbar, Container, Nav, Button } from "react-bootstrap"
+import "../../styles/nav-bar.css"
 
 type UserRole = "guest" | "student" | "admin"
 
@@ -11,44 +12,46 @@ interface NavBarProps {
 
 export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
   return (
-    <nav className="nav-bar">
-      <div className="nav-left">
-        <Link to="/" className="nav-logo-link">
-          <img src="/src/assets/logo.svg" alt="ТГУ логотип" className="nav-logo" />
-        </Link>
-      </div>
-
-      <div className="nav-right">
-        {userRole === "guest" ? (
-          <>
-            <Link to="/register" className="nav-button">
-              Регистрация
-            </Link>
-            <Link to="/login" className="nav-button">
-              Войти
-            </Link>
-          </>
-        ) : (
-          <>
-            {userRole === "admin" && (
-              <Link to="/users" className="nav-link">
-                Список пользователей
-              </Link>
-            )}
-            <Link to="/passes" className="nav-link">
-              Список пропусков
-            </Link>
-            <button className="nav-profile">
-              {userName || "Профиль"}
-            </button>
-            <button className="nav-button logout-button">
-              <LogOut size={20} />
-              <span>Выйти</span>
-            </button>
-          </>
-        )}
-      </div>
-    </nav>
+    <Navbar bg="primary" variant="dark" fixed="top" className="nav-bar">
+      <Container fluid>
+        <Navbar.Brand as={Link} to="/" className="nav-left">
+          <img
+            src="/src/assets/logo.svg"
+            alt="ТГУ логотип"
+            className="nav-logo"
+          />
+        </Navbar.Brand>
+        <Nav className="ms-auto nav-right">
+          {userRole === "guest" ? (
+            <>
+              <Nav.Link as={Link} to="/register" className="nav-button">
+                Регистрация
+              </Nav.Link>
+              <Nav.Link as={Link} to="/login" className="nav-button">
+                Войти
+              </Nav.Link>
+            </>
+          ) : (
+            <>
+              {userRole === "admin" && (
+                <Nav.Link as={Link} to="/users" className="nav-link">
+                  Список пользователей
+                </Nav.Link>
+              )}
+              <Nav.Link as={Link} to="/passes" className="nav-link">
+                Список пропусков
+              </Nav.Link>
+              <Button variant="link" className="nav-profile">
+                {userName || "Профиль"}
+              </Button>
+              <Button variant="link" className="nav-button logout-button">
+                <LogOut size={20} />
+                <span>Выйти</span>
+              </Button>
+            </>
+          )}
+        </Nav>
+      </Container>
+    </Navbar>
   )
 }
-

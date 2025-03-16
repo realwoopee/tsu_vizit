@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RegistrationPage from './pages/registrationPage';
 import LoginPage from './pages/loginPage';
+import MainPage from './pages/pass-list';
 
 const AppRouter: React.FC = () => {
   return (
@@ -10,6 +11,7 @@ const AppRouter: React.FC = () => {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<LoginPage />} />
+        <Route path="/main" element={<MainPage />} />
       </Routes>
     </Router>
   );

@@ -10,5 +10,5 @@ public class UserRegisterModel
 
     [Required] [MinLength(6)] public string Password { get; set; }
 
-    [StringLength(6, MinimumLength = 6)] public string StudentIdNumber { get; set; }
+    [StringLength(6, MinimumLength = 6)] public string? StudentIdNumber { get; set; } = null;
 }

@@ -14,16 +14,8 @@ namespace TSU.Vizit.Application.Features.Users;
 [ApiController]
 [Authorize]
 [Route("api/account")]
-public class UserController : ControllerBase
+public class UserController(UserAccessor _userAccessor, UserService _userService) : ControllerBase
 {
-    private readonly UserAccessor _userAccessor;
-    private readonly UserService _userService;
-
-    public UserController(UserService userService, UserAccessor userAccessor)
-    {
-        _userService = userService;
-        _userAccessor = userAccessor;
-    }
     
     [HttpGet("permissions")]
     public async Task<ActionResult<UserPermissionsDto>> GetPermissions()

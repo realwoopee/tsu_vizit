@@ -7,14 +7,38 @@ namespace TSU.Vizit.Persistence;
 
 public class CsvExportRepository(VizitDbContext dbContext) : ICsvExportRepository
 {
-    public async Task<Result<List<AbsenceRequest>>> ExportAbsenceRequests()
-    {
-        return Result.Ok(await dbContext.AbsenceRequest.ToListAsync());
-    }
-
-    public async Task<Result<List<AbsenceRequest>>> ExportPersonalAbsenceRequests(Guid userId)
+    public async Task<Result<List<AbsenceRequest>>> ExportAbsenceRequests(ExportAllAbsenceRequestListFilter filter)
     {
         var query = dbContext.AbsenceRequest.AsQueryable();
+        
+        if (filter.CreatedById == null)
+            query = query.Where(ar => ar.CreatedById == filter.CreatedById);
+        
+        if (filter.FinalisedById == null)
+            query = query.Where(ar => ar.FinalisedById == filter.FinalisedById);
+        
+        if (filter.Reason == null)
+            query = query.Where(ar => ar.Reason == filter.Reason);
+        
+        if (filter.FinalStatus == null)
+            query = query.Where(ar => ar.FinalStatus == filter.FinalStatus);
+        
+        return Result.Ok(await query.ToListAsync());
+    }
+
+    public async Task<Result<List<AbsenceRequest>>> ExportPersonalAbsenceRequests(Guid userId, ExportPersonalAbsenceRequestListFilter filter)
+    {
+        var query = dbContext.AbsenceRequest.AsQueryable();
+        
+        if (filter.FinalisedById == null)
+            query = query.Where(ar => ar.FinalisedById == filter.FinalisedById);
+        
+        if (filter.Reason == null)
+            query = query.Where(ar => ar.Reason == filter.Reason);
+        
+        if (filter.FinalStatus == null)
+            query = query.Where(ar => ar.FinalStatus == filter.FinalStatus);
+        
         query = query.Where(ar => ar.CreatedById == userId);
         return Result.Ok(await query.ToListAsync());
     }

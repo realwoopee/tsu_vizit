@@ -12,22 +12,36 @@ namespace TSU.Vizit.Application.Features.CsvExport;
 
 public class CsvExportService(ICsvExportRepository _csvExportRepository, UserService _userService)
 {
-    public async Task<Result<List<AbsenceRequestDto>>> ExportAbsenceRequests(Guid curUserId, ExportType exportType)
+    public async Task<Result<List<AbsenceRequestDto>>> ExportAbsenceRequests(Guid curUserId, ExportAllAbsenceRequestsModel model)
     {
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
         
-        if (!(userPermissions.Value.CanExportAll && exportType == ExportType.All))
+        if (!userPermissions.Value.CanExportAll)
             return CustomErrors.Forbidden("You do not have permission to export all absence requests.");
         
-        return await _csvExportRepository.ExportAbsenceRequests()
+        var filter = new ExportAllAbsenceRequestListFilter
+        {
+            CreatedById = model.CreatedById,
+            FinalisedById = model.FinalisedById,
+            FinalStatus = model.FinalStatus,
+            Reason = model.Reason
+        };
+        
+        return await _csvExportRepository.ExportAbsenceRequests(filter)
             .Map(list => list.Select(ar => ar.ToDto()).ToList());
     }
     
-    public async Task<Result<List<AbsenceRequestDto>>> ExportPersonalAbsenceRequests(Guid curUserId)
+    public async Task<Result<List<AbsenceRequestDto>>> ExportPersonalAbsenceRequests(Guid curUserId, ExportPersonalAbsenceRequestModel model)
     {
-        return await _csvExportRepository.ExportPersonalAbsenceRequests(curUserId)
+        var filter = new ExportPersonalAbsenceRequestListFilter
+        {
+            FinalisedById = model.FinalisedById,
+            FinalStatus = model.FinalStatus,
+            Reason = model.Reason
+        };
+        return await _csvExportRepository.ExportPersonalAbsenceRequests(curUserId, filter)
             .Map(list => list.Select(ar => ar.ToDto()).ToList());
     }
 }

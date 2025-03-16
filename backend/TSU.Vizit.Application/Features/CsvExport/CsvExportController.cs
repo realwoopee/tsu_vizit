@@ -17,13 +17,13 @@ namespace TSU.Vizit.Application.Features.CsvExport;
 [Route("api/export")]
 public class CsvExportController(UserAccessor _userAccessor, CsvExportService _csvExportService, UserService _userService): Controller
 {
-    [HttpGet("all")]
+    [HttpGet("absence_request/all")]
     [Produces("text/csv")]
-    public async Task<IActionResult> ExportAbsenceRequests(ExportType exportType)
+    public async Task<IActionResult> ExportAbsenceRequests([FromQuery] ExportAllAbsenceRequestsModel model)
     {
         var data = await _userAccessor.GetUserId()
             .Bind(async Task<Result<List<AbsenceRequestDto>>> (userId) =>
-                await _csvExportService.ExportAbsenceRequests(userId, exportType));
+                await _csvExportService.ExportAbsenceRequests(userId, model));
         
         using (var memoryStream = new MemoryStream())
         using (var streamWriter = new StreamWriter(memoryStream))
@@ -37,13 +37,13 @@ public class CsvExportController(UserAccessor _userAccessor, CsvExportService _c
         }
     }
     
-    [HttpGet("mine")]
+    [HttpGet("absence_request/mine")]
     [Produces("text/csv")]
-    public async Task<IActionResult> ExportPersonalAbsenceRequests()
+    public async Task<IActionResult> ExportPersonalAbsenceRequests([FromQuery] ExportPersonalAbsenceRequestModel model)
     {
         var data = await _userAccessor.GetUserId()
             .Bind(async Task<Result<List<AbsenceRequestDto>>> (userId) =>
-                await _csvExportService.ExportPersonalAbsenceRequests(userId));
+                await _csvExportService.ExportPersonalAbsenceRequests(userId, model));
         
         using (var memoryStream = new MemoryStream())
         using (var streamWriter = new StreamWriter(memoryStream))

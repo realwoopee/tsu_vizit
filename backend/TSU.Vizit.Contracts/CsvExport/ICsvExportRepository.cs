@@ -5,6 +5,6 @@ namespace TSU.Vizit.Contracts.CsvExport;
 
 public interface ICsvExportRepository
 {
-    public Task<Result<List<AbsenceRequest>>> ExportAbsenceRequests();
-    public Task<Result<List<AbsenceRequest>>> ExportPersonalAbsenceRequests(Guid userId);
+    public Task<Result<List<AbsenceRequest>>> ExportAbsenceRequests(ExportAllAbsenceRequestListFilter filter);
+    public Task<Result<List<AbsenceRequest>>> ExportPersonalAbsenceRequests(Guid userId, ExportPersonalAbsenceRequestListFilter filter);
 }

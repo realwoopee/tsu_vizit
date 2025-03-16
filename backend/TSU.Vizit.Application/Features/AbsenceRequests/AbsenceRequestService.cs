@@ -84,4 +84,26 @@ public class AbsenceRequestService(IAbsenceRequestRepository _absenceRequestRepo
         return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
             .Map(ar => ar.ToDto());
     }
+
+    public async Task<Result<AbsenceRequestDto>> EditAbsenceRequestStatus(Guid absenceRequestId,
+        EditAbsenceRequestStatusDto dto, Guid curUserId)
+    {
+        
+        var absenceRequestResult = await _absenceRequestRepository.GetAbsenceRequestById(absenceRequestId);
+        if (absenceRequestResult.IsFailed)
+            return Result.Fail(absenceRequestResult.Errors);
+
+        var userPermissions = await _userService.GetUserPermissions(curUserId);
+        if (userPermissions.IsFailed)
+            return Result.Fail(userPermissions.Errors);
+        
+        if (!(userPermissions.Value.IsAdmin || userPermissions.Value.CanApprove))
+            return CustomErrors.Forbidden("User does not have permission to edit the result of this absence request.");
+        
+        var absenceRequest = absenceRequestResult.Value;
+        absenceRequest.FinalStatus = dto.status;
+
+        return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
+            .Map(ar => ar.ToDto());
+    }
 }

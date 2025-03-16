@@ -51,4 +51,13 @@ public class AbsenceRequestController(AbsenceRequestService _absenceRequestServi
             .ToActionResult();
     }
     
+    [HttpPut("{id}/absence_request/status")]
+    public async Task<ActionResult<AbsenceRequestDto>> EditAbsenceRequestStatus(Guid id, EditAbsenceRequestStatusDto model)
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<AbsenceRequestDto>> (userId) =>
+                await _absenceRequestService.EditAbsenceRequestStatus(id, model, userId))
+            .ToActionResult();
+    }
+    
 }

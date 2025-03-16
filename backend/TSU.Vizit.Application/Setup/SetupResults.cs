@@ -8,8 +8,8 @@ public static class SetupResults
 {
     public static void Setup(WebApplicationBuilder builder)
     {
-        using var provider = builder.Services.BuildServiceProvider();
-        using var scope = provider.CreateScope();
+        var provider = builder.Services.BuildServiceProvider();
+        var scope = provider.CreateScope();
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<ResultEndpointProfile>>();
 
@@ -46,7 +46,7 @@ public static class SetupResults
                 return new UnauthorizedResult();
 
             if (result.IsFailed)
-                _logger.LogError("Unhandled error result: @Result", new { Result = result });
+                _logger.LogError("Unhandled error result: {Result}", new { Result = result });
 
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }

@@ -9,22 +9,22 @@ namespace TSU.Vizit.Application.Features.AbsenceRequests.Dto;
 
 public static class AbsenceRequestDtoConverters
 {
-
-    public static AbsenceRequest ToEntity(this CreateAbsenceRequestModel dto, Guid CreatedById)
+    public static AbsenceRequest ToEntity(this CreateAbsenceRequestModel dto, Guid createdById)
     {
         return new AbsenceRequest
         {
             AbsencePeriodStart = dto.AbsencePeriodStart,
             AbsencePeriodFinish = dto.AbsencePeriodFinish,
             TimeCreated = DateTime.UtcNow,
-            CreatedById = CreatedById,
+            CreatedById = createdById,
             FinalStatus = AbsenceRequestResult.Unknown,
             Reason = dto.Reason
         };
     }
+
     public static AbsenceRequestDto ToDto(this AbsenceRequest model)
     {
-        var result = new AbsenceRequestDto
+        return new AbsenceRequestDto
         {
             Id = model.Id,
             AbsencePeriodStart = model.AbsencePeriodStart,
@@ -34,10 +34,9 @@ public static class AbsenceRequestDtoConverters
             FinalStatus = model.FinalStatus,
             Reason = model.Reason,
             TimeCreated = model.TimeCreated,
-            TimeFinalised = model.TimeFinalised
+            TimeFinalised = model.TimeFinalised,
+            Attachments = model.Attachments.Select(d => d.ToDto()).ToList()
         };
-        result.Attachments = model.Attachments.Select(d => d.ToDto()).ToList();
-        return result;
     }
 
     public static AbsenceRequestPagedListDto ToDto(this AbsenceRequestPagedList model)

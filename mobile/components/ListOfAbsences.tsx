@@ -39,12 +39,6 @@ export default function ListOfAbsences({ navigation }: ListProps) {
 
   const [listOfItems, setListOfItems] = useState<IAbsence[]>([]);
 
-  const testList = [{ id: "1", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-  { id: "2", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-  { id: "3", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-  { id: "4", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-  { id: "5", status: "reject", name: "Ivanov Ivan Ivanovich", type: "illness", beg: "2025-02-03", end: "2025-04-04", docs: [] }];
-
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedStatus, setSelectedStatus] = useState<string>();
   const [selectedType, setSelectedType] = useState<string>();
@@ -93,6 +87,14 @@ export default function ListOfAbsences({ navigation }: ListProps) {
     );
   };
 
+  const handleNewAbsence = (absence: IAbsence) => {
+    setListOfItems((prevItems) => [absence, ...prevItems]);
+  };
+
+  const handleDeleteAbsence = (id: string) => {
+    setListOfItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
   const [isAddAbsenceVisible, setIsAddAbsenceBlockVisible] = useState(false);
@@ -113,7 +115,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
         keyExtractor={item => item.id.toString()}
         ListEmptyComponent={
           <View>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => setIsAddAbsenceBlockVisible(true)}>
               <Text style={[styles.headerTitle, { color: 'white' }]}>Добавить пропуск</Text>
             </TouchableOpacity>
 
@@ -127,7 +129,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
                   <Text style={[styles.headerTitle, {color: 'white'}]}>Добавить пропуск</Text>
                 </TouchableOpacity>
               )}
-              <AbsenceItem item={item} onAddDocument={onAddDocument} onRemoveDocument={onRemoveDocument} />
+              <AbsenceItem item={item} onAddDocument={onAddDocument} onRemoveDocument={onRemoveDocument} onDeleteAbsence={handleDeleteAbsence}/>
             </View>
           )}
       />
@@ -141,6 +143,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
       <AddAbsenceBlock 
         isVisible={isAddAbsenceVisible}
         closeModal={() => setIsAddAbsenceBlockVisible(false)}
+        onSaveNewAbsence={handleNewAbsence}
       />
 
       <Menu navigation={navigation} />
@@ -178,7 +181,7 @@ const styles = StyleSheet.create({
     fontFamily: 'inter-md'
   },
   lastItem: {
-    marginBottom: 200
+    marginBottom: 130
   },
   button: {
     backgroundColor: '#3478F6',

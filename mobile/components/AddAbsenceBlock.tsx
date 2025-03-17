@@ -5,19 +5,21 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { AppContext } from '..';
+import { IAbsence } from '../models/IAbsence';
 
 type AddAbsenceBlockProps = {
     isVisible: boolean;
     closeModal: () => void;
+    onSaveNewAbsence: (absence: IAbsence) => void;
 };
 
-type Doc = {
+type File = {
     name: string;
     type: string;
     uri: string;
 };
 
-const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal }) => {
+const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal, onSaveNewAbsence }) => {
     const [beginDate, setBeginDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [open, setOpen] = useState(false);
@@ -28,7 +30,7 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
         { label: 'Учебная', value: 'Personal' },
     ]);
 
-    const [documents, setDocuments] = useState<Doc[]>([]);
+    const [documents, setDocuments] = useState<File[]>([]);
 
     const { store } = useContext(AppContext);
 
@@ -70,7 +72,7 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
         }
     };
 
-    const renderDocumentItem = ({ item: doc }: { item: Doc }) => (
+    const renderDocumentItem = ({ item: doc }: { item: File }) => (
         <View style={styles.docItemContainer}>
             <View style={styles.docItem}>
                 <Ionicons name="document-text-outline" size={20} color="#666" />
@@ -95,17 +97,29 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
 
     const saveNewAbsence = async () => {
         try {
-            await store.saveNewAbsence(beginDate, endDate, value, documents);
+            const response = await store.postAbsence(beginDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0], value);
+            if(response){
+                for(let i = 0; i < documents.length; i ++) {
+                    try {
+                        await store.postDocument(response.id, documents[i].uri ,documents[i].name, documents[i].type);
+                    } catch(error: any) {
+                        const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+                        Alert.alert(errorMessage);
+                    }
+                }
+
+                onSaveNewAbsence(response);
+            }
             closeModal();
         } catch (error: any) {
             const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
             Alert.alert(errorMessage);
+            console.log(error);
         }
     }
 
 
-
-    const isFormValid = value && documents.length != 0 && beginDate <= endDate;
+    const isFormValid = value !== 'null' && documents.length !== 0 && beginDate <= endDate;
 
     const saveButtonStyle = isFormValid ? styles.saveButton : [styles.saveButton, styles.disabledButton];
     const uploadFileButtonStyle = documents.length < 5? styles.uploadFileButton : [styles.uploadFileButton, styles.disabledButton];
@@ -119,7 +133,7 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
                     <Text style={styles.text}>Дата начала</Text>
                     <TouchableOpacity style={{flexDirection: 'row', alignItems: 'flex-end',}}>
                         <Text style={styles.dateValue}>
-                            {beginDate.toLocaleDateString()}
+                            {beginDate.toISOString().split('T')[0]}
                         </Text>
 
                         <DateTimePicker
@@ -133,7 +147,7 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
                     <Text style={styles.text}>Дата окончания</Text>
                     <TouchableOpacity style={{flexDirection: 'row', alignItems: 'flex-end',}}>
                         <Text style={styles.dateValue}>
-                            {endDate.toLocaleDateString()}
+                            {endDate.toISOString().split('T')[0]}
                         </Text>
 
                         <DateTimePicker
@@ -182,7 +196,7 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
     );
 };
   
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     modal: {
         width: '90%',
         backgroundColor: '#fff',

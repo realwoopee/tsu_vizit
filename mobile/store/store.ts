@@ -196,4 +196,43 @@ export default class Store{
             this.handleApiError(e);
         }
     }
+
+    async postAbsence (
+        absencePeriodStart: string,
+        absencePeriodFinish: string,
+        reason: string
+    ) {
+        try{
+            const response = await AbsenceService.postAbsence(
+            absencePeriodStart, absencePeriodFinish, reason);
+
+            return response.data as IAbsence;
+        } catch(e) {
+            this.handleApiError(e);
+        }
+    }
+
+    async deleteAbsence (id: string) {
+        try{
+            const index = this.absences.findIndex(absence => absence.id === id);
+            if(index != -1) {
+                await AbsenceService.deleteAbsence(id);
+                const newAbsences = [
+                    ...this.absences.slice(0, index),
+                    ...this.absences.slice(index + 1)
+                ];
+                this.setAbsences(newAbsences)
+            }
+        } catch(e) {
+            this.handleApiError(e);
+        }
+    }
+
+    async postDocument (id: string, uri: string, name: string, type: string) {
+        try{
+            await AbsenceService.postDocument(id, uri, name, type);
+        }catch(e) {
+            this.handleApiError(e);
+        }
+    }
 }

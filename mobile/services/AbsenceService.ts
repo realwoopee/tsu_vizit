@@ -1,10 +1,8 @@
 import { AxiosResponse } from "axios";
 import $api from "../http";
-import { AuthResponse } from "../models/response/AuthResponse";
-import {IUser} from "../models/IUser";
-import { SessionResponse } from "../models/response/SessionResponse";
 import { IAbsence } from "../models/IAbsence";
 import { AbsenceResponse } from "../models/response/AbsenceResponse";
+import { IDocument } from "../models/IDocument";
 
 export default class AbsenceService{
 
@@ -40,5 +38,32 @@ export default class AbsenceService{
         return $api.put(`/absence/${absenceId}`, {absencePeriodStart, absencePeriodFinish, reason});
     }
 
-}
+    static async postAbsence (
+        absencePeriodStart: string,
+        absencePeriodFinish: string,
+        reason: string
+    ): Promise<AxiosResponse<IAbsence>>{
 
+        return $api.post(`/absence`, {absencePeriodStart, absencePeriodFinish, reason})
+    }
+
+    static async deleteAbsence (id: string): Promise<AxiosResponse<IAbsence>> {
+        return $api.delete(`/absence/${id}`);
+    }
+
+    static async postDocument (id: string, uri: string, name: string, type: string): Promise<AxiosResponse<IDocument>> {
+        const formData = new FormData();
+
+        formData.append('file', {
+            uri: uri,
+            name: name,
+            type: type,
+        } as any);
+
+        return $api.post(`/absence/${id}/attach`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    }
+}

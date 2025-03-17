@@ -40,9 +40,10 @@ interface AbsenceItemProps {
   item: IAbsence;
   onAddDocument: (id: string, docs: Doc[]) => void;
   onRemoveDocument: (itemId: string, docUri: string) => void;
+  onDeleteAbsence: (id: string) => void;
 }
 
-export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: AbsenceItemProps) {
+export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onDeleteAbsence }: AbsenceItemProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [endDate, setEndDate] = useState(new Date(item.absencePeriodFinish));
@@ -70,9 +71,9 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
       case 'Family':
         return 'Семейные обстоятельства';
       case 'Sick':
-        return 'Болезнь';
+        return 'Больничный';
       default:
-        return 'Причины неизвестны';
+        return 'Причина неизвестна';
     }
   };
 
@@ -84,13 +85,13 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
   };
 
   const editAbsencePeriodFinish = async (finishDate: Date) => {
-      try {
-        await store.editAbsencePeriodFinish(item.id, item.absencePeriodStart, finishDate.toString(), item.reason);;
-      } catch (error: any) {
-        const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
-        Alert.alert(errorMessage);
-      }
+    try {
+      await store.editAbsencePeriodFinish(item.id, item.absencePeriodStart, finishDate.toISOString().split('T')[0], item.reason);;
+    } catch (error: any) {
+      const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+      Alert.alert(errorMessage);
     }
+  }
 
 
   // const handleAddDocument = async () => {
@@ -189,29 +190,47 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
     }
   };
 
+  const deleteAbsence = async (id: string) => {
+    try {
+      await store.deleteAbsence(id);
+      onDeleteAbsence(id);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Ошибка', 'Не удалось удалить пропуск.');
+    }
+  }
+
 
   return (
-    <TouchableOpacity style={styles.itemContainer}>
+    <View style={styles.itemContainer}>
 
       <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.finalStatus) }]} />
 
       <View style={styles.contentContainer}>
 
-        <View style={styles.header}>
-          <Text style={styles.name}>{store.user.fullName}</Text>
-          <Text style={styles.type}>{setReason(item.reason)}</Text>
+        <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
+          <View style={styles.header}>
+            <Text style={styles.name}>{store.user.fullName}</Text>
+            <Text style={styles.type}>{setReason(item.reason)}</Text>
+          </View>
+
+          {item.finalStatus === 'Unknown' && (
+            <TouchableOpacity onPress={() => deleteAbsence(item.id)}>
+              <Ionicons name="trash-outline" size={25} color="#FF0000" />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.datesContainer}>
           <View style={styles.dateItem}>
             <Text style={styles.dateLabel}>Начало:</Text>
-            <Text style={styles.dateValue}>{new Date(item.absencePeriodStart).toLocaleDateString()}</Text>
+            <Text style={styles.dateValue}>{new Date(item.absencePeriodStart).toISOString().split('T')[0]}</Text>
           </View>
           <View style={styles.dateItem}>
             <Text style={styles.dateLabel}>Конец:</Text>
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
               <Text style={[styles.dateValue, styles.editableDate]}>
-                {endDate.toLocaleDateString()}
+                {endDate.toISOString().split('T')[0]}
               </Text>
             </TouchableOpacity>
 
@@ -230,7 +249,7 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.create}>Дата создания: {new Date(item.timeCreated).toLocaleDateString()}</Text>
+        <Text style={styles.create}>Дата создания: {new Date(item.timeCreated).toISOString().split('T')[0]}</Text>
 
       </View>
 
@@ -289,7 +308,7 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
 
       </Modal>
 
-    </TouchableOpacity>
+    </View>
   );
 }
 

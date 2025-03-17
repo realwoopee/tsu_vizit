@@ -7,11 +7,15 @@ import {
   Modal,
   FlatList,
   TouchableWithoutFeedback,
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import DateTimePicker from '@react-native-community/datetimepicker';
 // import DocumentPicker from 'react-native-document-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 
 type Doc = {
@@ -123,7 +127,13 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.deleteButton}
+        style={styles.docButton}
+        onPress={() => downloadFile(doc.uri, doc.name)}
+      >
+        <AntDesign name="download" size={20} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.docButton}
         onPress={() => onRemoveDocument(item.id, doc.uri)}
       >
         <Ionicons name="trash-outline" size={20} color="#FF0000" />
@@ -131,6 +141,30 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
     </View>
 
   );
+
+  const downloadFile = async (uri: string, fileName: string) => {
+    try {
+      if (!uri) throw new Error('URL не должен быть пустым');
+  
+      const fileUri = FileSystem.documentDirectory + fileName;
+      console.log(`Скачивание: ${uri} -> ${fileUri}`);
+  
+       await FileSystem.copyAsync({ from: uri, to: fileUri });
+  
+      Alert.alert('Файл загружен', `Файл сохранён: ${fileUri}`);
+  
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(fileUri);
+        } else {
+          Alert.alert('Ошибка', 'Поделиться файлом невозможно.');
+        }
+      
+        Alert.alert('Файл сохранён', 'Файл добавлен в «Загрузки».');
+    } catch (error) {
+      console.error('Ошибка загрузки:', error);
+      Alert.alert('Ошибка', 'Не удалось сохранить. Проверьте разрешения.');
+    }
+  };
 
 
   return (
@@ -370,9 +404,7 @@ const styles = StyleSheet.create({
     color: '#666',
     fontFamily: 'inter-md',
   },
-  deleteButton: {
+  docButton: {
     padding: 5,
-  },
-
-
+  }
 });

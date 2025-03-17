@@ -86,7 +86,7 @@ export default function Profile({ navigation }: ProfileProps) {
     loadData();
   }, []);
 
-  const isFormChanged = (fullName !== initialFullName || email !== initialEmail) && isValidEmail(email);
+  const isFormChanged = (fullName !== initialFullName || email !== initialEmail) && isValidEmail(email) && fullName;
 
   const updButtonStyle = isFormChanged ? styles.updButton : [styles.updButton, styles.disabledButton];
 
@@ -118,8 +118,9 @@ export default function Profile({ navigation }: ProfileProps) {
       <TouchableOpacity
         style={updButtonStyle}
         disabled={!isFormChanged}
+        onPress={editProfile}
       >
-        <Text style={{ color: 'white', fontFamily: 'inter-md' }} onPress={editProfile}>Сохранить изменения</Text>
+        <Text style={{ color: 'white', fontFamily: 'inter-md' }}>Сохранить изменения</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.exitButton} onPress={logout}>

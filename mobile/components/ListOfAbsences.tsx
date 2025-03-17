@@ -5,6 +5,7 @@ import AbsenceItem from './AbsenceItem';
 import { Ionicons } from '@expo/vector-icons';
 import FiltersBlock from './FiltersBlock';
 import Menu from './Menu';
+import AddAbsenceBlock from './AddAbsenceBlock';
 
 type RootStackParamList = {
   Профиль: undefined;
@@ -63,6 +64,8 @@ export default function ListOfAbsences({ navigation }: ListProps) {
 
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
+  const [isAddAbsenceVisible, setIsAddAbsenceBlockVisible] = useState(false);
+
 
   return (
     <View style={{backgroundColor: 'white'}}>
@@ -89,7 +92,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
           renderItem={({ item, index }) => (
             <View style={index === listOfItems.length - 1 ? styles.lastItem : null}>
               {index === 0 && (
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => setIsAddAbsenceBlockVisible(true)}>
                   <Text style={[styles.headerTitle, {color: 'white'}]}>Добавить пропуск</Text>
                 </TouchableOpacity>
               )}
@@ -101,6 +104,11 @@ export default function ListOfAbsences({ navigation }: ListProps) {
       <FiltersBlock
         isVisible={isFilterModalVisible}
         closeModal={() => setIsFilterModalVisible(false)}
+      />
+
+      <AddAbsenceBlock 
+        isVisible={isAddAbsenceVisible}
+        closeModal={() => setIsAddAbsenceBlockVisible(false)}
       />
 
       <Menu navigation={navigation} />

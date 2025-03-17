@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { StyleSheet, ActivityIndicator, ScrollView, View } from 'react-native';
 import * as Font from 'expo-font';
-import MainStcak from './Navigate';
+import MainStack from './Navigate';
 import Store from './store/store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -44,7 +44,7 @@ export default function App() {
 
     <AppContext.Provider value={{ store }}>
       <View style={styles.container}>
-        <MainStcak />
+        <MainStack />
       </View>
     </AppContext.Provider>
 

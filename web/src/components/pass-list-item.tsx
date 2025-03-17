@@ -34,6 +34,23 @@ export const PassListItem = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentEndDate, setCurrentEndDate] = useState(endDate)
   const [inputValue, setInputValue] = useState(endDate)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+
+  const handleFilesSelected = (files: File[]) => {
+    console.log("Выбранные файлы:", files)
+    setSelectedFiles(files)
+  }
+
+  const handleDownloadFile = (file: File) => {
+    const url = URL.createObjectURL(file)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = file.name
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
 
   // Функция для применения маски даты
   const applyDateMask = (value: string): string => {
@@ -179,12 +196,24 @@ export const PassListItem = ({
 
         <button className="pass-file-button">
           <File size={20} />
+          {selectedFiles.length > 0 && (
+            <div className="file-list">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="file-item" onClick={() => handleDownloadFile(file)}>
+                  {file.name}
+                </div>
+              ))}
+            </div>
+          )}
         </button>
         <div className="menu-container">
           <button className="pass-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <Menu size={20} />
           </button>
-          <DropdownMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} userRole={userRole} />
+          <DropdownMenu isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            userRole={userRole}
+            onFilesSelected={handleFilesSelected} />
         </div>
       </div>
     </div>

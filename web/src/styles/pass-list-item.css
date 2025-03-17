@@ -135,6 +135,27 @@
   position: relative;
 }
 
+.file-list {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.file-item {
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.file-item:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .pass-list-item {
     flex-direction: column;

@@ -1,20 +1,24 @@
 "use client"
 
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { Check, FileUp, Trash2, X } from "lucide-react"
 import { Dropdown } from "react-bootstrap"
 
 type UserRole = "student" | "teacher" | "admin"
+
 
 interface DropdownMenuProps {
   isOpen: boolean
   onClose: () => void
   userRole: UserRole
   toggleRef?: React.RefObject<HTMLButtonElement>
+  onFilesSelected: (files: File[]) => void
 }
 
-export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef }: DropdownMenuProps) => {
+export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef, onFilesSelected }: DropdownMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,8 +42,39 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef }: DropdownM
 
   if (!isOpen) return null
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Файл выбран")
+    const files = event.target.files
+    if (files && files.length > 0) {
+      const filesArray = Array.from(files).slice(0, 5) 
+      console.log("Выбранные файлы:", filesArray)
+      setSelectedFiles(filesArray)
+      onFilesSelected(filesArray)
+    }
+  }
+
+  const handleAttachFile = () => {
+    console.log("Попытка открыть выбор файла")
+    if (fileInputRef.current) {
+      console.log("fileInputRef.current найден:", fileInputRef.current) 
+    fileInputRef.current.value = "";
+    fileInputRef.current.click()
+  } else {
+    console.log("fileInputRef.current == null")
+  }
+}
+
+  if (!isOpen) return null
+
   const handleAction = (action: string) => {
-    console.log(`Action: ${action}`)
+    if (action === "attach") {
+      handleAttachFile()
+    }else if (action === "delete-file") {
+      setSelectedFiles([]) // Очистка списка файлов в локальном состоянии
+      onFilesSelected([]) // Обновляем родительский компонент
+    } else {
+      console.log(`Action: ${action}`)
+    }
     onClose()
   }
 
@@ -94,8 +129,21 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef }: DropdownM
   }
 
   return (
+    <>
     <Dropdown.Menu show={isOpen} ref={menuRef} className="dropdown-menu">
       {renderMenuItems()}
     </Dropdown.Menu>
+    <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => {
+          console.log("Файл выбран")
+          handleFileChange(e)
+        }}
+         multiple
+        accept="*"
+      />
+    </>
   )
 }

@@ -41,6 +41,8 @@ public class SetupAspNet
 
     public static void UseAspNet(WebApplication app)
     {
+        app.UseCors("AllowAll");
+        
         app.MapControllers();
 
         //app.UseEndpoints(endpoints => { });

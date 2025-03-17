@@ -39,7 +39,7 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
         AbsenceRequestSorting? sorting,
         PaginationModel? pagination)
     {
-        var query = dbContext.AbsenceRequest.AsNoTracking().AsQueryable();
+        var query = dbContext.AbsenceRequest.Include(ar => ar.Attachments).AsNoTracking().AsQueryable();
 
         if (filter.CreatedById != null)
             query = query.Where(ar => ar.CreatedById == filter.CreatedById);

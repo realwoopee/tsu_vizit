@@ -84,14 +84,14 @@ export default function Profile({ navigation }: ProfileProps) {
     };
 
     loadData();
-  }, []);
+  }, [store]);
 
   const isFormChanged = (fullName !== initialFullName || email !== initialEmail) && isValidEmail(email) && fullName;
 
   const updButtonStyle = isFormChanged ? styles.updButton : [styles.updButton, styles.disabledButton];
 
   return (
-    <View style={{ backgroundColor: "#fff", height: "100%", padding: '10%'}}>
+    <View style={{ backgroundColor: "#fff", height: "100%", padding: '10%' }}>
       <Text style={styles.role}>{role}</Text>
       <Text style={{ fontFamily: 'inter-md', color: '#a8a8a8' }}>ФИ</Text>
       <TextInput

@@ -5,11 +5,14 @@ import axios, { AxiosError } from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthResponse } from "../models/response/AuthResponse";
 import { API_URL } from "../http";
+import AbsenceService from "../services/AbsenceService";
+import { IAbsence } from "../models/IAbsence";
 
 export default class Store{
     user = {} as IUser;
     isAuth = false;
     isLoading = false;
+    absences = [] as IAbsence[];
 
     constructor(){
         makeAutoObservable(this);
@@ -21,6 +24,10 @@ export default class Store{
 
     setUser(user: IUser){
         this.user = user;
+    }
+
+    setAbsences(absences: IAbsence[]){
+        this.absences = absences;
     }
 
     setLoading(bool: boolean){
@@ -132,6 +139,61 @@ export default class Store{
         finally
         {
             this.setLoading(false);
+        }
+    }
+
+
+    async getAbsences (
+        CreatedById?: string, 
+        FinalisedById?: string, 
+        FinalStatus?: string, 
+        Reason?: string, 
+        Sorting?: string, 
+        Offset?: number, 
+        Limit?: number
+    ) {
+        try{
+           const response = await AbsenceService.getAbsences(
+            CreatedById,
+            FinalisedById,
+            FinalStatus,
+            Reason,
+            Sorting,
+            Offset,
+            Limit)
+            this.setAbsences(response.data.absenceRequests as IAbsence[])
+
+        }
+        catch(e)
+        {   
+            this.handleApiError(e);
+        }
+    }
+
+    async editAbsencePeriodFinish (
+        absenceId: string,
+        absencePeriodStart: string,
+        absencePeriodFinish: string,
+        reason: string
+    ) {
+        try{
+           const response = await AbsenceService.editAbsencePeriodFinish(
+            absenceId, absencePeriodStart, absencePeriodFinish, reason);
+
+            const updatedAbsence = response.data as IAbsence;
+
+            const index = this.absences.findIndex(absence => absence.id === absenceId);
+
+            if (index !== -1) {
+                const newAbsences = [...this.absences]; 
+                newAbsences[index] = updatedAbsence; 
+                this.setAbsences(newAbsences);
+            }
+
+        }
+        catch(e)
+        {   
+            this.handleApiError(e);
         }
     }
 }

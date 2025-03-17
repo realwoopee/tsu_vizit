@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, ScrollView, Modal } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, ScrollView, Modal, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AbsenceItem from './AbsenceItem';
 import { Ionicons } from '@expo/vector-icons';
 import FiltersBlock from './FiltersBlock';
 import Menu from './Menu';
 import AddAbsenceBlock from './AddAbsenceBlock';
+import { AppContext } from '..';
+import { IAbsence } from '../models/IAbsence';
 
 type RootStackParamList = {
   Профиль: undefined;
@@ -35,13 +37,42 @@ type Item = {
 
 export default function ListOfAbsences({ navigation }: ListProps) {
 
-  const [listOfItems, setListOfItems] = useState<Item[]>([
-    { id: "1", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-    { id: "2", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-    { id: "3", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-    { id: "4", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
-    { id: "5", status: "reject", name: "Ivanov Ivan Ivanovich", type: "illness", beg: "2025-02-03", end: "2025-04-04", docs: [] }
-  ]);
+  const [listOfItems, setListOfItems] = useState<IAbsence[]>([]);
+
+  const testList = [{ id: "1", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+  { id: "2", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+  { id: "3", status: "check", name: "Ivanov Ivan Ivanovich", type: "study", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+  { id: "4", status: "accept", name: "Ivanov Ivan Ivanovich", type: "family", beg: "2025-02-03", end: "2025-04-04", docs: [] },
+  { id: "5", status: "reject", name: "Ivanov Ivan Ivanovich", type: "illness", beg: "2025-02-03", end: "2025-04-04", docs: [] }];
+
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedStatus, setSelectedStatus] = useState<string>();
+  const [selectedType, setSelectedType] = useState<string>();
+
+  const { store } = useContext(AppContext);
+
+  const handleApplyFilters = (sortOrder: 'asc' | 'desc', selectedStatus: string | undefined, selectedType: string | undefined) => {
+    setSortOrder(sortOrder);
+    setSelectedStatus(selectedStatus);
+    setSelectedType(selectedType);
+  };
+
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await store.getAbsences(store.user.id, undefined, selectedStatus, selectedType, sortOrder === "asc" ? "TimeCreatedAsc" : "TimeCreatedDesc");
+        const data = store.absences;
+        setListOfItems(data);
+      }
+      catch (error: any) {
+        const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+        Alert.alert(errorMessage);
+      }
+    };
+
+    loadData();
+  }, [sortOrder, selectedStatus, selectedType, store]);
 
 
   const onAddDocument = (id: string, newDocs: Doc[]) => {
@@ -56,7 +87,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
     setListOfItems(prevItems =>
       prevItems.map(item =>
         item.id === id
-          ? { ...item, docs: item.docs.filter(doc => doc.uri !== delDoc) }
+          ? { ...item, docs: item.attachments.filter(doc => doc.uri !== delDoc) }
           : item
       )
     );
@@ -68,7 +99,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
 
 
   return (
-    <View style={{backgroundColor: 'white'}}>
+    <View style={{ backgroundColor: 'white', flex: 1 }}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Список пропусков</Text>
         <TouchableOpacity onPress={() => setIsFilterModalVisible(true)}>
@@ -83,7 +114,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
         ListEmptyComponent={
           <View>
             <TouchableOpacity style={styles.button}>
-              <Text style={[styles.headerTitle, {color: 'white'}]}>Добавить пропуск</Text>
+              <Text style={[styles.headerTitle, { color: 'white' }]}>Добавить пропуск</Text>
             </TouchableOpacity>
 
             <Text style={styles.emptyText}>Пропуски отсутствуют</Text>
@@ -104,6 +135,7 @@ export default function ListOfAbsences({ navigation }: ListProps) {
       <FiltersBlock
         isVisible={isFilterModalVisible}
         closeModal={() => setIsFilterModalVisible(false)}
+        onApplyFilters={handleApplyFilters}
       />
 
       <AddAbsenceBlock 

@@ -1,51 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Modal, TouchableOpacity } from 'react-native';
 
 type FiltersBlockProps = {
   isVisible: boolean;
   closeModal: () => void;
+  onApplyFilters: (sortOrder: 'asc' | 'desc', selectedStatus: string | undefined, selectedType: string | undefined) => void;
 };
 
-const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal }) => {
+const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onApplyFilters }) => {
 
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [tempSortOrder, setTempSortOrder] = useState<'asc' | 'desc'>('asc'); 
-  const [tempSelectedStatuses, setTempSelectedStatuses] = useState<string[]>([]); 
-  const [tempSelectedTypes, setTempSelectedTypes] = useState<string[]>([]);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedStatus, setSelectedStatus] = useState<string>();
+  const [selectedType, setSelectedType] = useState<string>();
+  const [tempSortOrder, setTempSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [tempSelectedStatus, setTempSelectedStatus] = useState<string>();
+  const [tempSelectedType, setTempSelectedType] = useState<string>();
 
-  const availableStatuses = ['check', 'accept', 'reject'];
-  const availableTypes = ['study', 'family', 'illness'];
+  const availableStatuses = ['Unknown', 'Approved', 'Declined'];
+  const availableTypes = ['Personal', 'Family', 'Sick'];
 
   const applyFilters = () => {
     setSortOrder(tempSortOrder);
-    setSelectedStatuses(tempSelectedStatuses);
-    setSelectedTypes(tempSelectedTypes);
-    closeModal(); 
+    setSelectedStatus(tempSelectedStatus);
+    setSelectedType(tempSelectedType);
+    closeModal();
   };
+
+  useEffect(() => {
+    onApplyFilters(sortOrder, selectedStatus, selectedType);
+  }, [sortOrder, selectedStatus, selectedType]);
 
   const cancelFilters = () => {
     setTempSortOrder(sortOrder);
-    setTempSelectedStatuses(selectedStatuses);
-    setTempSelectedTypes(selectedTypes);
+    setTempSelectedStatus(selectedStatus);
+    setTempSelectedType(selectedType);
     closeModal(
     );
   };
 
-  const toggleTempStatusFilter = (status: string) => {
-    setTempSelectedStatuses(prev =>
-      prev.includes(status)
-        ? prev.filter(s => s !== status)
-        : [...prev, status]
-    );
+  // const toggleTempStatusFilter = (status: string) => {
+  //   setTempSelectedStatuses(prev =>
+  //     prev.includes(status)
+  //       ? prev.filter(s => s !== status)
+  //       : [...prev, status]
+  //   );
+  // };
+  // const toggleTempTypeFilter = (type: string) => {
+  //   setTempSelectedTypes(prev =>
+  //     prev.includes(type)
+  //       ? prev.filter(t => t !== type)
+  //       : [...prev, type]
+  //   );
+  // };
+
+  const setStatus = (status: string) => {
+    switch (status) {
+      case 'Unknown':
+        return 'На проверке';
+      case 'Approved':
+        return 'Принято';
+      case 'Declined':
+        return 'Отклонено';
+      default:
+        return 'Неизвестно';
+    }
   };
-  const toggleTempTypeFilter = (type: string) => {
-    setTempSelectedTypes(prev =>
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
+
+  const setReason = (reason: string) => {
+    switch (reason) {
+      case 'Personal':
+        return 'Пропуск по учебе';
+      case 'Family':
+        return 'Семейные обстоятельства';
+      case 'Sick':
+        return 'Болезнь';
+      default:
+        return 'Причины неизвестны';
+    }
   };
 
   return (
@@ -56,19 +87,19 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal }) =>
           <Text style={styles.modalTitle}>Фильтры и сортировка</Text>
 
           <View style={styles.modalSection}>
-            <Text style={styles.sectionTitle}>Сортировка по дате</Text>
+            <Text style={styles.sectionTitle}>Сортировка по дате создания</Text>
             <View style={styles.filterOptions}>
-              <TouchableOpacity
-                style={[styles.filterButton, tempSortOrder === 'asc' && styles.activeFilterButton]}
-                onPress={() => setTempSortOrder('asc')}
-              >
-                <Text style={styles.filterButtonText}>По возрастанию</Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.filterButton, tempSortOrder === 'desc' && styles.activeFilterButton]}
                 onPress={() => setTempSortOrder('desc')}
               >
                 <Text style={styles.filterButtonText}>По убыванию</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.filterButton, tempSortOrder === 'asc' && styles.activeFilterButton]}
+                onPress={() => setTempSortOrder('asc')}
+              >
+                <Text style={styles.filterButtonText}>По возрастанию</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -81,11 +112,18 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal }) =>
                   key={status}
                   style={[
                     styles.filterButton,
-                    tempSelectedStatuses.includes(status) && styles.activeFilterButton
+                    tempSelectedStatus === status && styles.activeFilterButton
                   ]}
-                  onPress={() => toggleTempStatusFilter(status)}
+                  onPress={() => {
+                    if (tempSelectedStatus === status) {
+                      setTempSelectedStatus(undefined);
+                    } else {
+                      setTempSelectedStatus(status);
+                    }
+                  }
+                  }
                 >
-                  <Text style={styles.filterButtonText}>{status}</Text>
+                  <Text style={styles.filterButtonText}>{setStatus(status)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -99,11 +137,18 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal }) =>
                   key={type}
                   style={[
                     styles.filterButton,
-                    tempSelectedTypes.includes(type) && styles.activeFilterButton
+                    tempSelectedType === type && styles.activeFilterButton
                   ]}
-                  onPress={() => toggleTempTypeFilter(type)}
+                  onPress={() => {
+                    if (tempSelectedType === type) {
+                      setTempSelectedType(undefined);
+                    } else {
+                      setTempSelectedType(type);
+                    }
+                  }
+                  }
                 >
-                  <Text style={styles.filterButtonText}>{type}</Text>
+                  <Text style={styles.filterButtonText}>{setReason(type)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -136,8 +181,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
-    elevation: 5, 
-    shadowColor: '#000', 
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -162,13 +207,13 @@ const styles = StyleSheet.create({
   filterOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8, 
+    gap: 8,
   },
   filterButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: '#a8a8a8', 
-    borderRadius: 20, 
+    backgroundColor: '#a8a8a8',
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -189,7 +234,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     paddingVertical: 12,
-    backgroundColor: '#a8a8a8', 
+    backgroundColor: '#a8a8a8',
     borderRadius: 8,
     alignItems: 'center',
     marginRight: 8,
@@ -203,7 +248,7 @@ const styles = StyleSheet.create({
   applyButton: {
     flex: 1,
     paddingVertical: 12,
-    backgroundColor: '#007AFF', 
+    backgroundColor: '#007AFF',
     borderRadius: 8,
     alignItems: 'center',
     marginLeft: 8,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,14 @@ import {
   Modal,
   FlatList,
   TouchableWithoutFeedback,
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 // import DocumentPicker from 'react-native-document-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { IAbsence } from '../models/IAbsence';
+import { AppContext } from '..';
 
 
 type Doc = {
@@ -31,7 +34,7 @@ type Item = {
 };
 
 interface AbsenceItemProps {
-  item: Item;
+  item: IAbsence;
   onAddDocument: (id: string, docs: Doc[]) => void;
   onRemoveDocument: (itemId: string, docUri: string) => void;
 }
@@ -39,19 +42,34 @@ interface AbsenceItemProps {
 export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: AbsenceItemProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDocsModal, setShowDocsModal] = useState(false);
-  const [endDate, setEndDate] = useState(new Date(item.end));
+  const [endDate, setEndDate] = useState(new Date(item.absencePeriodFinish));
+
+  const { store } = useContext(AppContext);
 
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'check':
+      case 'Unknown':
         return '#FFA500';
-      case 'accept':
+      case 'Approved':
         return '#00FF00';
-      case 'reject':
+      case 'Declined':
         return '#FF0000';
       default:
         return '#000000';
+    }
+  };
+
+  const setReason = (reason: string) => {
+    switch (reason) {
+      case 'Personal':
+        return 'Пропуск по учебе';
+      case 'Family':
+        return 'Семейные обстоятельства';
+      case 'Sick':
+        return 'Болезнь';
+      default:
+        return 'Причины неизвестны';
     }
   };
 
@@ -59,7 +77,17 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
     const currentDate = selectedDate || endDate;
     setShowDatePicker(false);
     setEndDate(currentDate);
+    editAbsencePeriodFinish(currentDate);
   };
+
+  const editAbsencePeriodFinish = async (finishDate: Date) => {
+      try {
+        await store.editAbsencePeriodFinish(item.id, item.absencePeriodStart, finishDate.toString(), item.reason);;
+      } catch (error: any) {
+        const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+        Alert.alert(errorMessage);
+      }
+    }
 
 
   // const handleAddDocument = async () => {
@@ -136,19 +164,19 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
   return (
     <TouchableOpacity style={styles.itemContainer}>
 
-      <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.status) }]} />
+      <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.finalStatus) }]} />
 
       <View style={styles.contentContainer}>
 
         <View style={styles.header}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.type}>{item.type}</Text>
+          <Text style={styles.name}>{store.user.fullName}</Text>
+          <Text style={styles.type}>{setReason(item.reason)}</Text>
         </View>
 
         <View style={styles.datesContainer}>
           <View style={styles.dateItem}>
             <Text style={styles.dateLabel}>Начало:</Text>
-            <Text style={styles.dateValue}>{new Date(item.beg).toLocaleDateString()}</Text>
+            <Text style={styles.dateValue}>{new Date(item.absencePeriodStart).toLocaleDateString()}</Text>
           </View>
           <View style={styles.dateItem}>
             <Text style={styles.dateLabel}>Конец:</Text>
@@ -168,10 +196,12 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
           >
             <Ionicons name="document-attach-outline" size={20} color="#666" />
             <Text style={styles.docsText}>
-              Документы ({item.docs.length})
+              Документы ({item.attachments.length})
             </Text>
           </TouchableOpacity>
         </View>
+
+        <Text style={styles.create}>Дата создания: {new Date(item.timeCreated).toLocaleDateString()}</Text>
 
       </View>
 
@@ -205,7 +235,7 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument }: A
                 </View>
 
                 <FlatList
-                  data={item.docs}
+                  data={item.attachments}
                   renderItem={renderDocumentItem}
                   keyExtractor={(doc) => doc.uri}
                   ListEmptyComponent={
@@ -372,6 +402,12 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     padding: 5,
+  },
+  create: {
+    fontFamily: 'inter-md',
+    fontSize: 12,
+    marginTop: 6,
+    color: '#666'
   },
 
 

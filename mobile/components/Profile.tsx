@@ -84,14 +84,14 @@ export default function Profile({ navigation }: ProfileProps) {
     };
 
     loadData();
-  }, []);
+  }, [store]);
 
   const isFormChanged = (fullName !== initialFullName || email !== initialEmail) && isValidEmail(email);
 
   const updButtonStyle = isFormChanged ? styles.updButton : [styles.updButton, styles.disabledButton];
 
   return (
-    <View style={{ backgroundColor: "#fff", height: "100%", padding: '10%'}}>
+    <View style={{ backgroundColor: "#fff", height: "100%", padding: '10%' }}>
       <Text style={styles.role}>{role}</Text>
       <Text style={{ fontFamily: 'inter-md', color: '#a8a8a8' }}>ФИ</Text>
       <TextInput
@@ -118,11 +118,12 @@ export default function Profile({ navigation }: ProfileProps) {
       <TouchableOpacity
         style={updButtonStyle}
         disabled={!isFormChanged}
+        onPress={logout}
       >
         <Text style={{ color: 'white', fontFamily: 'inter-md' }} onPress={editProfile}>Сохранить изменения</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.exitButton} onPress={logout}>
+      <TouchableOpacity style={styles.exitButton}>
         <Text style={{ color: 'white', fontFamily: 'inter-md' }}>Выйти</Text>
       </TouchableOpacity>
 

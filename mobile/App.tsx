@@ -34,9 +34,9 @@ export default function App() {
 
   if (!fontLoaded) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
+      </View>
     );
   }
 

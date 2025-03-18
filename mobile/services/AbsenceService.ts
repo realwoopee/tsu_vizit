@@ -53,16 +53,14 @@ export default class AbsenceService{
 
     static async postDocument (id: string, uri: string, name: string, type: string): Promise<AxiosResponse<IDocument>> {
         const formData = new FormData();
-
-        formData.append('file', {
-            uri: uri,
-            name: name,
-            type: type,
-        } as any);
+    
+        const file = await fetch(uri).then(res => res.blob());
+        formData.append('file', file, name);
 
         return $api.post(`/absence/${id}/attach`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                'Accept': 'text/plain'
             }
         });
     }

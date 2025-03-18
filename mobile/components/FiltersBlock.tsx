@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, TextInput } from 'react-native';
+import { AppContext } from '..';
 
 type FiltersBlockProps = {
   isVisible: boolean;
   closeModal: () => void;
-  onApplyFilters: (sortOrder: 'asc' | 'desc', selectedStatus: string | undefined, selectedType: string | undefined) => void;
+  onApplyFilters: (sortOrder: 'asc' | 'desc', selectedStatus: string | undefined, selectedType: string | undefined, fullName: string | undefined) => void;
 };
 
 const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onApplyFilters }) => {
+
+  const { store } = useContext(AppContext);
 
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedStatus, setSelectedStatus] = useState<string>();
@@ -16,6 +19,9 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onAp
   const [tempSelectedStatus, setTempSelectedStatus] = useState<string>();
   const [tempSelectedType, setTempSelectedType] = useState<string>();
 
+  const [tempFullName, setTempFullName] = useState('');
+  const [fullName, setFullName] = useState('');
+
   const availableStatuses = ['Unknown', 'Approved', 'Declined'];
   const availableTypes = ['Personal', 'Family', 'Sick'];
 
@@ -23,17 +29,19 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onAp
     setSortOrder(tempSortOrder);
     setSelectedStatus(tempSelectedStatus);
     setSelectedType(tempSelectedType);
+    setFullName(tempFullName);
     closeModal();
   };
 
   useEffect(() => {
-    onApplyFilters(sortOrder, selectedStatus, selectedType);
-  }, [sortOrder, selectedStatus, selectedType]);
+    onApplyFilters(sortOrder, selectedStatus, selectedType, fullName);
+  }, [sortOrder, selectedStatus, selectedType, fullName]);
 
   const cancelFilters = () => {
     setTempSortOrder(sortOrder);
     setTempSelectedStatus(selectedStatus);
     setTempSelectedType(selectedType);
+    setTempFullName(fullName);
     closeModal(
     );
   };
@@ -154,6 +162,19 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onAp
             </View>
           </View>
 
+          {store.user.role !== 'Student' && (
+            <View style={styles.modalSection}>
+              <Text style={styles.sectionTitle}>Фильтр по имени</Text>
+              <View style={styles.filterOptions}>
+                <TextInput
+                  style={styles.input}
+                  value={tempFullName}
+                  onChangeText={setTempFullName}
+                />
+              </View>
+            </View>
+          )}
+
           <View style={styles.modalActions}>
             <TouchableOpacity style={styles.cancelButton} onPress={cancelFilters}>
               <Text style={styles.cancelButtonText}>Закрыть</Text>
@@ -258,6 +279,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     fontFamily: 'inter-md'
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#a8a8a8',
+    padding: 10,
   },
 })
 export default FiltersBlock;

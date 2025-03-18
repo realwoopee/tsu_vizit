@@ -26,24 +26,12 @@ type Doc = {
   uri: string;
 };
 
-type Item = {
-  id: string;
-  status: string;
-  name: string;
-  type: string;
-  beg: string;
-  end: string;
-  docs: Doc[];
-};
 
 interface AbsenceItemProps {
   item: IAbsence;
-  onAddDocument: (id: string, docs: Doc[]) => void;
-  onRemoveDocument: (itemId: string, docUri: string) => void;
-  onDeleteAbsence: (id: string) => void;
 }
 
-export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onDeleteAbsence }: AbsenceItemProps) {
+export default function AbsenceItem({ item }: AbsenceItemProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [endDate, setEndDate] = useState(new Date(item.absencePeriodFinish));
@@ -80,8 +68,12 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
   const handleDateChange = (event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || endDate;
     setShowDatePicker(false);
-    setEndDate(currentDate);
-    editAbsencePeriodFinish(currentDate);
+    if (currentDate < new Date(item.absencePeriodStart)) {
+      Alert.alert("Ошибка", "Дата конца не может быть раньше даты начала.");
+    } else {
+      setEndDate(currentDate);
+      editAbsencePeriodFinish(currentDate);
+    }
   };
 
   const editAbsencePeriodFinish = async (finishDate: Date) => {
@@ -122,7 +114,7 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
     try {
       const res = await DocumentPicker.getDocumentAsync({
         type: '*/*',
-        multiple: true,
+        multiple: false,
       });
 
       if (res.canceled) {
@@ -130,13 +122,15 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
         return;
       }
 
-      const newDocs: Doc[] = res.assets.map(file => ({
-        name: file.name || 'Без названия',
-        type: file.mimeType || 'Неизвестный',
-        uri: file.uri,
-      }));
-
-      onAddDocument(item.id, newDocs);
+      if (res.assets && res.assets.length > 0) {
+        const file = res.assets[0];
+        try {
+          await store.postDocument(item.id, file.uri, file.name || 'unknown', file.mimeType || 'unknown');
+        } catch (error: any) {
+          const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+          Alert.alert(errorMessage);
+        }
+      }
 
     } catch (err) {
       console.error(err);
@@ -162,7 +156,7 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.docButton}
-        onPress={() => onRemoveDocument(item.id, doc.uri)}
+      // onPress={() => onRemoveDocument(item.id, doc.uri)}
       >
         <Ionicons name="trash-outline" size={20} color="#FF0000" />
       </TouchableOpacity>
@@ -173,17 +167,17 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
   const downloadFile = async (uri: string, fileName: string) => {
     try {
       if (!uri) throw new Error('URL не должен быть пустым');
-  
+
       const fileUri = FileSystem.documentDirectory + fileName;
       console.log(`Скачивание: ${uri} -> ${fileUri}`);
-  
-       await FileSystem.copyAsync({ from: uri, to: fileUri });
-  
-        if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(fileUri);
-        } else {
-          Alert.alert('Ошибка', 'Поделиться файлом невозможно.');
-        }
+
+      await FileSystem.copyAsync({ from: uri, to: fileUri });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        Alert.alert('Ошибка', 'Поделиться файлом невозможно.');
+      }
     } catch (error) {
       console.error('Ошибка загрузки:', error);
       Alert.alert('Ошибка', 'Не удалось сохранить. Проверьте разрешения.');
@@ -193,12 +187,13 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
   const deleteAbsence = async (id: string) => {
     try {
       await store.deleteAbsence(id);
-      onDeleteAbsence(id);
     } catch (error) {
       console.error(error);
       Alert.alert('Ошибка', 'Не удалось удалить пропуск.');
     }
   }
+
+  const uploadFileButtonStyle = item.attachments.length < 5? styles.addDocButton : [styles.addDocButton, styles.disabledButton];
 
 
   return (
@@ -208,7 +203,7 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
 
       <View style={styles.contentContainer}>
 
-        <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={styles.header}>
             <Text style={styles.name}>{store.user.fullName}</Text>
             <Text style={styles.type}>{setReason(item.reason)}</Text>
@@ -292,7 +287,8 @@ export default function AbsenceItem({ item, onAddDocument, onRemoveDocument, onD
                 />
 
                 <TouchableOpacity
-                  style={styles.addDocButton}
+                  style={uploadFileButtonStyle} 
+                  disabled={item.attachments.length >= 5}
                   onPress={() => {
                     handleAddDocument();
                   }}
@@ -332,6 +328,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
+  disabledButton: {
+    backgroundColor: '#a8a8a8'
+},
   statusIndicator: {
     width: 8,
     borderRadius: 4,

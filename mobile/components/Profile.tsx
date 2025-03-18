@@ -84,7 +84,7 @@ export default function Profile({ navigation }: ProfileProps) {
     };
 
     loadData();
-  }, [store]);
+  }, []);
 
   const isFormChanged = (fullName !== initialFullName || email !== initialEmail) && isValidEmail(email) && fullName;
 

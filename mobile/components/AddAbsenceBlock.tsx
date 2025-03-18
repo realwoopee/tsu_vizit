@@ -10,7 +10,6 @@ import { IAbsence } from '../models/IAbsence';
 type AddAbsenceBlockProps = {
     isVisible: boolean;
     closeModal: () => void;
-    onSaveNewAbsence: (absence: IAbsence) => void;
 };
 
 type File = {
@@ -19,7 +18,7 @@ type File = {
     uri: string;
 };
 
-const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal, onSaveNewAbsence }) => {
+const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal }) => {
     const [beginDate, setBeginDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [open, setOpen] = useState(false);
@@ -107,8 +106,6 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
                         Alert.alert(errorMessage);
                     }
                 }
-
-                onSaveNewAbsence(response);
             }
             closeModal();
         } catch (error: any) {

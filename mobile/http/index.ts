@@ -6,7 +6,6 @@ import { AuthResponse } from "../models/response/AuthResponse";
 export const API_URL = "https://vizit.90.188.95.63.sslip.io/api"
 
 const $api = axios.create({
-    withCredentials: true,
     baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',

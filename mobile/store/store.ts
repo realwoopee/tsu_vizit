@@ -62,7 +62,7 @@ export default class Store{
 
     async register (email: string, password: string, name: string, lastName: string) {
         try{
-           const response = await AuthService.register(email, password, lastName+" "+name, "111111"); 
+           const response = await AuthService.register(email, password, lastName+" "+name); 
            console.log(response);
            AsyncStorage.setItem('token', response.data.token);
            AsyncStorage.setItem('refreshToken', response.data.refreshToken);
@@ -116,7 +116,6 @@ export default class Store{
         try{
             const refreshToken = await AsyncStorage.getItem('refreshToken');
             const response = await axios.post<AuthResponse>(`${API_URL}/auth/refresh`, `${refreshToken}`, {
-                withCredentials:true, 
                 headers: {
                 'Content-Type': 'application/json' 
                 
@@ -206,6 +205,8 @@ export default class Store{
             const response = await AbsenceService.postAbsence(
             absencePeriodStart, absencePeriodFinish, reason);
 
+            this.absences.push(response.data);
+
             return response.data as IAbsence;
         } catch(e) {
             this.handleApiError(e);
@@ -230,7 +231,17 @@ export default class Store{
 
     async postDocument (id: string, uri: string, name: string, type: string) {
         try{
-            await AbsenceService.postDocument(id, uri, name, type);
+            const res = await AbsenceService.postDocument(id, uri, name, type);
+
+            const index = this.absences.findIndex(absence => absence.id === id);
+
+            if (index !== -1) {
+                const newAbsences = [...this.absences]; 
+                const updatedAbsence = this.absences[index];
+                updatedAbsence.attachments.push(res.data.attachment);
+                newAbsences[index] = updatedAbsence; 
+                this.setAbsences(newAbsences);
+            }
         }catch(e) {
             this.handleApiError(e);
         }

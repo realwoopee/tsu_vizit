@@ -5,8 +5,9 @@ import "../styles/user-list-item.css"
 
 export type UserRole = "Student" | "Teacher" | "DeansEmployee" | "Admin"
 
+// Update the User interface to match the API response
 export interface User {
-  id: number
+  id: string | number // Change to accept string or number
   fullName: string
   email: string
   studentIdNumber?: string
@@ -15,31 +16,50 @@ export interface User {
 
 interface UserListItemProps {
   user: User
-  onRoleChange: (userId: number, newRole: UserRole) => void
+  onRoleChange: (userId: string | number, newRole: UserRole) => void
 }
 
 export const UserListItem = ({ user, onRoleChange }: UserListItemProps) => {
   const [selectedRole, setSelectedRole] = useState<UserRole>(user.role)
   const [hasChanges, setHasChanges] = useState(false)
-  // Добавить состояние для модального окна
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleRoleChange = (newRole: UserRole) => {
     setSelectedRole(newRole)
     setHasChanges(true)
   }
 
-  // Изменить обработчик сохранения, чтобы он открывал модальное окно
   const handleSave = () => {
     setIsModalOpen(true)
   }
 
-  // Добавить обработчик подтверждения
-  const handleConfirm = () => {
-    console.log(`Отправка запроса на изменение роли пользователя ${user.fullName} на ${selectedRole}`)
-    onRoleChange(user.id, selectedRole)
-    setHasChanges(false)
-    setIsModalOpen(false)
+  const handleConfirm = async () => {
+    try {
+      setIsSaving(true)
+      await onRoleChange(user.id, selectedRole)
+      setHasChanges(false)
+      setIsModalOpen(false)
+    } catch (error) {
+      console.error("Ошибка при сохранении роли:", error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const getRoleDisplayName = (role: UserRole): string => {
+    switch (role) {
+      case "Student":
+        return "Студент"
+      case "Teacher":
+        return "Преподаватель"
+      case "DeansEmployee":
+        return "Сотрудник деканата"
+      case "Admin":
+        return "Администратор"
+      default:
+        return role
+    }
   }
 
   return (
@@ -56,24 +76,28 @@ export const UserListItem = ({ user, onRoleChange }: UserListItemProps) => {
           className="role-select"
           value={selectedRole}
           onChange={(e) => handleRoleChange(e.target.value as UserRole)}
+          disabled={isSaving}
         >
           <option value="Student">Студент</option>
           <option value="Teacher">Преподаватель</option>
           <option value="DeansEmployee">Сотрудник деканата</option>
           <option value="Admin">Администратор</option>
         </select>
-        <button className={`save-button ${hasChanges ? "active" : ""}`} onClick={handleSave} disabled={!hasChanges}>
-          Сохранить
+        <button
+          className={`save-button ${hasChanges ? "active" : ""}`}
+          onClick={handleSave}
+          disabled={!hasChanges || isSaving}
+        >
+          {isSaving ? "Сохранение..." : "Сохранить"}
         </button>
       </div>
 
-      {/* Добавить модальное окно подтверждения */}
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirm}
         title="Подтверждение изменения роли"
-        message={`Вы уверены, что хотите изменить роль пользователя ${user.fullName} на "${selectedRole === "Student" ? "Студент" : selectedRole === "Teacher" ? "Преподаватель" : selectedRole === "DeansEmployee" ? "Сотрудник деканата" : "Администратор"}"?`}
+        message={`Вы уверены, что хотите изменить роль пользователя ${user.fullName} на "${getRoleDisplayName(selectedRole)}"?`}
         confirmText="Сохранить"
         cancelText="Отмена"
       />

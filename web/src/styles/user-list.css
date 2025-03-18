@@ -1,7 +1,7 @@
 .user-list {
     width: 100%;
-    max-width: 90vw;
-    min-width: 70vw;
+    max-width: 80vw;
+    min-width: 50rem;
     margin: 0 auto;
     padding: 10px;
     background-color: #fff;

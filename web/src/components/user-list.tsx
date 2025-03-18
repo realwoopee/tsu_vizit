@@ -3,7 +3,7 @@ import "../styles/user-list.css"
 
 interface UserListProps {
   users: User[]
-  onRoleChange: (userId: number, newRole: User["role"]) => void
+  onRoleChange: (userId: string | number, newRole: User["role"]) => void
 }
 
 export const UserList = ({ users, onRoleChange }: UserListProps) => {
@@ -14,7 +14,7 @@ export const UserList = ({ users, onRoleChange }: UserListProps) => {
   return (
     <div className="user-list">
       {users.map((user) => (
-        <UserListItem key={user.id} user={user} onRoleChange={onRoleChange} />
+        <UserListItem key={user.id.toString()} user={user} onRoleChange={onRoleChange} />
       ))}
     </div>
   )

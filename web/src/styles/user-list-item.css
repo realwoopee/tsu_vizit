@@ -72,13 +72,13 @@
 }
 
 .save-button.active {
-  background-color: #28a745;
+  background-color: #007AFF;
   color: white;
   opacity: 1;
 }
 
 .save-button.active:hover {
-  background-color: #218838;
+  background-color: #0069da;
 }
 
 .save-button:disabled {

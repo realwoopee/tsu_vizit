@@ -23,7 +23,7 @@ public class DocumentController(DocumentService _documentService, UserAccessor _
         return await _documentService.CreateDocument(absenceId, memoryStream.ToArray()).ToActionResult();
     }
     
-    [HttpPost("/api/absence/{absenceId}/delete")]
+    [HttpDelete("/api/absence/{absenceId}/delete")]
     public async Task<ActionResult> DeleteDocument(Guid docId)
     {
         return await _userAccessor.GetUserId()

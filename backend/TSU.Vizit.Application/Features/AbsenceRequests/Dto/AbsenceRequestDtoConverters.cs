@@ -1,5 +1,6 @@
 using FluentResults;
 using FluentResults.Extensions;
+using FluentResults.Extensions.AspNetCore;
 using TSU.Vizit.Application.Features.Documents.Dto;
 using TSU.Vizit.Contracts.AbsenceRequests;
 using TSU.Vizit.Contracts.Documents;
@@ -41,7 +42,7 @@ public static class AbsenceRequestDtoConverters
 
     public static AbsenceRequestPagedListDto ToDto(this AbsenceRequestPagedList model)
     {
-        return new AbsenceRequestPagedListDto()
+        return new AbsenceRequestPagedListDto
         {
             AbsenceRequests = model.AbsenceRequests.Select(ar => ar.ToDto()).ToList(),
             TotalCount = model.TotalCount

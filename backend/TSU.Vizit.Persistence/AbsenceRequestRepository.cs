@@ -1,5 +1,6 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
+using NeinLinq;
 using TSU.Vizit.Contracts.AbsenceRequests;
 using TSU.Vizit.Contracts.Utils;
 using TSU.Vizit.Domain;

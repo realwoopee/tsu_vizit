@@ -7,7 +7,6 @@ import FiltersBlock from './FiltersBlock';
 import Menu from './Menu';
 import AddAbsenceBlock from './AddAbsenceBlock';
 import { AppContext } from '..';
-import { IAbsence } from '../models/IAbsence';
 import { observer } from 'mobx-react-lite';
 
 type RootStackParamList = {
@@ -41,17 +40,17 @@ const ListOfAbsences = observer(({ navigation }: ListProps) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const userId = store.user.role === 'Student'?store.user.id : undefined;
+        const userId = store.userPermissions.canCheck? undefined : store.user.id;
         await store.getAbsences(userId, undefined, selectedStatus, selectedType, sortOrder === "asc" ? "TimeCreatedAsc" : "TimeCreatedDesc");
       }
       catch (error: any) {
         const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
-        Alert.alert(errorMessage);
+        console.log(errorMessage);
       }
     };
 
     loadData();
-  }, [sortOrder, selectedStatus, selectedType, fullName]);
+  }, [sortOrder, selectedStatus, selectedType, fullName, store.newAbsence]);
 
 
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
@@ -74,16 +73,17 @@ const ListOfAbsences = observer(({ navigation }: ListProps) => {
         keyExtractor={item => item.id.toString()}
         ListEmptyComponent={
           <View>
+            {store.userPermissions.canCreate &&
             <TouchableOpacity style={styles.button} onPress={() => setIsAddAbsenceBlockVisible(true)}>
               <Text style={[styles.headerTitle, { color: 'white' }]}>Добавить пропуск</Text>
             </TouchableOpacity>
-
+            }
             <Text style={styles.emptyText}>Пропуски отсутствуют</Text>
           </View>
         }
           renderItem={({ item, index }) => (
             <View style={index === store.absences.length - 1 ? styles.lastItem : null}>
-              {index === 0 && (
+              {(index === 0 && store.userPermissions.canCreate) && (
                 <TouchableOpacity style={styles.button} onPress={() => setIsAddAbsenceBlockVisible(true)}>
                   <Text style={[styles.headerTitle, {color: 'white'}]}>Добавить пропуск</Text>
                 </TouchableOpacity>

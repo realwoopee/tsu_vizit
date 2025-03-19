@@ -49,7 +49,7 @@ export default function Profile({ navigation }: ProfileProps) {
       navigation.navigate('Вход');
     } catch (error: any) {
       const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
-      Alert.alert(errorMessage);
+      console.log(errorMessage);
     }
   }
 
@@ -71,15 +71,22 @@ export default function Profile({ navigation }: ProfileProps) {
         await store.getProfile();
         const data = store.user;
         setInitialFullName(data.fullName);
+        console.log(data.id)
         setInitialEmail(data.email);
         setFullName(data.fullName);
         setEmail(data.email);
 
         data.role == 'Student' ? setRole('Студент') : data.role == 'Teacher' ? setRole('Преподаватель') : data.role == 'DeansEmployee' ? setRole('Деканат') : setRole('Администратор');
+
+        try {
+          await store.getPermissions();
+        } catch (error: any) {
+          throw error;
+        }
       }
       catch (error: any) {
         const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
-        Alert.alert(errorMessage);
+        console.log(errorMessage);
       }
     };
 

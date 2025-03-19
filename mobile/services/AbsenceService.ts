@@ -54,8 +54,14 @@ export default class AbsenceService{
     static async postDocument (id: string, uri: string, name: string, type: string): Promise<AxiosResponse<IDocument>> {
         const formData = new FormData();
     
-        const file = await fetch(uri).then(res => res.blob());
-        formData.append('file', file, name);
+        // const file = await fetch(uri).then(res => res.blob());
+        // formData.append('file', file, name);
+
+        formData.append('file', {
+            uri: uri,
+            name: name,
+            type: type,
+        } as any);
 
         return $api.post(`/absence/${id}/attach`, formData, {
             headers: {
@@ -63,5 +69,9 @@ export default class AbsenceService{
                 'Accept': 'text/plain'
             }
         });
+    }
+
+    static async putStatus (id: string, status: string): Promise<AxiosResponse<AbsenceResponse>> {
+        return $api.put(`/absence/${id}/status`, {status});
     }
 }

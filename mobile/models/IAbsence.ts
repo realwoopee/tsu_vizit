@@ -5,6 +5,7 @@ export interface IAbsence{
     timeCreated: string,
     timeFinalised: string,
     createdById: string,
+    createdBy: string,
     finalisedById: string | null,
     finalStatus: string,
     reason: string,

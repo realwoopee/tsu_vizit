@@ -107,6 +107,10 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
                     }
                 }
             }
+            documents.length = 0;
+            setBeginDate(new Date());
+            setEndDate(new Date());
+            setValue('null');
             closeModal();
         } catch (error: any) {
             const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";

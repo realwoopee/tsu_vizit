@@ -7,12 +7,19 @@ import { AuthResponse } from "../models/response/AuthResponse";
 import { API_URL } from "../http";
 import AbsenceService from "../services/AbsenceService";
 import { IAbsence } from "../models/IAbsence";
+import { IPermissions } from "../models/IPermissions";
 
 export default class Store{
     user = {} as IUser;
     isAuth = false;
     isLoading = false;
     absences = [] as IAbsence[];
+    newAbsence = {} as IAbsence;
+    userPermissions = {} as IPermissions;
+
+    setnewAbsence(newAbsence: IAbsence){
+        this.newAbsence = newAbsence;
+    }
 
     constructor(){
         makeAutoObservable(this);
@@ -32,6 +39,10 @@ export default class Store{
 
     setLoading(bool: boolean){
         this.isLoading = bool;
+    }
+
+    setUserPermissions(permissions: IPermissions){
+        this.userPermissions = permissions;
     }
 
     handleApiError(e: unknown) {
@@ -82,6 +93,9 @@ export default class Store{
            AsyncStorage.removeItem('refreshToken');
            this.setAuth(false);
            this.setUser({} as IUser)
+           this.setAbsences([] as IAbsence[]);
+           this.setnewAbsence({} as IAbsence);
+           this.setUserPermissions({} as IPermissions);
         }
         catch(e)
         {   
@@ -138,6 +152,15 @@ export default class Store{
         finally
         {
             this.setLoading(false);
+        }
+    }
+
+    async getPermissions() {
+        try{
+            const response = await AuthService.getPermissions();
+            this.setUserPermissions(response.data);
+        }catch(e) {
+            this.handleApiError(e);
         }
     }
 
@@ -205,7 +228,7 @@ export default class Store{
             const response = await AbsenceService.postAbsence(
             absencePeriodStart, absencePeriodFinish, reason);
 
-            this.absences.push(response.data);
+            this.setnewAbsence(response.data);
 
             return response.data as IAbsence;
         } catch(e) {
@@ -243,6 +266,24 @@ export default class Store{
                 this.setAbsences(newAbsences);
             }
         }catch(e) {
+            this.handleApiError(e);
+        }
+    }
+
+    async putStatus (id: string, status: string) {
+        try {
+            await AbsenceService.putStatus(id, status);
+
+            const index = this.absences.findIndex(absence => absence.id === id);
+
+            if (index !== -1) {
+                const newAbsences = [...this.absences]; 
+                const updatedAbsence = this.absences[index];
+                updatedAbsence.finalStatus = status;
+                newAbsences[index] = updatedAbsence; 
+                this.setAbsences(newAbsences);
+            }
+        } catch(e) {
             this.handleApiError(e);
         }
     }

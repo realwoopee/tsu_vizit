@@ -3,6 +3,7 @@ import $api from "../http";
 import { AuthResponse } from "../models/response/AuthResponse";
 import {IUser} from "../models/IUser";
 import { SessionResponse } from "../models/response/SessionResponse";
+import { IPermissions } from "../models/IPermissions";
 
 export default class AuthService{
     static async login (email: string, password: string): Promise<AxiosResponse<AuthResponse>>{
@@ -27,6 +28,10 @@ export default class AuthService{
 
     static async editProfile (fullName: string, email: string): Promise<AxiosResponse<IUser>>{
         return $api.put<IUser>('/account/profile', {fullName, email})
+    }
+
+    static async getPermissions (): Promise<AxiosResponse<IPermissions>>{
+        return $api.get('/account/permissions')
     }
 }
 

@@ -81,7 +81,7 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onAp
       case 'Family':
         return 'Семейные обстоятельства';
       case 'Sick':
-        return 'Болезнь';
+        return 'Больничный';
       default:
         return 'Причины неизвестны';
     }
@@ -101,13 +101,13 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onAp
                 style={[styles.filterButton, tempSortOrder === 'desc' && styles.activeFilterButton]}
                 onPress={() => setTempSortOrder('desc')}
               >
-                <Text style={styles.filterButtonText}>По убыванию</Text>
+                <Text style={styles.filterButtonText}>Сначала новые</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.filterButton, tempSortOrder === 'asc' && styles.activeFilterButton]}
                 onPress={() => setTempSortOrder('asc')}
               >
-                <Text style={styles.filterButtonText}>По возрастанию</Text>
+                <Text style={styles.filterButtonText}>Сначала старые</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -162,7 +162,7 @@ const FiltersBlock: React.FC<FiltersBlockProps> = ({ isVisible, closeModal, onAp
             </View>
           </View>
 
-          {store.user.role !== 'Student' && (
+          {store.userPermissions.canCheck && (
             <View style={styles.modalSection}>
               <Text style={styles.sectionTitle}>Фильтр по имени</Text>
               <View style={styles.filterOptions}>
@@ -286,6 +286,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#a8a8a8',
     padding: 10,
+    width: '100%'
   },
 })
 export default FiltersBlock;

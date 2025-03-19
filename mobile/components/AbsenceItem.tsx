@@ -18,6 +18,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { IAbsence } from '../models/IAbsence';
 import { AppContext } from '..';
+import UpdStatusBlock from './UpdStatusBlock';
 
 
 type Doc = {
@@ -35,6 +36,8 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [endDate, setEndDate] = useState(new Date(item.absencePeriodFinish));
+  
+  const [isUpdStatusVisible, setIsUpdStatusVisible] = useState(false);
 
   const { store } = useContext(AppContext);
 
@@ -148,18 +151,22 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
           <Text style={styles.docType}>{doc.type}</Text>
         </View>
       </TouchableOpacity>
+      
       <TouchableOpacity
         style={styles.docButton}
         onPress={() => downloadFile(doc.uri, doc.name)}
       >
         <AntDesign name="download" size={20} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.docButton}
-      // onPress={() => onRemoveDocument(item.id, doc.uri)}
-      >
-        <Ionicons name="trash-outline" size={20} color="#FF0000" />
-      </TouchableOpacity>
+
+      {(item.createdById === store.user.id || store.userPermissions.isAdmin) && 
+        <TouchableOpacity
+          style={styles.docButton}
+        // onPress={() => onRemoveDocument(item.id, doc.uri)}
+        >
+          <Ionicons name="trash-outline" size={20} color="#FF0000" />
+        </TouchableOpacity>
+      }
     </View>
 
   );
@@ -194,22 +201,26 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
   }
 
   const uploadFileButtonStyle = item.attachments.length < 5? styles.addDocButton : [styles.addDocButton, styles.disabledButton];
+  const editableDateStyle = item.createdById !== store.user.id && !store.userPermissions.isAdmin? styles.dateValue : [styles.dateValue, styles.editableDate]
 
 
   return (
     <View style={styles.itemContainer}>
 
-      <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.finalStatus) }]} />
+      <TouchableOpacity 
+      style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.finalStatus) }]} 
+      onPress={() => setIsUpdStatusVisible(true)}
+      disabled={ !store.userPermissions.canApprove } />
 
       <View style={styles.contentContainer}>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={styles.header}>
-            <Text style={styles.name}>{store.user.fullName}</Text>
+            <Text style={styles.name}>{item.createdBy}</Text>
             <Text style={styles.type}>{setReason(item.reason)}</Text>
           </View>
 
-          {item.finalStatus === 'Unknown' && (
+          {((item.finalStatus === 'Unknown' && store.user.id === item.createdById) || store.userPermissions.isAdmin)&& (
             <TouchableOpacity onPress={() => deleteAbsence(item.id)}>
               <Ionicons name="trash-outline" size={25} color="#FF0000" />
             </TouchableOpacity>
@@ -223,8 +234,11 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
           </View>
           <View style={styles.dateItem}>
             <Text style={styles.dateLabel}>Конец:</Text>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Text style={[styles.dateValue, styles.editableDate]}>
+            <TouchableOpacity 
+              onPress={() => setShowDatePicker(true)}
+              disabled={item.createdById !== store.user.id && !store.userPermissions.isAdmin}
+            >
+              <Text style={[styles.dateValue, editableDateStyle]}>
                 {endDate.toISOString().split('T')[0]}
               </Text>
             </TouchableOpacity>
@@ -235,7 +249,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
         <View style={styles.docsContainer}>
           <TouchableOpacity
             style={styles.docsButton}
-            onPress={() => setShowDocsModal(true)}
+            onPress={() => setShowDocsModal(true)} 
           >
             <Ionicons name="document-attach-outline" size={20} color="#666" />
             <Text style={styles.docsText}>
@@ -286,15 +300,17 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
                   }
                 />
 
-                <TouchableOpacity
-                  style={uploadFileButtonStyle} 
-                  disabled={item.attachments.length >= 5}
-                  onPress={() => {
-                    handleAddDocument();
-                  }}
-                >
-                  <Text style={styles.addDocButtonText}>Добавить документ</Text>
-                </TouchableOpacity>
+                {(item.createdById === store.user.id || store.userPermissions.isAdmin) && 
+                  <TouchableOpacity
+                    style={uploadFileButtonStyle} 
+                    disabled={item.attachments.length >= 5}
+                    onPress={() => {
+                      handleAddDocument();
+                    }}
+                  >
+                    <Text style={styles.addDocButtonText}>Добавить документ</Text>
+                  </TouchableOpacity>
+                }
 
               </View>
             </TouchableWithoutFeedback>
@@ -303,6 +319,8 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
         </TouchableWithoutFeedback>
 
       </Modal>
+
+      <UpdStatusBlock isVisible={isUpdStatusVisible} closeModal={() => setIsUpdStatusVisible(false)} item={item}/>
 
     </View>
   );
@@ -332,7 +350,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#a8a8a8'
 },
   statusIndicator: {
-    width: 8,
+    width: 15,
     borderRadius: 4,
     marginRight: 12,
   },

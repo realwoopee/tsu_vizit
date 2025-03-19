@@ -1,7 +1,11 @@
+"use client"
+
 import { Link, useNavigate } from "react-router-dom"
-import { LogOut } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
+import { ChevronDown, LogOut, User, Layers } from 'lucide-react'
 import "../styles/nav-bar.css"
+import ProfileModal from "./profile-modal"
+import SessionsModal from "./sessions-modal"
 
 type UserRole = "guest" | "student" | "admin"
 
@@ -13,10 +17,17 @@ interface NavBarProps {
 export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
   const navigate = useNavigate()
   const [profileName, setProfileName] = useState<string | null>(null)
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDI0MjM2MjgsIlVzZXJJZCI6IjAxOTU5MTRlLWRkMGYtN2Q5Ny04YjdkLWIzMGU4NzA1NTQyZSIsIlNlc3Npb25JZCI6IjA5Mjg1OWE0LTFhYWUtNDc4Yi04MjVhLTUwMzAzMmIzMWZkZCIsImlhdCI6MTc0MjQyMDAyOCwibmJmIjoxNzQyNDIwMDI4fQ.mxcAWdoQz0P9tIH4vAIbktYUepNVcTPMaNUgv54Wi0I"
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [isSessionsModalOpen, setIsSessionsModalOpen] = useState(false)
+  
+  const menuRef = useRef<HTMLDivElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const fetchUserProfile = async () => {
     try {
+      // Заглушка для Bearer токена
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDI0MjUxMTgsIlVzZXJJZCI6IjAxOTU5MTRlLWRkMGYtN2Q5Ny04YjdkLWIzMGU4NzA1NTQyZSIsIlNlc3Npb25JZCI6ImE3NTJmYzNhLTMyY2UtNDhkYi1iNTAyLTEyZjAyNjEwNzc0YyIsImlhdCI6MTc0MjQyMTUxOCwibmJmIjoxNzQyNDIxNTE4fQ.GAvG25PkIrwlBNMiEUBbRKJGdAfM3hoCgXzhXKvpUOI"
 
       const profileResponse = await fetch("https://vizit.90.188.95.63.sslip.io/api/account/profile", {
         method: "GET",
@@ -39,13 +50,37 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
     }
   }
 
-  fetchUserProfile()
+  useEffect(() => {
+    if (userRole !== "guest") {
+      fetchUserProfile()
+    }
+  }, [userRole])
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isMenuOpen && 
+        menuRef.current && 
+        !menuRef.current.contains(event.target as Node) &&
+        menuButtonRef.current && 
+        !menuButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isMenuOpen])
 
   const handleLogout = async () => {
     try {
+      // Заглушка для Bearer токена
+      const token = "example_bearer_token"
 
-      const sessionResponse = await fetch("https://vizit.90.188.95.63.sslip.io/api/session", {
+      const sessionResponse = await fetch("https://vizit.90.188.95.63.sslip.io/api/session/current", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -79,8 +114,17 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
     }
   }
 
+  const displayName = profileName || userName || "Профиль"
 
-  const displayName = profileName || "Профиль"
+  const handleProfileClick = () => {
+    setIsProfileModalOpen(true)
+    setIsMenuOpen(false)
+  }
+
+  const handleSessionsClick = () => {
+    setIsSessionsModalOpen(true)
+    setIsMenuOpen(false)
+  }
 
   return (
     <nav className="nav-bar">
@@ -110,17 +154,50 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
             <Link to="/passes" className="nav-link">
               Список пропусков
             </Link>
-            <Link to="/profile" className="nav-link">
-              {displayName}
-            </Link>
-            <button className="nav-button logout-button" onClick={handleLogout}>
-              <LogOut size={20} />
-              <span>Выйти</span>
+            
+            <button className="nav-profile" onClick={handleProfileClick}>
+              <User size={18} />
+              <span>{displayName}</span>
             </button>
+            
+            <div className="menu-container">
+              <button 
+                className="nav-menu-button" 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                ref={menuButtonRef}
+              >
+                <ChevronDown size={20} />
+              </button>
+              
+              {isMenuOpen && (
+                <div className="nav-dropdown-menu" ref={menuRef}>
+                  <button className="dropdown-item" onClick={handleSessionsClick}>
+                    <Layers size={16} className="icon-left" />
+                    <span>Сессии</span>
+                  </button>
+                  <button className="dropdown-item delete" onClick={handleLogout}>
+                    <LogOut size={16} className="icon-left" />
+                    <span>Выйти</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         )}
       </div>
+
+      {isProfileModalOpen && (
+        <ProfileModal 
+          onClose={() => setIsProfileModalOpen(false)} 
+          onProfileUpdated={fetchUserProfile}
+        />
+      )}
+
+      {isSessionsModalOpen && (
+        <SessionsModal 
+          onClose={() => setIsSessionsModalOpen(false)} 
+        />
+      )}
     </nav>
   )
 }
-

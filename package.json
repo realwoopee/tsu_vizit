@@ -1,0 +1,14 @@
+{
+  "name": "tsu_vizit",
+  "packageManager": "yarn@4.0.2",
+  "private": true,
+  "scripts": {
+    "backend-start": "cd backend && docker compose up -d",
+    "generate-api-client": "yarn workspace tsu-vizit-shared generate-api-client"
+  },
+  "workspaces": [
+    "mobile/",
+    "web/",
+    "tsu-vizit-shared/"
+  ]
+}

@@ -35,7 +35,6 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
     [HttpPut("profile")]
     public async Task<ActionResult<UserDto>> EditProfile([FromBody] UserEditProfileModel model)
     {
-        // Does this require extra authentication?
         return await _userAccessor.GetUserId()
             .Bind(async Task<Result<UserDto>> (userId) => await _userService.EditUserById(userId, model))
             .ToActionResult();
@@ -56,12 +55,13 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
     [HttpPut("{id}/profile/role")]
     public async Task<ActionResult<UserPermissionsDto>> EditUserRole(Guid id, UserRole userRole)
     {
-        var userIdResult =  _userAccessor.GetUserId();
-        
+        var userIdResult = _userAccessor.GetUserId();
+
         return await userIdResult
             .Bind(async Task<Result<UserPermissionsDto>> (userId) => await _userService.GetUserPermissions(userId))
             .Bind((userRoles) => Result.OkIf(userRoles.IsAdmin, new ForbiddenError("You are not an admin.")))
-            .Bind(() => Task.FromResult(Result.FailIf(userIdResult.Value == id, new ValidationError("Cannot edit your own role"))))
+            .Bind(() => Task.FromResult(Result.FailIf(userIdResult.Value == id,
+                new ValidationError("Cannot edit your own role"))))
             .Bind(async () => await _userService.EditUserRole(new UserEditRoleModel { Id = id, UserRole = userRole }))
             .ToActionResult();
     }

@@ -3,6 +3,7 @@ using FluentResults.Extensions;
 using FluentResults.Extensions.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using TSU.Vizit.Application.Features.AbsenceRequests.Dto;
 using TSU.Vizit.Application.Features.Users;
 using TSU.Vizit.Application.Features.Users.Dto;
@@ -20,11 +21,22 @@ public class AbsenceRequestController(
     UserAccessor _userAccessor,
     UserService _userService) : ControllerBase
 {
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AbsenceRequestDto>> GetAbsenceRequest(Guid id)
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<AbsenceRequestDto>> (curUserId) =>
+                await _absenceRequestService.GetAbsenceRequest(id, curUserId))
+            .ToActionResult();
+    }
+
     [HttpGet]
     public async Task<ActionResult<List<AbsenceRequestDto>>> GetAllAbsenceRequests(
         [FromQuery] GetAllAbsenceRequestsModel model)
     {
-        return await _absenceRequestService.GetAllAbsenceRequests(model).ToActionResult();
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<AbsenceRequestPagedListDto>> (curUserId) =>
+                await _absenceRequestService.GetAllAbsenceRequests(model, curUserId)).ToActionResult();
     }
 
     [HttpPost]

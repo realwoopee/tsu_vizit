@@ -7,6 +7,7 @@ public class AbsenceRequest
     public DateOnly AbsencePeriodFinish { get; set; }
     public DateTime TimeCreated { get; set; }
     public DateTime TimeFinalised { get; set; }
+    public User CreatedBy { get; set; }
     public Guid CreatedById { get; set; }
     public Guid? FinalisedById { get; set; }
     public AbsenceRequestResult? FinalStatus { get; set; }

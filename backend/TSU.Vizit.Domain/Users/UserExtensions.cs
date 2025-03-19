@@ -13,13 +13,13 @@ public static class UserExtensions
             UserRole.Teacher => new UserPermissions
             {
                 CanCheck = true,
-                CanExportAll = true
+                CanExportAll = true,
             },
             UserRole.DeansEmployee => new UserPermissions
             {
                 CanCheck = true,
                 CanApprove = true,
-                CanExportAll = true
+                CanExportAll = true,
             },
             UserRole.Admin => new UserPermissions
             {
@@ -27,7 +27,7 @@ public static class UserExtensions
                 CanApprove = true,
                 CanCreate = true,
                 IsAdmin = true,
-                CanExportAll = true
+                CanExportAll = true,
             },
             _ => throw new ArgumentOutOfRangeException()
         };

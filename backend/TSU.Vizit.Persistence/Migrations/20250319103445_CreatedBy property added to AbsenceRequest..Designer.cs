@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TSU.Vizit.Domain;
@@ -13,9 +14,11 @@ using TSU.Vizit.Persistence;
 namespace TSU.Vizit.Persistence.Migrations
 {
     [DbContext(typeof(VizitDbContext))]
-    partial class VizitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250319103445_CreatedBy property added to AbsenceRequest.")]
+    partial class CreatedBypropertyaddedtoAbsenceRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +64,7 @@ namespace TSU.Vizit.Persistence.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("AbsenceRequest", (string)null);
+                    b.ToTable("AbsenceRequest");
                 });
 
             modelBuilder.Entity("TSU.Vizit.Domain.Document", b =>
@@ -81,7 +84,7 @@ namespace TSU.Vizit.Persistence.Migrations
 
                     b.HasIndex("AbsenceRequestId");
 
-                    b.ToTable("Document", (string)null);
+                    b.ToTable("Document");
                 });
 
             modelBuilder.Entity("TSU.Vizit.Domain.Users.User", b =>
@@ -119,7 +122,7 @@ namespace TSU.Vizit.Persistence.Migrations
                     b.HasIndex("StudentIdNumber")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("TSU.Vizit.Domain.AbsenceRequest", b =>

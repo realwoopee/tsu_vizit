@@ -5,6 +5,7 @@ namespace TSU.Vizit.Contracts.AbsenceRequests;
 
 public class AbsenceRequestListFilter
 {
+    public string? CreatedBy { get; set; }
     public Guid? CreatedById { get; set; }
     public Guid? FinalisedById { get; set; }
     public AbsenceRequestResult? FinalStatus { get; set; }

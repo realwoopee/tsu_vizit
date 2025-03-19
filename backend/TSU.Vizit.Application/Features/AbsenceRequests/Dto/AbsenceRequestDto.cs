@@ -11,8 +11,9 @@ public class AbsenceRequestDto
     public DateTime TimeCreated { get; set; }
     public DateTime TimeFinalised { get; set; }
     public Guid CreatedById { get; set; }
+    public string? CreatedBy { get; set; }
     public Guid? FinalisedById { get; set; }
     public AbsenceRequestResult? FinalStatus { get; set; }
     public AbsenceReason Reason { get; set; }
-    public List<DocumentDto> Attachments { get; set; } = [];
+    public List<DocumentShortDto> Attachments { get; set; } = [];
 }

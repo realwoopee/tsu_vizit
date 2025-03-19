@@ -45,6 +45,7 @@ public class AbsenceRequestService(
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
+
         
         var filter = new AbsenceRequestListFilter
         {
@@ -54,9 +55,12 @@ public class AbsenceRequestService(
             FinalStatus = model.FinalStatus,
             Reason = model.Reason
         };
-        
+
         if (!userPermissions.Value.CanViewAlienAbsences)
+        {
             filter.CreatedById = curUserId;
+        }
+        
         
         var absenceRequestPagedList =
             await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination);

@@ -36,7 +36,7 @@ public static class AbsenceRequestDtoConverters
             Reason = model.Reason,
             TimeCreated = model.TimeCreated,
             TimeFinalised = model.TimeFinalised,
-            Attachments = model.Attachments.Select(d => d.ToDto()).ToList()
+            Attachments = model.Attachments.Select(d => d.ToShortDto()).ToList()
         };
         if (model.CreatedBy != null)
             result.CreatedBy = model.CreatedBy.FullName;

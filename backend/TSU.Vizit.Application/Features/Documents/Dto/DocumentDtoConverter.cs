@@ -14,4 +14,12 @@ public static class DocumentDtoConverter
             Attachment = document.Attachment
         };
     }
+
+    public static DocumentShortDto ToShortDto(this Document document)
+    {
+        return new DocumentShortDto
+        {
+            Id = document.Id
+        };
+    }
 }

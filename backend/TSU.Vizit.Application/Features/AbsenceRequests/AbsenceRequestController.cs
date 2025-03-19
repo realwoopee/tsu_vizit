@@ -20,12 +20,14 @@ public class AbsenceRequestController(
     UserAccessor _userAccessor,
     UserService _userService) : ControllerBase
 {
-    
+
     [HttpGet]
     public async Task<ActionResult<AbsenceRequestDto>> GetAbsenceRequest(Guid id)
     {
-        var curUserId = _userAccessor.GetUserId();
-        return await _absenceRequestService.GetAbsenceRequest(id, curUserId).ToActionResult();
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<AbsenceRequestDto>> (curUserId) =>
+                await _absenceRequestService.GetAbsenceRequest(id, curUserId))
+            .ToActionResult();
     }
     
     [HttpGet]

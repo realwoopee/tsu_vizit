@@ -41,7 +41,7 @@ const ListOfAbsences = observer(({ navigation }: ListProps) => {
     const loadData = async () => {
       try {
         const userId = store.userPermissions.canCheck? undefined : store.user.id;
-        await store.getAbsences(userId, undefined, selectedStatus, selectedType, sortOrder === "asc" ? "TimeCreatedAsc" : "TimeCreatedDesc");
+        await store.getAbsences(userId, undefined, fullName, selectedStatus, selectedType, sortOrder === "asc" ? "TimeCreatedAsc" : "TimeCreatedDesc");
       }
       catch (error: any) {
         const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";

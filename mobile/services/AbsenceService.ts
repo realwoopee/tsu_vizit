@@ -9,6 +9,7 @@ export default class AbsenceService{
     static async getAbsences (
         CreatedById?: string, 
         FinalisedById?: string, 
+        CreatedBy?: string,
         FinalStatus?: string, 
         Reason?: string, 
         Sorting?: string, 
@@ -18,6 +19,7 @@ export default class AbsenceService{
         const params = {
             CreatedById,
             FinalisedById,
+            CreatedBy,
             FinalStatus,
             Reason,
             Sorting,
@@ -73,5 +75,9 @@ export default class AbsenceService{
 
     static async putStatus (id: string, status: string): Promise<AxiosResponse<AbsenceResponse>> {
         return $api.put(`/absence/${id}/status`, {status});
+    }
+
+    static async deleteDocument(id: string): Promise<AxiosResponse<void>>{
+        return $api.delete(`/absence/${id}/delete`);
     }
 }

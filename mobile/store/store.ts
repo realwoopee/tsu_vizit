@@ -8,6 +8,7 @@ import { API_URL } from "../http";
 import AbsenceService from "../services/AbsenceService";
 import { IAbsence } from "../models/IAbsence";
 import { IPermissions } from "../models/IPermissions";
+import base64 from 'react-native-base64';
 
 export default class Store{
     user = {} as IUser;
@@ -168,6 +169,7 @@ export default class Store{
     async getAbsences (
         CreatedById?: string, 
         FinalisedById?: string, 
+        CreatedBy?: string,
         FinalStatus?: string, 
         Reason?: string, 
         Sorting?: string, 
@@ -178,6 +180,7 @@ export default class Store{
            const response = await AbsenceService.getAbsences(
             CreatedById,
             FinalisedById,
+            CreatedBy,
             FinalStatus,
             Reason,
             Sorting,
@@ -283,6 +286,26 @@ export default class Store{
                 newAbsences[index] = updatedAbsence; 
                 this.setAbsences(newAbsences);
             }
+        } catch(e) {
+            this.handleApiError(e);
+        }
+    }
+
+    async deleteDocument(id: string, absenceId:string){
+        try {
+            const response = await AbsenceService.deleteDocument(id);
+
+            const index = this.absences.findIndex(absence => absence.id === absenceId);
+
+            if (index !== -1) {
+                const newAbsences = [...this.absences]; 
+                const updatedAbsence = { ...newAbsences[index] };
+                updatedAbsence.attachments = updatedAbsence.attachments.filter(att => att.id !== id);
+                newAbsences[index] = updatedAbsence; 
+                this.setAbsences(newAbsences);
+            }
+            
+            
         } catch(e) {
             this.handleApiError(e);
         }

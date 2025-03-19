@@ -19,6 +19,7 @@ import * as Sharing from 'expo-sharing';
 import { IAbsence } from '../models/IAbsence';
 import { AppContext } from '..';
 import UpdStatusBlock from './UpdStatusBlock';
+import { IDocument } from '../models/IDocument';
 
 
 type Doc = {
@@ -128,7 +129,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
       if (res.assets && res.assets.length > 0) {
         const file = res.assets[0];
         try {
-          await store.postDocument(item.id, file.uri, file.name || 'unknown', file.mimeType || 'unknown');
+          const res = await store.postDocument(item.id, file.uri, file.name || 'unknown', file.mimeType || 'unknown');
         } catch (error: any) {
           const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
           Alert.alert(errorMessage);
@@ -140,29 +141,38 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
     }
   }
 
+  const deleteDocument = async (id:string, absenseId:string = item.id) => {
+    try {
+      await store.deleteDocument(id, absenseId);
+    } catch (error: any) {
+      const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+      console.log(errorMessage);
+    }
+  }
 
 
-  const renderDocumentItem = ({ item: doc }: { item: Doc }) => (
+
+  const renderDocumentItem = ({ item: doc }: { item: IDocument }) => (
     <View style={styles.docItemContainer}>
       <TouchableOpacity style={styles.docItem}>
         <Ionicons name="document-text-outline" size={20} color="#666" />
         <View style={styles.docInfo}>
-          <Text style={styles.docName}>{doc.name}</Text>
-          <Text style={styles.docType}>{doc.type}</Text>
+          <Text style={styles.docName}>{/*doc.name*/}</Text>
+          <Text style={styles.docType}>{/*doc.type*/}</Text>
         </View>
       </TouchableOpacity>
       
       <TouchableOpacity
         style={styles.docButton}
-        onPress={() => downloadFile(doc.uri, doc.name)}
+        /*onPress={() => downloadFile(doc.uri, doc.name)}*/
       >
         <AntDesign name="download" size={20} color="black" />
       </TouchableOpacity>
 
-      {(item.createdById === store.user.id || store.userPermissions.isAdmin) && 
+      {((item.createdById === store.user.id && item.finalStatus === 'Unknown' || store.userPermissions.isAdmin) && item.attachments.length > 1) && 
         <TouchableOpacity
           style={styles.docButton}
-        // onPress={() => onRemoveDocument(item.id, doc.uri)}
+          onPress={async () => deleteDocument(doc.id)}
         >
           <Ionicons name="trash-outline" size={20} color="#FF0000" />
         </TouchableOpacity>
@@ -201,7 +211,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
   }
 
   const uploadFileButtonStyle = item.attachments.length < 5? styles.addDocButton : [styles.addDocButton, styles.disabledButton];
-  const editableDateStyle = item.createdById !== store.user.id && !store.userPermissions.isAdmin? styles.dateValue : [styles.dateValue, styles.editableDate]
+  const editableDateStyle = (item.createdById !== store.user.id || item.finalStatus === 'Declined') && !store.userPermissions.isAdmin? styles.dateValue : [styles.dateValue, styles.editableDate]
 
 
   return (
@@ -236,7 +246,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
             <Text style={styles.dateLabel}>Конец:</Text>
             <TouchableOpacity 
               onPress={() => setShowDatePicker(true)}
-              disabled={item.createdById !== store.user.id && !store.userPermissions.isAdmin}
+              disabled={(item.createdById !== store.user.id || item.finalStatus === 'Declined') && !store.userPermissions.isAdmin}
             >
               <Text style={[styles.dateValue, editableDateStyle]}>
                 {endDate.toISOString().split('T')[0]}
@@ -294,13 +304,13 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
                 <FlatList
                   data={item.attachments}
                   renderItem={renderDocumentItem}
-                  keyExtractor={(doc) => doc.uri}
+                  keyExtractor={(doc) => doc.id}
                   ListEmptyComponent={
                     <Text style={styles.emptyText}>Документы отсутствуют</Text>
                   }
                 />
 
-                {(item.createdById === store.user.id || store.userPermissions.isAdmin) && 
+                {(item.createdById === store.user.id && item.finalStatus === 'Unknown'|| store.userPermissions.isAdmin) && 
                   <TouchableOpacity
                     style={uploadFileButtonStyle} 
                     disabled={item.attachments.length >= 5}

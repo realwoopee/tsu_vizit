@@ -22,7 +22,7 @@ namespace TSU.Vizit.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "absence_reason", new[] { "family", "studying", "sick" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "absence_reason", new[] { "personal", "family", "sick" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "absence_request_result", new[] { "unknown", "approved", "declined" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "user_role", new[] { "student", "teacher", "deans_employee", "admin" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -61,7 +61,7 @@ namespace TSU.Vizit.Persistence.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("AbsenceRequest");
+                    b.ToTable("AbsenceRequest", (string)null);
                 });
 
             modelBuilder.Entity("TSU.Vizit.Domain.Document", b =>
@@ -81,7 +81,7 @@ namespace TSU.Vizit.Persistence.Migrations
 
                     b.HasIndex("AbsenceRequestId");
 
-                    b.ToTable("Document");
+                    b.ToTable("Document", (string)null);
                 });
 
             modelBuilder.Entity("TSU.Vizit.Domain.Users.User", b =>
@@ -119,7 +119,7 @@ namespace TSU.Vizit.Persistence.Migrations
                     b.HasIndex("StudentIdNumber")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("TSU.Vizit.Domain.AbsenceRequest", b =>

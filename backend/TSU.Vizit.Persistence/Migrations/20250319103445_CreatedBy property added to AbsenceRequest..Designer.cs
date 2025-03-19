@@ -25,7 +25,7 @@ namespace TSU.Vizit.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "absence_reason", new[] { "family", "studying", "sick" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "absence_reason", new[] { "personal", "family", "sick" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "absence_request_result", new[] { "unknown", "approved", "declined" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "user_role", new[] { "student", "teacher", "deans_employee", "admin" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);

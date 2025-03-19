@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using TSU.Vizit.Domain;
 
 namespace TSU.Vizit.Application.Features.Documents.Dto;
@@ -9,6 +10,7 @@ public static class DocumentDtoConverter
         return new DocumentDto
         {
             Id = document.Id,
+            AbsenceRequestId = document.AbsenceRequestId,
             Attachment = document.Attachment
         };
     }

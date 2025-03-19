@@ -13,7 +13,7 @@ namespace TSU.Vizit.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:Enum:absence_reason", "family,studying,sick")
+                .Annotation("Npgsql:Enum:absence_reason", "personal,family,sick")
                 .Annotation("Npgsql:Enum:absence_request_result", "unknown,approved,declined")
                 .Annotation("Npgsql:Enum:user_role", "student,teacher,deans_employee,admin")
                 .OldAnnotation("Npgsql:Enum:user_role", "student,teacher,deans_employee,admin");
@@ -91,7 +91,7 @@ namespace TSU.Vizit.Persistence.Migrations
 
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:Enum:user_role", "student,teacher,deans_employee,admin")
-                .OldAnnotation("Npgsql:Enum:absence_reason", "family,studying,sick")
+                .OldAnnotation("Npgsql:Enum:absence_reason", "personal,family,sick")
                 .OldAnnotation("Npgsql:Enum:absence_request_result", "unknown,approved,declined")
                 .OldAnnotation("Npgsql:Enum:user_role", "student,teacher,deans_employee,admin");
         }

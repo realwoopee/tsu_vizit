@@ -14,14 +14,12 @@ public static class UserExtensions
             {
                 CanCheck = true,
                 CanExportAll = true,
-                CanViewAlienAbsences = true
             },
             UserRole.DeansEmployee => new UserPermissions
             {
                 CanCheck = true,
                 CanApprove = true,
                 CanExportAll = true,
-                CanViewAlienAbsences = true
             },
             UserRole.Admin => new UserPermissions
             {
@@ -30,7 +28,6 @@ public static class UserExtensions
                 CanCreate = true,
                 IsAdmin = true,
                 CanExportAll = true,
-                CanViewAlienAbsences = true
             },
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -44,5 +41,4 @@ public class UserPermissions
     public bool CanApprove { get; set; } = false;
     public bool IsAdmin { get; set; } = false;
     public bool CanExportAll { get; set; } = false;
-    public bool CanViewAlienAbsences { get; set; } = false;
 }

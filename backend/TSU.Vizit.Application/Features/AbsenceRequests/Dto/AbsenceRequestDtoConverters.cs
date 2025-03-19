@@ -25,13 +25,12 @@ public static class AbsenceRequestDtoConverters
 
     public static AbsenceRequestDto ToDto(this AbsenceRequest model)
     {
-        return new AbsenceRequestDto
+        var result = new AbsenceRequestDto
         {
             Id = model.Id,
             AbsencePeriodStart = model.AbsencePeriodStart,
             AbsencePeriodFinish = model.AbsencePeriodFinish,
             FinalisedById = model.FinalisedById,
-            CreatedBy = model.CreatedBy.FullName,
             CreatedById = model.CreatedById,
             FinalStatus = model.FinalStatus,
             Reason = model.Reason,
@@ -39,6 +38,10 @@ public static class AbsenceRequestDtoConverters
             TimeFinalised = model.TimeFinalised,
             Attachments = model.Attachments.Select(d => d.ToDto()).ToList()
         };
+        if (model.CreatedBy != null)
+            result.CreatedBy = model.CreatedBy.FullName;
+        
+        return result;
     }
 
     public static AbsenceRequestPagedListDto ToDto(this AbsenceRequestPagedList model)

@@ -10,5 +10,4 @@ public class UserPermissionsDto
     public bool CanApprove { get; set; } = false;
     public bool IsAdmin { get; set; } = false;
     public bool CanExportAll { get; set; } = false;
-    public bool CanViewAlienAbsences { get; set; } = false;
 }

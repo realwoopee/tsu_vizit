@@ -14,8 +14,16 @@ namespace TSU.Vizit.Application.Features.Documents;
 [Route("api/document")]
 public class DocumentController(DocumentService _documentService, UserAccessor _userAccessor) : ControllerBase
 {
+    [HttpGet("{id}")]
+    public async Task<ActionResult<DocumentDto>> GetDocument(Guid id)
+    {
+        return await _userAccessor.GetUserId()
+            .Bind(async Task<Result<DocumentDto>> (curUserId) => await _documentService.GetDocument(id, curUserId))
+            .ToActionResult();
+    }
+    
     [HttpPost("/api/absence/{absenceId}/attach")]
-    public async Task<ActionResult<Document>> AttachDocument(Guid absenceId, IFormFile file)
+    public async Task<ActionResult<DocumentDto>> AttachDocument(Guid absenceId, IFormFile file)
     {
         var curUserId = _userAccessor.GetUserId();
         using var memoryStream = new MemoryStream();

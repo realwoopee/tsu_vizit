@@ -9,6 +9,7 @@ namespace TSU.Vizit.Persistence;
 
 public class DocumentRepository(VizitDbContext dbContext) : IDocumentRepository
 {
+    
     public async Task<Result<Document>> GetDocumentById(Guid id)
     {
         var result = await dbContext.Document.FirstOrDefaultAsync(document => document.Id == id);

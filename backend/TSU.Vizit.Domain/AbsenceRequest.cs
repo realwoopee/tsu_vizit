@@ -24,7 +24,7 @@ public enum AbsenceRequestResult
 
 public enum AbsenceReason
 {
+    Personal,
     Family,
-    Studying,
     Sick
 }

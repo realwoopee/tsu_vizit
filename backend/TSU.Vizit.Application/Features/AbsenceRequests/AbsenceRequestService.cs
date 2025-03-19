@@ -50,7 +50,7 @@ public class AbsenceRequestService(
             Reason = model.Reason
         };
 
-        if (!userPermissions.Value.CanViewAlienAbsences) filter.CreatedById = curUserId;
+        if (!userPermissions.Value.CanCheck) filter.CreatedById = curUserId;
 
         return await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination)
             .Map(absenceList => absenceList.ToDto());
@@ -81,11 +81,7 @@ public class AbsenceRequestService(
         return await Result
             .FailIf(absenceRequest.Value.CreatedById != curUserId && !userPermissions.Value.IsAdmin,
                 new ForbiddenError("User does not have permission to delete this absence request."))
-            .Bind(async Task<Result> () =>
-            {
-                await _documentRepository.DeleteAttachedDocuments(absenceRequestId);
-                return await _absenceRequestRepository.DeleteAbsenceRequest(absenceRequestId);
-            });
+            .Bind(async Task<Result> () => await _absenceRequestRepository.DeleteAbsenceRequest(absenceRequestId));
     }
 
     public async Task<Result<AbsenceRequestDto>> EditAbsenceRequest(Guid id, EditAbsenceRequestModel model,

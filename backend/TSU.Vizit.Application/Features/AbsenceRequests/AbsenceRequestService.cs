@@ -18,35 +18,29 @@ public class AbsenceRequestService(
     IDocumentRepository _documentRepository,
     UserService _userService)
 {
-    
     public async Task<Result<AbsenceRequestDto>> GetAbsenceRequest(Guid id, Guid curUserId)
     {
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
-        
+
         var result = await _absenceRequestRepository.GetAbsenceRequestById(id)
             .Bind(Result<AbsenceRequestDto> (ar) => ar.ToDto());
 
-        var requestCreatedBy = await _userService.GetUserById(result.Value.CreatedById);
-        
-        if (requestCreatedBy.IsFailed)
-            return Result.Fail(requestCreatedBy.Errors);
-        
-        result.Value.CreatedBy = requestCreatedBy.Value.FullName;
-
         if (result.Value.CreatedById != curUserId && !userPermissions.Value.CanCheck)
             return CustomErrors.Forbidden("User does not have permission to retrieve this absence request.");
-        
+
         return result;
     }
-    public async Task<Result<AbsenceRequestPagedListDto>> GetAllAbsenceRequests(GetAllAbsenceRequestsModel model, Guid curUserId)
+
+    public async Task<Result<AbsenceRequestPagedListDto>> GetAllAbsenceRequests(GetAllAbsenceRequestsModel model,
+        Guid curUserId)
     {
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
 
-        
+
         var filter = new AbsenceRequestListFilter
         {
             CreatedBy = model.CreatedBy,
@@ -56,27 +50,10 @@ public class AbsenceRequestService(
             Reason = model.Reason
         };
 
-        if (!userPermissions.Value.CanViewAlienAbsences)
-        {
-            filter.CreatedById = curUserId;
-        }
-        
-        
-        var absenceRequestPagedList =
-            await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination);
-        
-        if (absenceRequestPagedList.IsFailed)
-            return Result.Fail(absenceRequestPagedList.Errors);
-        
-        var absenceRequestPagedListDto = absenceRequestPagedList.Value.ToDto();
-        
+        if (!userPermissions.Value.CanViewAlienAbsences) filter.CreatedById = curUserId;
 
-        for (int i=0; i<absenceRequestPagedListDto.AbsenceRequests.Count; i++)
-        {
-            absenceRequestPagedListDto.AbsenceRequests[i].CreatedBy = absenceRequestPagedList.Value.AbsenceRequestAuthorNames[i];
-        }
-        
-        return absenceRequestPagedListDto;
+        return await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination)
+            .Map(absenceList => absenceList.ToDto());
     }
 
     public async Task<Result<AbsenceRequestDto>> CreateAbsenceRequest(CreateAbsenceRequestModel model, Guid curUserId)
@@ -89,7 +66,7 @@ public class AbsenceRequestService(
                 data.CreatedBy = user.Value.FullName;
                 return data;
             });
-}
+    }
 
     public async Task<Result> DeleteAbsenceRequestById(Guid absenceRequestId, Guid curUserId)
     {
@@ -129,16 +106,9 @@ public class AbsenceRequestService(
         absenceRequest.Reason = model.Reason;
         absenceRequest.AbsencePeriodStart = model.AbsencePeriodStart;
         absenceRequest.AbsencePeriodFinish = model.AbsencePeriodFinish;
-        
-        var userCreatedBy = await _userService.GetUserById(absenceRequest.CreatedById);
 
         return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
-            .Map(ar => ar.ToDto())
-            .Bind(Result<AbsenceRequestDto> (ar) =>
-            {
-                ar.CreatedBy = userCreatedBy.Value.FullName;
-                return ar;
-            });
+            .Map(ar => ar.ToDto());
     }
 
     public async Task<Result<AbsenceRequestDto>> EditAbsenceRequestStatus(Guid absenceRequestId,

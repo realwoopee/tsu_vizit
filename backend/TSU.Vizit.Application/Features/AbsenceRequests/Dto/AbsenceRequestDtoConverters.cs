@@ -31,6 +31,7 @@ public static class AbsenceRequestDtoConverters
             AbsencePeriodStart = model.AbsencePeriodStart,
             AbsencePeriodFinish = model.AbsencePeriodFinish,
             FinalisedById = model.FinalisedById,
+            CreatedBy = model.CreatedBy.FullName,
             CreatedById = model.CreatedById,
             FinalStatus = model.FinalStatus,
             Reason = model.Reason,

@@ -21,9 +21,7 @@ public class AbsenceRequestController(
     UserAccessor _userAccessor,
     UserService _userService) : ControllerBase
 {
-
     [HttpGet("{id}")]
-
     public async Task<ActionResult<AbsenceRequestDto>> GetAbsenceRequest(Guid id)
     {
         return await _userAccessor.GetUserId()
@@ -31,13 +29,13 @@ public class AbsenceRequestController(
                 await _absenceRequestService.GetAbsenceRequest(id, curUserId))
             .ToActionResult();
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<List<AbsenceRequestDto>>> GetAllAbsenceRequests(
         [FromQuery] GetAllAbsenceRequestsModel model)
     {
         return await _userAccessor.GetUserId()
-            .Bind(async  Task<Result<AbsenceRequestPagedListDto>>  (curUserId) =>
+            .Bind(async Task<Result<AbsenceRequestPagedListDto>> (curUserId) =>
                 await _absenceRequestService.GetAllAbsenceRequests(model, curUserId)).ToActionResult();
     }
 

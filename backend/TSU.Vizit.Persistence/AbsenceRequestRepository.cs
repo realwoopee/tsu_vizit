@@ -13,10 +13,9 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
     public async Task<Result<AbsenceRequest>> GetAbsenceRequestById(Guid id)
     {
         var data = await dbContext.AbsenceRequest.AsNoTracking()
-            .Include(ab => ab.Attachments).FirstOrDefaultAsync(ar => ar.Id == id);
-        // CanCheck or creator
-        
-        
+            .Include(ab => ab.Attachments).Include(ar => ar.CreatedBy)
+            .FirstOrDefaultAsync(ar => ar.Id == id);
+
         return data is not null ? data : CustomErrors.NotFound("AbsenceRequest not found");
     }
 
@@ -29,7 +28,8 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
 
     public async Task<Result<AbsenceRequest>> EditAbsenceRequest(AbsenceRequest newAbsenceRequest)
     {
-        var data = await dbContext.AbsenceRequest.FirstOrDefaultAsync(ar => ar.Id == newAbsenceRequest.Id);
+        var data = await dbContext.AbsenceRequest.Include(ar => ar.CreatedBy)
+            .FirstOrDefaultAsync(ar => ar.Id == newAbsenceRequest.Id);
 
         if (data is null)
             return CustomErrors.NotFound("AbsenceRequest not found");
@@ -43,7 +43,11 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
         AbsenceRequestSorting? sorting,
         PaginationModel? pagination)
     {
-        var query = dbContext.AbsenceRequest.AsNoTracking().Include(ar => ar.Attachments).AsQueryable();
+        var query = dbContext.AbsenceRequest.AsNoTracking().Include(ar => ar.Attachments).Include(ar => ar.CreatedBy)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.CreatedBy))
+            query = query.Where(ar => ar.CreatedBy.FullName.Contains(filter.CreatedBy));
 
         if (filter.CreatedById != null)
             query = query.Where(ar => ar.CreatedById == filter.CreatedById);
@@ -72,31 +76,10 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
                 .Skip(pagination.Offset)
                 .Take(pagination.Limit);
 
-        var absenceRequestAuthorNames = new List<string>();
-        var absenceRequests = await query.ToListAsync();
-        var itemsToRemove = new List<AbsenceRequest>();
-        foreach (var absenceRequest in absenceRequests)
-        {
-            var userId = absenceRequest.CreatedById;
-            var user = await dbContext.Users.FirstOrDefaultAsync(ar => ar.Id == userId);
-            if (!string.IsNullOrEmpty(filter.CreatedBy) && !user.FullName.Contains(filter.CreatedBy))
-            {
-                itemsToRemove.Add(absenceRequest);
-                continue;
-            }
-            absenceRequestAuthorNames.Add(user.FullName);
-        }
-        
-        foreach (var item in itemsToRemove)
-        {
-            absenceRequests.Remove(item);
-        }
-        
         return new AbsenceRequestPagedList
         {
-            TotalCount = absenceRequests.Count,
-            AbsenceRequests = absenceRequests,
-            AbsenceRequestAuthorNames = absenceRequestAuthorNames
+            TotalCount = await query.CountAsync(),
+            AbsenceRequests = await query.ToListAsync()
         };
     }
 

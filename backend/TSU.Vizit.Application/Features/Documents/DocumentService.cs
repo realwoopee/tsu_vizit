@@ -21,11 +21,11 @@ public class DocumentService(
 
         if (absenceRequest.IsFailed)
             return Result.Fail(absenceRequest.Errors);
-        
+
         var userPermissions = await _userService.GetUserPermissions(curUserId);
         if (userPermissions.IsFailed)
             return Result.Fail(userPermissions.Errors);
-        
+
         if (!userPermissions.Value.IsAdmin && absenceRequest.Value.CreatedById != curUserId)
             return CustomErrors.Forbidden("You can not attach documents to this absence request.");
 
@@ -36,14 +36,13 @@ public class DocumentService(
         };
         return await _documentRepository.CreateDocument(document);
     }
-    
+
     public async Task<Result> DeleteDocument(Guid docId, Guid curUserId)
     {
         var document = await _documentRepository.GetDocumentById(docId);
 
         if (document.IsFailed)
             return CustomErrors.NotFound("Document not found.");
-            // return Result.Fail(document.Errors);
 
         var absRequest = await _absenceRequestRepository.GetAbsenceRequestById(document.Value.AbsenceRequestId);
         if (absRequest.IsFailed)

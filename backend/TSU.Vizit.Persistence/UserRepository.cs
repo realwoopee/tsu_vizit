@@ -148,14 +148,14 @@ public class UserRepository(VizitDbContext dbContext, PasswordHasher<User> _pass
     public async Task<Result<User>> EditUserRole(Guid id, UserRole userRole)
     {
         var user = await dbContext.Users.FirstOrDefaultAsync(user => user.Id == id);
-        
+
         if (user is null)
             return CustomErrors.NotFound("User not found");
-        
+
         user.UserRole = userRole;
 
         await dbContext.SaveChangesAsync();
-        
+
         return user;
     }
 }

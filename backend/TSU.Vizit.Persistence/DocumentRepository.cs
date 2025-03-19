@@ -14,7 +14,7 @@ public class DocumentRepository(VizitDbContext dbContext) : IDocumentRepository
         var result = await dbContext.Document.FirstOrDefaultAsync(document => document.Id == id);
         if (result is null)
             return Result.Fail("Document not found");
-        
+
         return Result.Ok(result);
     }
 
@@ -36,10 +36,10 @@ public class DocumentRepository(VizitDbContext dbContext) : IDocumentRepository
     public async Task<Result> DeleteDocumentById(Guid id)
     {
         var document = await dbContext.Document.FirstOrDefaultAsync(document => document.Id == id);
-        
+
         if (document == null)
             return new NotFoundError("Document not found.");
-        
+
         dbContext.Document.Remove(document);
         await dbContext.SaveChangesAsync();
         return Result.Ok();
@@ -47,7 +47,8 @@ public class DocumentRepository(VizitDbContext dbContext) : IDocumentRepository
 
     public async Task<Result> DeleteAttachedDocuments(Guid absenceRequestId)
     {
-        var docsToDelete = await dbContext.Document.Where(document => document.AbsenceRequestId == absenceRequestId).ToListAsync();
+        var docsToDelete = await dbContext.Document.Where(document => document.AbsenceRequestId == absenceRequestId)
+            .ToListAsync();
         dbContext.Document.RemoveRange(docsToDelete);
         await dbContext.SaveChangesAsync();
         return Result.Ok();

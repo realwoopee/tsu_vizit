@@ -20,10 +20,11 @@ public class DocumentController(DocumentService _documentService, UserAccessor _
         var curUserId = _userAccessor.GetUserId();
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
-        
-        return await _documentService.CreateDocument(absenceId, memoryStream.ToArray(), curUserId.Value).ToActionResult();
+
+        return await _documentService.CreateDocument(absenceId, memoryStream.ToArray(), curUserId.Value)
+            .ToActionResult();
     }
-    
+
     [HttpDelete("/api/absence/{docId}/delete")]
     public async Task<ActionResult> DeleteDocument(Guid docId)
     {

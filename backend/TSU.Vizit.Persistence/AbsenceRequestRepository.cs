@@ -43,7 +43,7 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
         AbsenceRequestSorting? sorting,
         PaginationModel? pagination)
     {
-        var query = dbContext.AbsenceRequest.AsNoTracking().AsQueryable();
+        var query = dbContext.AbsenceRequest.AsNoTracking().Include(ar => ar.Attachments).AsQueryable();
 
         if (filter.CreatedById != null)
             query = query.Where(ar => ar.CreatedById == filter.CreatedById);
@@ -72,10 +72,31 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
                 .Skip(pagination.Offset)
                 .Take(pagination.Limit);
 
+        var absenceRequestAuthorNames = new List<string>();
+        var absenceRequests = await query.ToListAsync();
+        var itemsToRemove = new List<AbsenceRequest>();
+        foreach (var absenceRequest in absenceRequests)
+        {
+            var userId = absenceRequest.CreatedById;
+            var user = await dbContext.Users.FirstOrDefaultAsync(ar => ar.Id == userId);
+            if (!string.IsNullOrEmpty(filter.CreatedBy) && !user.FullName.Contains(filter.CreatedBy))
+            {
+                itemsToRemove.Add(absenceRequest);
+                continue;
+            }
+            absenceRequestAuthorNames.Add(user.FullName);
+        }
+        
+        foreach (var item in itemsToRemove)
+        {
+            absenceRequests.Remove(item);
+        }
+        
         return new AbsenceRequestPagedList
         {
-            TotalCount = await query.CountAsync(),
-            AbsenceRequests = await query.ToListAsync()
+            TotalCount = absenceRequests.Count,
+            AbsenceRequests = absenceRequests,
+            AbsenceRequestAuthorNames = absenceRequestAuthorNames
         };
     }
 

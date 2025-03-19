@@ -8,6 +8,7 @@ using TSU.Vizit.Application.Features.Users.Dto;
 using TSU.Vizit.Contracts.AbsenceRequests;
 using TSU.Vizit.Contracts.Documents;
 using TSU.Vizit.Domain;
+using TSU.Vizit.Domain.Users;
 using TSU.Vizit.Infrastructure.Errors;
 
 namespace TSU.Vizit.Application.Features.AbsenceRequests;
@@ -27,30 +28,64 @@ public class AbsenceRequestService(
         var result = await _absenceRequestRepository.GetAbsenceRequestById(id)
             .Bind(Result<AbsenceRequestDto> (ar) => ar.ToDto());
 
+        var requestCreatedBy = await _userService.GetUserById(result.Value.CreatedById);
+        
+        if (requestCreatedBy.IsFailed)
+            return Result.Fail(requestCreatedBy.Errors);
+        
+        result.Value.CreatedBy = requestCreatedBy.Value.FullName;
+
         if (result.Value.CreatedById != curUserId && !userPermissions.Value.CanCheck)
             return CustomErrors.Forbidden("User does not have permission to retrieve this absence request.");
         
         return result;
     }
-    public async Task<Result<AbsenceRequestPagedListDto>> GetAllAbsenceRequests(GetAllAbsenceRequestsModel model)
+    public async Task<Result<AbsenceRequestPagedListDto>> GetAllAbsenceRequests(GetAllAbsenceRequestsModel model, Guid curUserId)
     {
+        var userPermissions = await _userService.GetUserPermissions(curUserId);
+        if (userPermissions.IsFailed)
+            return Result.Fail(userPermissions.Errors);
+        
         var filter = new AbsenceRequestListFilter
         {
+            CreatedBy = model.CreatedBy,
             CreatedById = model.CreatedById,
             FinalisedById = model.FinalisedById,
             FinalStatus = model.FinalStatus,
             Reason = model.Reason
         };
+        
+        if (!userPermissions.Value.CanViewAlienAbsences)
+            filter.CreatedById = curUserId;
+        
+        var absenceRequestPagedList =
+            await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination);
+        
+        if (absenceRequestPagedList.IsFailed)
+            return Result.Fail(absenceRequestPagedList.Errors);
+        
+        var absenceRequestPagedListDto = absenceRequestPagedList.Value.ToDto();
+        
 
-        return await _absenceRequestRepository.GetAllAbsenceRequests(filter, model.Sorting, model.Pagination)
-            .Bind(Result<AbsenceRequestPagedListDto> (x) => x.ToDto());
+        for (int i=0; i<absenceRequestPagedListDto.AbsenceRequests.Count; i++)
+        {
+            absenceRequestPagedListDto.AbsenceRequests[i].CreatedBy = absenceRequestPagedList.Value.AbsenceRequestAuthorNames[i];
+        }
+        
+        return absenceRequestPagedListDto;
     }
 
     public async Task<Result<AbsenceRequestDto>> CreateAbsenceRequest(CreateAbsenceRequestModel model, Guid curUserId)
     {
         return await _absenceRequestRepository.CreateAbsenceRequest(model.ToEntity(curUserId))
-            .Bind(Result<AbsenceRequestDto> (data) => data.ToDto());
-    }
+            .Bind(Result<AbsenceRequestDto> (data) => data.ToDto())
+            .Bind(async Task<Result<AbsenceRequestDto>> (data) =>
+            {
+                var user = await _userService.GetUserById(curUserId);
+                data.CreatedBy = user.Value.FullName;
+                return data;
+            });
+}
 
     public async Task<Result> DeleteAbsenceRequestById(Guid absenceRequestId, Guid curUserId)
     {
@@ -90,9 +125,16 @@ public class AbsenceRequestService(
         absenceRequest.Reason = model.Reason;
         absenceRequest.AbsencePeriodStart = model.AbsencePeriodStart;
         absenceRequest.AbsencePeriodFinish = model.AbsencePeriodFinish;
+        
+        var userCreatedBy = await _userService.GetUserById(absenceRequest.CreatedById);
 
         return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
-            .Map(ar => ar.ToDto());
+            .Map(ar => ar.ToDto())
+            .Bind(Result<AbsenceRequestDto> (ar) =>
+            {
+                ar.CreatedBy = userCreatedBy.Value.FullName;
+                return ar;
+            });
     }
 
     public async Task<Result<AbsenceRequestDto>> EditAbsenceRequestStatus(Guid absenceRequestId,

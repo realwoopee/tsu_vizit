@@ -39,6 +39,7 @@ public static class UserDtoConverters
             CanApprove = userPermissions.CanApprove,
             IsAdmin = userPermissions.IsAdmin,
             CanExportAll = userPermissions.CanExportAll,
+            CanViewAlienAbsences = userPermissions.CanViewAlienAbsences
         };
     }
 

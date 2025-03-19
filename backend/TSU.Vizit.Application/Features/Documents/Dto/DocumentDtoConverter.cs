@@ -8,7 +8,8 @@ public static class DocumentDtoConverter
     {
         return new DocumentDto
         {
-            Id = document.Id
+            Id = document.Id,
+            Attachment = document.Attachment
         };
     }
 }

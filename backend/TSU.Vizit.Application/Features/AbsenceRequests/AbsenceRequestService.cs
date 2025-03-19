@@ -157,6 +157,8 @@ public class AbsenceRequestService(
 
         var absenceRequest = absenceRequestResult.Value;
         absenceRequest.FinalStatus = dto.status;
+        absenceRequest.FinalisedById = curUserId;
+        absenceRequest.TimeFinalised = DateTime.UtcNow;
 
         return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
             .Map(ar => ar.ToDto());

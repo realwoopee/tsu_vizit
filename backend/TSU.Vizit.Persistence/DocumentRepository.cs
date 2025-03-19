@@ -11,13 +11,17 @@ public class DocumentRepository(VizitDbContext dbContext) : IDocumentRepository
 {
     public async Task<Result<Document>> GetDocumentById(Guid id)
     {
-        return await dbContext.Document.FirstOrDefaultAsync(document => document.Id == id);
+        var result = await dbContext.Document.FirstOrDefaultAsync(document => document.Id == id);
+        if (result is null)
+            return Result.Fail("Document not found");
+        
+        return Result.Ok(result);
     }
 
-    public async Task<Result<List<Document>>> GetAllAttachments(Guid AbsenceRequestId)
+    public async Task<Result<List<Document>>> GetAllAttachments(Guid absenceRequestId)
     {
         var documents = dbContext.Document.AsNoTracking().AsQueryable();
-        documents = documents.Where(d => d.AbsenceRequestId == AbsenceRequestId);
+        documents = documents.Where(d => d.AbsenceRequestId == absenceRequestId);
         var result = await documents.ToListAsync();
         return Result.Ok(result);
     }

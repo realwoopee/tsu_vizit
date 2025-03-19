@@ -17,13 +17,14 @@ public class DocumentController(DocumentService _documentService, UserAccessor _
     [HttpPost("/api/absence/{absenceId}/attach")]
     public async Task<ActionResult<Document>> AttachDocument(Guid absenceId, IFormFile file)
     {
+        var curUserId = _userAccessor.GetUserId();
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
         
-        return await _documentService.CreateDocument(absenceId, memoryStream.ToArray()).ToActionResult();
+        return await _documentService.CreateDocument(absenceId, memoryStream.ToArray(), curUserId.Value).ToActionResult();
     }
     
-    [HttpDelete("/api/absence/{absenceId}/delete")]
+    [HttpDelete("/api/absence/{docId}/delete")]
     public async Task<ActionResult> DeleteDocument(Guid docId)
     {
         return await _userAccessor.GetUserId()

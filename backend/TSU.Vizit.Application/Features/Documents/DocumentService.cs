@@ -15,12 +15,19 @@ public class DocumentService(
     IAbsenceRequestRepository _absenceRequestRepository,
     UserService _userService)
 {
-    public async Task<Result<Document>> CreateDocument(Guid absenceRequestId, byte[] data)
+    public async Task<Result<Document>> CreateDocument(Guid absenceRequestId, byte[] data, Guid curUserId)
     {
         var absenceRequest = await _absenceRequestRepository.GetAbsenceRequestById(absenceRequestId);
 
         if (absenceRequest.IsFailed)
             return Result.Fail(absenceRequest.Errors);
+        
+        var userPermissions = await _userService.GetUserPermissions(curUserId);
+        if (userPermissions.IsFailed)
+            return Result.Fail(userPermissions.Errors);
+        
+        if (!userPermissions.Value.IsAdmin && absenceRequest.Value.CreatedById != curUserId)
+            return CustomErrors.Forbidden("You can not attach documents to this absence request.");
 
         var document = new Document
         {
@@ -35,7 +42,8 @@ public class DocumentService(
         var document = await _documentRepository.GetDocumentById(docId);
 
         if (document.IsFailed)
-            return Result.Fail(document.Errors);
+            return CustomErrors.NotFound("Document not found.");
+            // return Result.Fail(document.Errors);
 
         var absRequest = await _absenceRequestRepository.GetAbsenceRequestById(document.Value.AbsenceRequestId);
         if (absRequest.IsFailed)

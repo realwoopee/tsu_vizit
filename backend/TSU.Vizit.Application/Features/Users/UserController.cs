@@ -35,7 +35,6 @@ public class UserController(UserAccessor _userAccessor, UserService _userService
     [HttpPut("profile")]
     public async Task<ActionResult<UserDto>> EditProfile([FromBody] UserEditProfileModel model)
     {
-        // Does this require extra authentication?
         return await _userAccessor.GetUserId()
             .Bind(async Task<Result<UserDto>> (userId) => await _userService.EditUserById(userId, model))
             .ToActionResult();

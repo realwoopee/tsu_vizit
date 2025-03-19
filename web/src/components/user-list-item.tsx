@@ -5,9 +5,8 @@ import "../styles/user-list-item.css"
 
 export type UserRole = "Student" | "Teacher" | "DeansEmployee" | "Admin"
 
-// Update the User interface to match the API response
 export interface User {
-  id: string | number // Change to accept string or number
+  id: string | number
   fullName: string
   email: string
   studentIdNumber?: string

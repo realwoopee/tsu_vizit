@@ -24,7 +24,7 @@
 
 .search-section {
   margin-bottom: 24px;
-  min-width: 81.3rem;
+  max-width: 80vw;
 }
 
 .search-header {

@@ -3,8 +3,7 @@ import type { User, UserRole } from "../components/user-list-item"
 const API_BASE_URL = "https://vizit.90.188.95.63.sslip.io/api"
 //Заглушка, заменить использованием норамльного токена после слияния со страницей логина
 const BEARER_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDIzNDA2MTcsIlVzZXJJZCI6IjAxOTU5ZmJkLTJlYTEtN2NhOS1hMjQyLTJkMGZiYmU0NzA4NiIsIlNlc3Npb25JZCI6IjFiODZhOWIwLWFkNWEtNGFhOS04YmY5LTM4MjAxYWJiYjhmNyIsImlhdCI6MTc0MjMzNzAxNywibmJmIjoxNzQyMzM3MDE3fQ.AFBAtNgHX_QJZWu8inyaoXN51p_ifmNiGInJx1R-PFg"
-
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDI0MjgzNjcsIlVzZXJJZCI6IjAxOTU5ZmJkLTJlYTEtN2NhOS1hMjQyLTJkMGZiYmU0NzA4NiIsIlNlc3Npb25JZCI6IjkzYzU4MjQ4LTE2MmUtNDViNy04YTY3LTZjZjQ2OGNkZjE1ZCIsImlhdCI6MTc0MjQyNDc2NywibmJmIjoxNzQyNDI0NzY3fQ.9lR2OxjxqDQKtKM3z8Kbrv_jBibHz0D7u-m_yg0inG0"
 export interface SearchParams {
   studentIdNumber?: string
   fullName?: string

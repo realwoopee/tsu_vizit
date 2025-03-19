@@ -17,6 +17,21 @@ public class AbsenceRequestService(
     IDocumentRepository _documentRepository,
     UserService _userService)
 {
+    
+    public async Task<Result<AbsenceRequestDto>> GetAbsenceRequest(Guid id, Guid curUserId)
+    {
+        var userPermissions = await _userService.GetUserPermissions(curUserId);
+        if (userPermissions.IsFailed)
+            return Result.Fail(userPermissions.Errors);
+        
+        var result = await _absenceRequestRepository.GetAbsenceRequestById(id)
+            .Bind(Result<AbsenceRequestDto> (ar) => ar.ToDto());
+
+        if (result.Value.CreatedById != curUserId && !userPermissions.Value.CanCheck)
+            return CustomErrors.Forbidden("User does not have permission to retrieve this absence request.");
+        
+        return result;
+    }
     public async Task<Result<AbsenceRequestPagedListDto>> GetAllAbsenceRequests(GetAllAbsenceRequestsModel model)
     {
         var filter = new AbsenceRequestListFilter

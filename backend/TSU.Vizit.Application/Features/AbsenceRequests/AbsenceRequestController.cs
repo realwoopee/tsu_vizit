@@ -20,6 +20,14 @@ public class AbsenceRequestController(
     UserAccessor _userAccessor,
     UserService _userService) : ControllerBase
 {
+    
+    [HttpGet]
+    public async Task<ActionResult<AbsenceRequestDto>> GetAbsenceRequest(Guid id)
+    {
+        var curUserId = _userAccessor.GetUserId();
+        return await _absenceRequestService.GetAbsenceRequest(id, curUserId).ToActionResult();
+    }
+    
     [HttpGet]
     public async Task<ActionResult<List<AbsenceRequestDto>>> GetAllAbsenceRequests(
         [FromQuery] GetAllAbsenceRequestsModel model)

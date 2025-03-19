@@ -14,6 +14,9 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
     {
         var data = await dbContext.AbsenceRequest.AsNoTracking()
             .Include(ab => ab.Attachments).FirstOrDefaultAsync(ar => ar.Id == id);
+        // CanCheck or creator
+        
+        
         return data is not null ? data : CustomErrors.NotFound("AbsenceRequest not found");
     }
 
@@ -36,7 +39,7 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
         return Result.Ok(data);
     }
 
-    public async Task<Result<AbsenceRequestPagedList>> GetAllAbsenceRequests(AbsenceRequestListFilter filter,
+    public async Task<Result<AbsenceRequestPagedList>> GetAllAbsenceRequests(AbsenceRequestListFilter filter, //Include?
         AbsenceRequestSorting? sorting,
         PaginationModel? pagination)
     {

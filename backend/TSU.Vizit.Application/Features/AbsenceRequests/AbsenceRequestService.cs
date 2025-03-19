@@ -102,6 +102,7 @@ public class AbsenceRequestService(
         absenceRequest.Reason = model.Reason;
         absenceRequest.AbsencePeriodStart = model.AbsencePeriodStart;
         absenceRequest.AbsencePeriodFinish = model.AbsencePeriodFinish;
+        absenceRequest.FinalStatus = AbsenceRequestResult.Unknown;
 
         return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
             .Map(ar => ar.ToDto());

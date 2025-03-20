@@ -1,0 +1,29 @@
+name: Build and Deploy on RPI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      # Step 1: Update CI instance git state
+      - name: Git Pull
+        run: |
+          git stash
+          git pull
+          git stash pop
+        working-directory: /home/pi/tsu_vizit/.ci
+
+      - name: Docker Compose Build
+        run: docker compose build
+        working-directory: /home/pi/tsu_vizit/.ci
+
+      # Step 6: Deploy
+      - name: Docker Compose Up
+        run: docker compose up -d
+        working-directory: /home/pi/tsu_vizit/.ci
+

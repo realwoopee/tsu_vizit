@@ -157,7 +157,29 @@ export const PassListItem = ({
         return ""
     }
   }
+  const getStatusDisplay = (status: PassStatus) => {
+    switch (status) {
+      case "Unknown":
+        return "На проверке"
+      case "Approved":
+        return "Принято"
+      case "Denied":
+        return "Отклонено"
+      default:
+        return ""
+    }
 
+  }
+  const getReasonDisplay = (reason: PassReason) => {
+    switch (reason) {
+      case "Family":
+        return "Семейные обстоятельства"
+      case "Sick":
+        return "Болезнь"
+      case "Personal":
+        return "Учебная"
+    }
+  }
   const toggleCalendar = () => {
       setIsCalendarOpen(!isCalendarOpen)
   }
@@ -183,13 +205,13 @@ export const PassListItem = ({
   return (
     <div className="pass-list-item">
       <div className="pass-left-section">
-        <div className={`pass-status ${getStatusClass(pass.finalStatus)}`}>{status}</div>
+        <div className={`pass-status ${getStatusClass(pass.finalStatus)}`}>{getStatusDisplay(pass.finalStatus)}</div>
         <div className="pass-fullname">{pass.createdBy}</div>
       </div>
 
       <div className="pass-right-section">
-        <div className="pass-reason">{pass.reason}</div>
-        <div className="pass-date">{pass.abscencePeriodStart}</div>
+        <div className="pass-reason">{getReasonDisplay(pass.reason)}</div>
+        <div className="pass-date">{pass.abscencePeriodFinish}</div>
         <div className="pass-date-separator">—</div>
 
         

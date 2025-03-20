@@ -50,6 +50,7 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef, onFilesSele
       console.log("Выбранные файлы:", filesArray)
       setSelectedFiles(filesArray)
       onFilesSelected(filesArray)
+      onClose()
     }
   }
 
@@ -72,10 +73,12 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef, onFilesSele
     }else if (action === "delete-file") {
       setSelectedFiles([]) // Очистка списка файлов в локальном состоянии
       onFilesSelected([]) // Обновляем родительский компонент
+      onClose()
     } else {
       console.log(`Action: ${action}`)
+      onClose()
     }
-    onClose()
+   
   }
 
   const renderMenuItems = () => {

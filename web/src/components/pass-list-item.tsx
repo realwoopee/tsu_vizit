@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Calendar, File, Menu } from "lucide-react"
 import { DatePicker } from "./date-picker"
 import { DropdownMenu } from "./dropdown-menu"
@@ -35,7 +35,13 @@ export const PassListItem = ({
   const [currentEndDate, setCurrentEndDate] = useState(endDate)
   const [inputValue, setInputValue] = useState(endDate)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-
+  const [isFileListOpen, setIsFileListOpen] = useState(false)
+  const fileButtonRef = useRef<HTMLButtonElement | null>(null);
+  const fileListRef = useRef<HTMLDivElement | null>(null);
+  
+  const toggleFileList = () => {
+    setIsFileListOpen(!isFileListOpen)
+  }
   const handleFilesSelected = (files: File[]) => {
     console.log("Выбранные файлы:", files)
     setSelectedFiles(files)
@@ -51,6 +57,27 @@ export const PassListItem = ({
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   }
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        fileButtonRef.current &&
+        fileListRef.current &&
+        !fileButtonRef.current.contains(event.target as Node) &&
+        !fileListRef.current.contains(event.target as Node)
+      ) {
+        setIsFileListOpen(false);
+      }
+    };
+  
+    if (isFileListOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isFileListOpen]);
 
   // Функция для применения маски даты
   const applyDateMask = (value: string): string => {
@@ -194,10 +221,10 @@ export const PassListItem = ({
           <div className="pass-end-date-static">{currentEndDate}</div>
         )}
 
-        <button className="pass-file-button">
+        <button ref={fileButtonRef} className="pass-file-button" onClick={toggleFileList}>
           <File size={20} />
-          {selectedFiles.length > 0 && (
-            <div className="file-list">
+          {selectedFiles.length > 0 && isFileListOpen &&  (
+            <div ref={fileListRef} className="file-list">
               {selectedFiles.map((file, index) => (
                 <div key={index} className="file-item" onClick={() => handleDownloadFile(file)}>
                   {file.name}

@@ -14,7 +14,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
   return (
     <Navbar bg="primary" variant="dark" fixed="top" className="nav-bar">
       <Container fluid>
-        <Navbar.Brand as={Link} to="/" className="nav-left">
+        <Navbar.Brand  className="nav-left">
           <img
             src="/src/assets/logo.svg"
             alt="ТГУ логотип"
@@ -38,7 +38,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
                   Список пользователей
                 </Nav.Link>
               )}
-              <Nav.Link as={Link} to="/passes" className="nav-link">
+              <Nav.Link as={Link} to="/main" className="nav-link">
                 Список пропусков
               </Nav.Link>
               <Button variant="link" className="nav-profile">

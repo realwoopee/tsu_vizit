@@ -1,14 +1,42 @@
 import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate  } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
+  const baseUrl = 'https://vizit.90.188.95.63.sslip.io/api/'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  };
+    setError('');
+
+        try {
+            const response = await fetch(`${baseUrl}auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                navigate('/main'); 
+            } else {
+                const errorData = await response.json();
+                setError(errorData.detail || 'Ошибка авторизации');
+            }
+        } catch (err) {
+            const errorMessage = 'Произошла ошибка при попытке авторизации';
+            setError('Произошла ошибка при попытке авторизации');
+            alert(errorMessage);
+        }
+    };
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100 text-left">
@@ -37,7 +65,7 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-
+          {error && <div className="alert alert-danger mt-3">{error}</div>}
           </div>
           <button type="submit" className="btn btn-primary w-100">Войти</button>
           <Link to="/register" className="btn btn-secondary w-100 mt-3">Нет аккаунта? Зарегистрироваться</Link>

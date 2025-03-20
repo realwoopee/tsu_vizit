@@ -2,17 +2,55 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, useNavigate } from 'react-router-dom';
 
-const RegistrationPage: React.FC = () => {
+const RegistrationPage = () => {
+  const baseUrl = 'https://vizit.90.188.95.63.sslip.io/api/'
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [studentIdNumber, setStudentIdNumber] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    navigate('/main');
+
+    const fullName = `${firstName} ${lastName}`;
+
+    const registrationData = {
+      fullName,
+      email,
+      password,
+      studentIdNumber: null,
   };
+
+      try {
+        const response = await fetch(`${baseUrl}register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(registrationData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Ошибка регистрации');
+        }
+
+        const data = await response.json();
+        console.log('Успешная регистрация:', data);
+
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('refreshToken', data.refreshToken);
+
+        navigate('/main');
+      } catch (err) {
+        const errorMessage = 'Произошла ошибка при попытке регистрации';
+        setError('Произошла ошибка при попытке регистрации');
+        alert(errorMessage);
+      }
+};
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100 text-left">
@@ -71,4 +109,4 @@ const RegistrationPage: React.FC = () => {
   );
 };
 
-export default RegistrationPage;
+export default RegistrationPage; 

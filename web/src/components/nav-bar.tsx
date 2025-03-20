@@ -28,8 +28,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
   const fetchUserProfile = async () => {
     try {
       // Заглушка для Bearer токена
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDI0MjUxMTgsIlVzZXJJZCI6IjAxOTU5MTRlLWRkMGYtN2Q5Ny04YjdkLWIzMGU4NzA1NTQyZSIsIlNlc3Npb25JZCI6ImE3NTJmYzNhLTMyY2UtNDhkYi1iNTAyLTEyZjAyNjEwNzc0YyIsImlhdCI6MTc0MjQyMTUxOCwibmJmIjoxNzQyNDIxNTE4fQ.GAvG25PkIrwlBNMiEUBbRKJGdAfM3hoCgXzhXKvpUOI"
+      const token = localStorage.getItem("token")
 
       const profileResponse = await fetch("https://vizit.90.188.95.63.sslip.io/api/account/profile", {
         method: "GET",

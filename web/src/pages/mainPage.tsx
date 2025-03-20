@@ -1,5 +1,5 @@
 import { PassListItem , type  Pass, type PassReason } from "../components/pass-list-item";
-import { NavBar } from "../components/navigation/nav-bar";
+import { NavBar } from "../components/nav-bar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "../styles/main.css";
 import { FileDown, ChevronDown, Search, AlertCircle } from "lucide-react"

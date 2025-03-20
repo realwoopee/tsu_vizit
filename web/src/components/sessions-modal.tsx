@@ -26,7 +26,7 @@ const SessionsModal = ({ onClose }: SessionsModalProps) => {
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Заглушка для Bearer токена
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDI0MjUxMTgsIlVzZXJJZCI6IjAxOTU5MTRlLWRkMGYtN2Q5Ny04YjdkLWIzMGU4NzA1NTQyZSIsIlNlc3Npb25JZCI6ImE3NTJmYzNhLTMyY2UtNDhkYi1iNTAyLTEyZjAyNjEwNzc0YyIsImlhdCI6MTc0MjQyMTUxOCwibmJmIjoxNzQyNDIxNTE4fQ.GAvG25PkIrwlBNMiEUBbRKJGdAfM3hoCgXzhXKvpUOI"
+  const token = localStorage.getItem("token")
 
   const fetchSessions = async () => {
     try {
@@ -165,7 +165,6 @@ const SessionsModal = ({ onClose }: SessionsModalProps) => {
                   <div className="session-info">
                     {session.id === currentSessionId && <span className="current-session-badge">Текущая сессия</span>}
                     <div className="session-details">
-                      <div>IP: {session.lastIp}</div>
                       <div>Истекает: {formatDate(session.expiresAfter)}</div>
                     </div>
                   </div>

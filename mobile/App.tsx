@@ -1,13 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import React, { useState, useEffect, createContext } from 'react';
+import { StyleSheet, ActivityIndicator, ScrollView, View } from 'react-native';
 import * as Font from 'expo-font';
-import MainStcak from './Navigate';
+import MainStack from './Navigate';
+import Store from './store/store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const fonts = () => Font.loadAsync({
   'inter-semi-bold': require('./assets/fonts/Inter_18pt-SemiBold.ttf'),
   'inter-md': require('./assets/fonts/Inter_18pt-Medium.ttf')
 });
+
+interface State {
+  store: Store,
+}
+
+const store = new Store();
+export const AppContext = createContext<State>({
+  store,
+});
+
 
 export default function App() {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -23,16 +34,20 @@ export default function App() {
 
   if (!fontLoaded) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={[styles.container, {alignItems: 'center'}]}>
         <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <MainStcak />
-    </SafeAreaView>
+
+    <AppContext.Provider value={{ store }}>
+      <View style={styles.container}>
+        <MainStack />
+      </View>
+    </AppContext.Provider>
+
   );
 }
 

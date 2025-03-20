@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { AppContext } from '..';
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const isValidEmail = (email: string) => emailRegex.test(email);
+const isValidPassword = (password: string) => password.length >= 6;
 
 type RootStackParamList = {
   Вход: undefined;
@@ -17,61 +23,95 @@ export default function Registration({ navigation }: RegProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const isFormValid = name && surname && email && password;
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const { store } = useContext(AppContext);
+
+  const isFormValid = name && surname && email && password && isValidEmail(email) && isValidPassword(password);
 
   const loadAuthForm = () => {
     navigation.navigate('Вход');
   };
-  const loadProfile = () => {
-    navigation.navigate('Профиль');
-  };
+
+
+  const register = async () => {
+    try {
+      await store.register(email, password, name, surname);
+      navigation.navigate('Профиль');
+    } catch (error: any) {
+      const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+      Alert.alert(errorMessage);
+    }
+  }
 
   return (
-    <View style={{backgroundColor: "#fff", height: "100%"}}>
+    <View style={{ backgroundColor: "#fff", height: "100%" }}>
       <View style={styles.container}>
         <View style={styles.form}>
+
           <Text style={{ alignSelf: 'center', marginBottom: 15, fontSize: 25, fontFamily: 'inter-semi-bold' }}>Регистрация</Text>
-          
+
           <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Имя</Text>
           <TextInput
             style={styles.input}
             placeholder="Иван"
             value={name}
             onChangeText={setName}
+            placeholderTextColor="#a8a8a8"
           />
-          
+
           <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Фамилия</Text>
           <TextInput
             style={styles.input}
             placeholder="Иванов"
             value={surname}
             onChangeText={setSurname}
+            placeholderTextColor="#a8a8a8"
           />
-          
+
           <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>E-mail</Text>
-          <TextInput
-            style={styles.input}
+          <TextInput style={[styles.input, emailError ? styles.errorInput : null]}
             placeholder="example@email.com"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => {
+              setEmail(text);
+              if (text !== "" && !isValidEmail(text)) {
+                setEmailError('Введите корректный email');
+              } else {
+                setEmailError('');
+              }
+            }}
             keyboardType="email-address"
+            placeholderTextColor="#a8a8a8"
           />
-          
+          {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
           <Text style={{ marginLeft: 5, fontFamily: 'inter-md' }}>Пароль</Text>
-          <TextInput
-            style={styles.input}
+          <TextInput style={[styles.input, passwordError ? styles.errorInput : null]}
             placeholder="Введите пароль..."
             secureTextEntry={true}
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (text !== "" && !isValidPassword(text)) {
+                setPasswordError('Минимальная длина пароля 6 символов');
+              } else {
+                setPasswordError('');
+              }
+            }}
+            placeholderTextColor="#a8a8a8"
           />
+          {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+
         </View>
 
         <TouchableOpacity
           style={[styles.button, !isFormValid && styles.buttonDisabled]}
           disabled={!isFormValid}
+          onPress={register}
         >
-          <Text style={{ color: 'white', fontFamily: 'inter-md' }} onPress={loadProfile}>Зарегистрироваться</Text>
+          <Text style={{ color: 'white', fontFamily: 'inter-md' }}>Зарегистрироваться</Text>
         </TouchableOpacity>
 
         <Text style={{ fontFamily: 'inter-md' }}>Уже есть аккаунт?</Text>
@@ -114,5 +154,15 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     backgroundColor: '#a8a8a8'
-  }
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginLeft: 5,
+    marginBottom: 5
+  },
+  errorInput: {
+    borderColor: 'red',
+    marginBottom: 0,
+  },
 });

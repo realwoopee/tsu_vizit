@@ -7,10 +7,12 @@ import { Calendar, File, Menu } from "lucide-react"
 import { DatePicker } from "./date-picker"
 import { DropdownMenu } from "./dropdown-menu"
 import "../styles/pass-list-item.css"
+import { deletePass } from "../services/passDelete"
 
 type PassStatus = "На проверке" | "Принято" | "Отклонено"
 
 interface PassListItemProps {
+  id: string;
   status: PassStatus
   fullName: string
   reason: string
@@ -20,6 +22,7 @@ interface PassListItemProps {
 }
 
 export const PassListItem = ({
+  id,
   status,
   fullName,
   reason,
@@ -179,6 +182,12 @@ export const PassListItem = ({
     }
   }
 
+  const handleDeletePass = () => {
+    if (window.confirm("Вы уверены, что хотите удалить пропуск?")) {
+      deletePass(id);
+    }
+  };
+
   return (
     <div className="pass-list-item">
       <div className="pass-left-section">
@@ -191,7 +200,7 @@ export const PassListItem = ({
         <div className="pass-date">{startDate}</div>
         <div className="pass-date-separator">—</div>
 
-        {isEditable ? (
+        {localStorage.getItem("canCreate") && isEditable? (
           <div className="pass-end-date-container">
             <div className="pass-end-date" onClick={toggleCalendar}>
               <input
@@ -233,6 +242,9 @@ export const PassListItem = ({
         <div className="menu-container">
           <button className="pass-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <Menu size={20} />
+          </button>
+          <button className="delete-button" onClick={handleDeletePass}>
+              Удалить
           </button>
           <DropdownMenu isOpen={isMenuOpen}
             onClose={() => setIsMenuOpen(false)}

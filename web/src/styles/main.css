@@ -45,6 +45,22 @@
   background-color: #0056b3;
 }
 
+.pass-export-button{
+  display:flex;
+  width:16rem;
+  gap: 8px;
+  justify-self: flex-end;
+  border: 1px solid white;
+  border-radius: 8px;
+  background: #007bff;
+  color: white;
+  padding: 10px 0px 10px 1rem;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+.pass-export-button:hover{
+  background-color: #0056b3;
+}
 
 @media (max-width: 580px) {
   .test-container {

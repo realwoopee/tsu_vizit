@@ -1,10 +1,6 @@
 import { registerRootComponent } from 'expo';
 import App from './App';
-import React, { useState, useEffect, createContext } from 'react';
-import { StyleSheet, ActivityIndicator, ScrollView, View } from 'react-native';
-import * as Font from 'expo-font';
-import MainStcak from './Navigate';
-import ListOfAbsences from './components/ListOfAbsences';
+import { createContext } from 'react';
 import Store from './store/store';
 
 interface State {

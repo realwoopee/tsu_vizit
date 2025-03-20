@@ -44,18 +44,28 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
 
   const [documents, setDocuments] = useState<(IDocument)[]>([]);
 
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const docs = await Promise.all(item.attachments.map((attachment) => getDocument(attachment.id)));
-        const validDocs = docs.filter((doc): doc is IDocument => doc !== undefined); 
-        setDocuments(validDocs);
-      } catch (error: any) {
-        console.log(error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка");
-      }
-    };
+  const [loading, setLoading] = useState(false);
 
-    fetchDocuments();
+  const fetchDocuments = async () => {
+    try {
+      const docs = await Promise.all(
+        item.attachments.map((attachment) => getDocument(attachment.id))
+      );
+      const validDocs = docs.filter((doc): doc is IDocument => doc !== undefined);
+      setDocuments(validDocs);
+      console.log(showDocsModal);
+      setShowDocsModal(true);
+      console.log(showDocsModal);
+    } catch (error: any) {
+      console.log(error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка");
+    }
+  };
+
+  useEffect(() => {
+  
+    if (showDocsModal) {
+      fetchDocuments();
+    }
   }, [item.attachments]);
 
 
@@ -240,7 +250,6 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
   const uploadFileButtonStyle = item.attachments.length < 5? styles.addDocButton : [styles.addDocButton, styles.disabledButton];
   const editableDateStyle = (item.createdById !== store.user.id || item.finalStatus === 'Declined') && !store.userPermissions.isAdmin? styles.dateValue : [styles.dateValue, styles.editableDate]
 
-
   return (
     <View style={styles.itemContainer}>
 
@@ -286,7 +295,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
         <View style={styles.docsContainer}>
           <TouchableOpacity
             style={styles.docsButton}
-            onPress={() => setShowDocsModal(true)} 
+            onPress={() => fetchDocuments()} 
           >
             <Ionicons name="document-attach-outline" size={20} color="#666" />
             <Text style={styles.docsText}>

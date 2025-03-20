@@ -24,8 +24,8 @@ public class AbsenceRequestService(
 
         var result = await _absenceRequestRepository.GetAbsenceRequestById(id)
             .Bind(Result<AbsenceRequestDto> (ar) => ar.ToDto());
-
-        if (result.Value.CreatedById != curUserId && !userPermissions.Value.CanCheck)
+        
+        if (result.IsSuccess && result.Value.CreatedById != curUserId && !userPermissions.Value.CanCheck)
             return CustomErrors.Forbidden("User does not have permission to retrieve this absence request.");
 
         return result;

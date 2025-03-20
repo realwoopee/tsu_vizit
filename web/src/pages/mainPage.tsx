@@ -4,12 +4,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "../styles/main.css";
 import React, { useState, useRef, useEffect } from "react";
 import axios from 'axios';
-import { fetchAndSavePermissions } from "../components/profileData";
+import { fetchAndSavePermissions } from "../services/profileData";
 
 
 export const MainPage = () => {
 
+  useEffect(() => {
    fetchAndSavePermissions();
+  }, []);
+
   const baseUrl = 'https://vizit.90.188.95.63.sslip.io/api/';
 
   type PassStatus = "На проверке" | "Принято" | "Отклонено";

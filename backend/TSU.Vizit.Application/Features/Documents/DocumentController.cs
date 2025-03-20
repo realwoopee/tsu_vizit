@@ -29,7 +29,14 @@ public class DocumentController(DocumentService _documentService, UserAccessor _
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
 
-        return await _documentService.CreateDocument(absenceId, memoryStream.ToArray(), curUserId.Value)
+        var documentDto = new CreateDocumentDto
+        {
+            Title = file.FileName,
+            AbsenceRequestId = absenceId,
+            Attachment = memoryStream.ToArray()
+        };
+
+        return await _documentService.CreateDocument(documentDto, curUserId.Value)
             .ToActionResult();
     }
 

@@ -10,6 +10,7 @@ public static class DocumentDtoConverter
         return new DocumentDto
         {
             Id = document.Id,
+            Title = document.Title,
             AbsenceRequestId = document.AbsenceRequestId,
             Attachment = document.Attachment
         };
@@ -19,7 +20,7 @@ public static class DocumentDtoConverter
     {
         return new DocumentShortDto
         {
-            Id = document.Id
+            Id = document.Id,
         };
     }
 }

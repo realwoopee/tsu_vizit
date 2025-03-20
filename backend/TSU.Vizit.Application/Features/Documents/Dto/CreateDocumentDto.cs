@@ -1,10 +1,7 @@
-﻿using System.Reflection.Metadata;
+namespace TSU.Vizit.Application.Features.Documents.Dto;
 
-namespace TSU.Vizit.Domain;
-
-public class Document
+public class CreateDocumentDto
 {
-    public Guid Id { get; set; }
     public string Title { get; set; }
     public Guid AbsenceRequestId { get; set; }
     public byte[] Attachment { get; set; }

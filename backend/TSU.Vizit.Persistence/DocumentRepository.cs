@@ -12,11 +12,8 @@ public class DocumentRepository(VizitDbContext dbContext) : IDocumentRepository
     
     public async Task<Result<Document>> GetDocumentById(Guid id)
     {
-        var result = await dbContext.Document.FirstOrDefaultAsync(document => document.Id == id);
-        if (result is null)
-            return Result.Fail("Document not found");
-
-        return Result.Ok(result);
+        var data = await dbContext.Document.FirstOrDefaultAsync(document => document.Id == id);
+        return data is not null ? data : CustomErrors.NotFound("Document not found");
     }
 
     public async Task<Result<List<Document>>> GetAllAttachments(Guid absenceRequestId)

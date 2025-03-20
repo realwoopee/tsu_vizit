@@ -21,8 +21,6 @@ public class AbsenceRequestService(
     public async Task<Result<AbsenceRequestDto>> GetAbsenceRequest(Guid id, Guid curUserId)
     {
         var userPermissions = await _userService.GetUserPermissions(curUserId);
-        if (userPermissions.IsFailed)
-            return Result.Fail(userPermissions.Errors);
 
         var result = await _absenceRequestRepository.GetAbsenceRequestById(id)
             .Bind(Result<AbsenceRequestDto> (ar) => ar.ToDto());

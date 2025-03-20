@@ -245,7 +245,7 @@ export const MainPage = () => {
 
   return (
     <>
-      <NavBar userRole="admin" />
+      <NavBar/>
       <div className="test-container">
         <div className="row">
           <div className="col">

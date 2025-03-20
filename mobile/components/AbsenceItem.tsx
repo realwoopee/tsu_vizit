@@ -500,6 +500,7 @@ const styles = StyleSheet.create({
   },
   docInfo: {
     marginLeft: 10,
+    width: '85%'
   },
   docName: {
     fontSize: 16,

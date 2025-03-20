@@ -1,0 +1,20 @@
+.user-list {
+    width: 100%;
+    max-width: 90vw;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-list-empty {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+  }
+  
+  

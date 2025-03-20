@@ -8,29 +8,32 @@ import { DatePicker } from "./date-picker"
 import { DropdownMenu } from "./dropdown-menu"
 import "../styles/pass-list-item.css"
 
-type PassStatus = "На проверке" | "Принято" | "Отклонено"
+export type PassStatus = "Unknown" | "Approved" | "Denied"
+export type PassReason = "Personal" | "Family" | "Sick"
+
+export interface Pass{
+  id: string
+  abscencePeriodStart: string
+  abscencePeriodFinish: string
+  timeCreated: string
+  timeFinalised: string
+  createdById: string
+  createdBy: string
+  finalStatus: PassStatus
+  reason: PassReason
+  attachments: Array<string>
+}
 
 interface PassListItemProps {
-  status: PassStatus
-  fullName: string
-  reason: string
-  startDate: string
-  endDate: string
-  isEditable?: boolean
+  pass: Pass
 }
 
 export const PassListItem = ({
-  status,
-  fullName,
-  reason,
-  startDate,
-  endDate,
-  isEditable = true,
-}: PassListItemProps) => {
+  pass}: PassListItemProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [currentEndDate, setCurrentEndDate] = useState(endDate)
-  const [inputValue, setInputValue] = useState(endDate)
+  const [currentEndDate, setCurrentEndDate] = useState(pass.abscencePeriodFinish)
+  const [inputValue, setInputValue] = useState(pass.abscencePeriodFinish)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isFileListOpen, setIsFileListOpen] = useState(false)
   const fileButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -144,11 +147,11 @@ export const PassListItem = ({
 
   const getStatusClass = (status: PassStatus) => {
     switch (status) {
-      case "На проверке":
+      case "Unknown":
         return "status-review"
-      case "Принято":
+      case "Approved":
         return "status-accepted"
-      case "Отклонено":
+      case "Denied":
         return "status-rejected"
       default:
         return ""
@@ -156,9 +159,7 @@ export const PassListItem = ({
   }
 
   const toggleCalendar = () => {
-    if (isEditable) {
       setIsCalendarOpen(!isCalendarOpen)
-    }
   }
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,16 +183,16 @@ export const PassListItem = ({
   return (
     <div className="pass-list-item">
       <div className="pass-left-section">
-        <div className={`pass-status ${getStatusClass(status)}`}>{status}</div>
-        <div className="pass-fullname">{fullName}</div>
+        <div className={`pass-status ${getStatusClass(pass.finalStatus)}`}>{status}</div>
+        <div className="pass-fullname">{pass.createdBy}</div>
       </div>
 
       <div className="pass-right-section">
-        <div className="pass-reason">{reason}</div>
-        <div className="pass-date">{startDate}</div>
+        <div className="pass-reason">{pass.reason}</div>
+        <div className="pass-date">{pass.abscencePeriodStart}</div>
         <div className="pass-date-separator">—</div>
 
-        {isEditable ? (
+        
           <div className="pass-end-date-container">
             <div className="pass-end-date" onClick={toggleCalendar}>
               <input
@@ -214,9 +215,6 @@ export const PassListItem = ({
               onClose={() => setIsCalendarOpen(false)}
             />
           </div>
-        ) : (
-          <div className="pass-end-date-static">{currentEndDate}</div>
-        )}
 
         <button ref={fileButtonRef} className="pass-file-button" onClick={toggleFileList}>
           <File size={20} />

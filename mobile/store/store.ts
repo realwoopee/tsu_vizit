@@ -260,13 +260,15 @@ export default class Store{
             const res = await AbsenceService.postDocument(id, uri, name, type);
 
             const index = this.absences.findIndex(absence => absence.id === id);
+            console.log(index);
 
             if (index !== -1) {
                 const newAbsences = [...this.absences]; 
                 const updatedAbsence = this.absences[index];
-                updatedAbsence.attachments.push(res.data.attachment);
+                updatedAbsence.attachments.push({ id: res.data.id });
                 newAbsences[index] = updatedAbsence; 
                 this.setAbsences(newAbsences);
+                this.setnewAbsence(updatedAbsence);
             }
         }catch(e) {
             this.handleApiError(e);

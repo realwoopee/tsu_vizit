@@ -77,7 +77,6 @@ const AddAbsenceBlock: React.FC<AddAbsenceBlockProps> = ({ isVisible, closeModal
                 <Ionicons name="document-text-outline" size={20} color="#666" />
                 <View style={styles.docInfo}>
                     <Text style={styles.docName}>{doc.name}</Text>
-                    <Text style={styles.docType}>{doc.type}</Text>
                 </View>
             </View>
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -41,6 +41,22 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
   const [isUpdStatusVisible, setIsUpdStatusVisible] = useState(false);
 
   const { store } = useContext(AppContext);
+
+  const [documents, setDocuments] = useState<(IDocument)[]>([]);
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const docs = await Promise.all(item.attachments.map((attachment) => getDocument(attachment.id)));
+        const validDocs = docs.filter((doc): doc is IDocument => doc !== undefined); 
+        setDocuments(validDocs);
+      } catch (error: any) {
+        console.log(error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка");
+      }
+    };
+
+    fetchDocuments();
+  }, [item.attachments]);
 
 
   const getStatusColor = (status: string) => {
@@ -150,6 +166,17 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
     }
   }
 
+  const getDocument = async (id:string) => {
+    try {
+      const doc = await store.getDocument(id);
+      return doc;
+    } catch (error: any) {
+      const errorMessage = error?.status ? `Ошибка ${error.status}` : "Произошла непредвиденная ошибка";
+      console.log(errorMessage);
+      return;
+    }
+  }
+
 
 
   const renderDocumentItem = ({ item: doc }: { item: IDocument }) => (
@@ -157,14 +184,13 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
       <TouchableOpacity style={styles.docItem}>
         <Ionicons name="document-text-outline" size={20} color="#666" />
         <View style={styles.docInfo}>
-          <Text style={styles.docName}>{/*doc.name*/}</Text>
-          <Text style={styles.docType}>{/*doc.type*/}</Text>
+          <Text style={styles.docName}>{doc.title}</Text>
         </View>
       </TouchableOpacity>
       
       <TouchableOpacity
         style={styles.docButton}
-        /*onPress={() => downloadFile(doc.uri, doc.name)}*/
+        onPress={() => downloadFile(doc.attachment, doc.title)}
       >
         <AntDesign name="download" size={20} color="black" />
       </TouchableOpacity>
@@ -181,15 +207,16 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
 
   );
 
-  const downloadFile = async (uri: string, fileName: string) => {
+  const downloadFile = async (attachment: string, fileName:string) => {
     try {
-      if (!uri) throw new Error('URL не должен быть пустым');
-
+      if (!attachment) throw new Error('Данные файла отсутствуют');
+  
       const fileUri = FileSystem.documentDirectory + fileName;
-      console.log(`Скачивание: ${uri} -> ${fileUri}`);
-
-      await FileSystem.copyAsync({ from: uri, to: fileUri });
-
+  
+      await FileSystem.writeAsStringAsync(fileUri, attachment, { encoding: FileSystem.EncodingType.Base64 });
+  
+      console.log(`Файл сохранен: ${fileUri}`);
+  
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(fileUri);
       } else {
@@ -302,7 +329,7 @@ export default function AbsenceItem({ item }: AbsenceItemProps) {
                 </View>
 
                 <FlatList
-                  data={item.attachments}
+                  data={documents}
                   renderItem={renderDocumentItem}
                   keyExtractor={(doc) => doc.id}
                   ListEmptyComponent={

@@ -291,6 +291,17 @@ export default class Store{
         }
     }
 
+    async getDocument(id: string){
+        try {
+            const response = await AbsenceService.getDocument(id);
+
+            return response.data;
+            
+        } catch(e) {
+            this.handleApiError(e);
+        }
+    }
+
     async deleteDocument(id: string, absenceId:string){
         try {
             const response = await AbsenceService.deleteDocument(id);

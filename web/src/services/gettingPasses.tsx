@@ -64,7 +64,10 @@ export const GettingPasses = async (params: SearchParams): Promise<PassesRespons
                 "Pagination.Limit": params["Pagination.Limit"]
             }
         });
-        return response.data.absenceRequests; 
+        
+        return {passes: response.data.absenceRequests,
+            totalCount: response.data.totalCount,
+        }
     } catch (error) {
         console.error("Error fetching passes:", error); 
         throw error;  

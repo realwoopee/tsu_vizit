@@ -10,12 +10,11 @@ type UserRole = "student" | "teacher" | "admin"
 interface DropdownMenuProps {
   isOpen: boolean
   onClose: () => void
-  userRole: UserRole
   toggleRef?: React.RefObject<HTMLButtonElement>
   onFilesSelected: (files: File[]) => void
 }
 
-export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef, onFilesSelected }: DropdownMenuProps) => {
+export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: DropdownMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -82,71 +81,57 @@ export const DropdownMenu = ({ isOpen, onClose, userRole, toggleRef, onFilesSele
   }
 
   const renderMenuItems = () => {
-    switch (userRole) {
-      case "student":
-        return (
-          <>
-            <Dropdown.Item onClick={() => handleAction("attach")}>
-              <span>Прикрепить файл</span>
-              <FileUp size={16} className="icon-right" />
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleAction("delete-file")} className="delete">
-              <span>Удалить файл</span>
-              <Trash2 size={16} className="icon-right" />
-            </Dropdown.Item>
-          </>
-        )
-      case "teacher":
-        return (
-          <>
-            <Dropdown.Item onClick={() => handleAction("confirm")}>
-              <span>Подтвердить</span>
-              <Check size={16} className="icon-right" />
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleAction("reject")}>
-              <span>Отклонить</span>
-              <X size={16} className="icon-right" />
-            </Dropdown.Item>
-          </>
-        )
-      case "admin":
-        return (
-          <>
-            <Dropdown.Item onClick={() => handleAction("confirm")}>
-              <span>Подтвердить</span>
-              <Check size={16} className="icon-right" />
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleAction("reject")}>
-              <span>Отклонить</span>
-              <X size={16} className="icon-right" />
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleAction("delete-record")} className="delete">
-              <span>Удалить запись</span>
-              <Trash2 size={16} className="icon-right" />
-            </Dropdown.Item>
-          </>
-        )
-      default:
-        return null
+    if(localStorage.getItem("canCreate")){
+      return (
+        <>
+          <Dropdown.Item onClick={() => handleAction("attach")}>
+            <span>Прикрепить файл</span>
+            <FileUp size={16} className="icon-right" />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleAction("delete-file")} className="delete">
+            <span>Удалить файл</span>
+            <Trash2 size={16} className="icon-right" />
+          </Dropdown.Item>
+        </>
+      )
     }
-  }
-
+    
+    if(localStorage.getItem("canApprove")){
+      return (
+        <>
+          <Dropdown.Item onClick={() => handleAction("confirm")}>
+            <span>Подтвердить</span>
+            <Check size={16} className="icon-right" />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleAction("reject")}>
+            <span>Отклонить</span>
+            <X size={16} className="icon-right" />
+          </Dropdown.Item>
+        </>
+      )
+    }
+    if(localStorage.getItem("isAdmin")){
+      return (
+        <>
+          <Dropdown.Item onClick={() => handleAction("confirm")}>
+            <span>Подтвердить</span>
+            <Check size={16} className="icon-right" />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleAction("reject")}>
+            <span>Отклонить</span>
+            <X size={16} className="icon-right" />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => handleAction("delete-record")} className="delete">
+            <span>Удалить запись</span>
+            <Trash2 size={16} className="icon-right" />
+          </Dropdown.Item>
+        </>
+        )
+      }
+    } /*если не работает return null*/
   return (
-    <>
     <Dropdown.Menu show={isOpen} ref={menuRef} className="dropdown-menu">
       {renderMenuItems()}
     </Dropdown.Menu>
-    <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={(e) => {
-          console.log("Файл выбран")
-          handleFileChange(e)
-        }}
-         multiple
-        accept="*"
-      />
-    </>
   )
 }

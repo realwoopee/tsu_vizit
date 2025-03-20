@@ -4,10 +4,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "../styles/main.css";
 import React, { useState, useRef, useEffect } from "react";
 import axios from 'axios';
+import { fetchAndSavePermissions } from "../components/profileData";
 
 
 export const MainPage = () => {
 
+   fetchAndSavePermissions();
   const baseUrl = 'https://vizit.90.188.95.63.sslip.io/api/';
 
   type PassStatus = "На проверке" | "Принято" | "Отклонено";
@@ -98,7 +100,7 @@ export const MainPage = () => {
             "Content-Type": "application/json"
           },
         });
-        console.log(response)
+        console.log(response.data.id)
         const createdPass = response.data;
 
         for (const file of files) {

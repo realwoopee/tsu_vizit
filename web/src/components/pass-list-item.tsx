@@ -9,7 +9,6 @@ import { DropdownMenu } from "./dropdown-menu"
 import "../styles/pass-list-item.css"
 
 type PassStatus = "На проверке" | "Принято" | "Отклонено"
-type UserRole = "student" | "teacher" | "admin"
 
 interface PassListItemProps {
   status: PassStatus
@@ -18,7 +17,6 @@ interface PassListItemProps {
   startDate: string
   endDate: string
   isEditable?: boolean
-  userRole?: UserRole
 }
 
 export const PassListItem = ({
@@ -28,7 +26,6 @@ export const PassListItem = ({
   startDate,
   endDate,
   isEditable = true,
-  userRole = "student",
 }: PassListItemProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -239,7 +236,6 @@ export const PassListItem = ({
           </button>
           <DropdownMenu isOpen={isMenuOpen}
             onClose={() => setIsMenuOpen(false)}
-            userRole={userRole}
             onFilesSelected={handleFilesSelected} />
         </div>
       </div>

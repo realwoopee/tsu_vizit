@@ -21,12 +21,6 @@ public class DocumentService(
         var curUserPermissions = await _userService.GetUserPermissions(curUserId);
         var curUser = await _userService.GetUserById(curUserId);
 
-        if (curUserPermissions.IsFailed)
-            return CustomErrors.NotFound("Could not get user permissions.");
-        
-        if (curUser.IsFailed)
-            return CustomErrors.NotFound("User not found.");
-
         var document = await _documentRepository.GetDocumentById(id);
         
         if (document.IsFailed)
@@ -45,9 +39,9 @@ public class DocumentService(
         return Result.Ok(document.Value.ToDto());
     }
     
-    public async Task<Result<DocumentDto>> CreateDocument(Guid absenceRequestId, byte[] data, Guid curUserId)
+    public async Task<Result<DocumentDto>> CreateDocument(CreateDocumentDto model, Guid curUserId)
     {
-        var absenceRequest = await _absenceRequestRepository.GetAbsenceRequestById(absenceRequestId);
+        var absenceRequest = await _absenceRequestRepository.GetAbsenceRequestById(model.AbsenceRequestId);
 
         if (absenceRequest.IsFailed)
             return Result.Fail(absenceRequest.Errors);
@@ -61,8 +55,9 @@ public class DocumentService(
 
         var document = new Document
         {
-            AbsenceRequestId = absenceRequestId,
-            Attachment = data
+            AbsenceRequestId = model.AbsenceRequestId,
+            Attachment = model.Attachment,
+            Title = model.Title
         };
         return (await _documentRepository.CreateDocument(document)).Map(doc => doc.ToDto());
     }

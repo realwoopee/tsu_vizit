@@ -2,12 +2,12 @@
 
 import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect, useRef } from "react"
-import { ChevronDown, LogOut, User, Layers } from 'lucide-react'
+import { ChevronDown, LogOut, User, Layers } from "lucide-react"
 import "../styles/nav-bar.css"
 import ProfileModal from "./profile-modal"
 import SessionsModal from "./sessions-modal"
 
-type UserRole = "guest" | "student" | "admin"
+type UserRole = "Student" | "Teacher" | "DeansEmployee" | "Admin" | "guest"
 
 interface NavBarProps {
   userRole?: UserRole
@@ -20,14 +20,16 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSessionsModalOpen, setIsSessionsModalOpen] = useState(false)
-  
+  const [userRoleState, setUserRoleState] = useState<UserRole>(userRole || "guest")
+
   const menuRef = useRef<HTMLDivElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const fetchUserProfile = async () => {
     try {
       // Заглушка для Bearer токена
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDI0MjUxMTgsIlVzZXJJZCI6IjAxOTU5MTRlLWRkMGYtN2Q5Ny04YjdkLWIzMGU4NzA1NTQyZSIsIlNlc3Npb25JZCI6ImE3NTJmYzNhLTMyY2UtNDhkYi1iNTAyLTEyZjAyNjEwNzc0YyIsImlhdCI6MTc0MjQyMTUxOCwibmJmIjoxNzQyNDIxNTE4fQ.GAvG25PkIrwlBNMiEUBbRKJGdAfM3hoCgXzhXKvpUOI"
+      const token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0c3Utdml6aXQiLCJpc3MiOiJ0c3Utdml6aXQiLCJleHAiOjE3NDI0MjUxMTgsIlVzZXJJZCI6IjAxOTU5MTRlLWRkMGYtN2Q5Ny04YjdkLWIzMGU4NzA1NTQyZSIsIlNlc3Npb25JZCI6ImE3NTJmYzNhLTMyY2UtNDhkYi1iNTAyLTEyZjAyNjEwNzc0YyIsImlhdCI6MTc0MjQyMTUxOCwibmJmIjoxNzQyNDIxNTE4fQ.GAvG25PkIrwlBNMiEUBbRKJGdAfM3hoCgXzhXKvpUOI"
 
       const profileResponse = await fetch("https://vizit.90.188.95.63.sslip.io/api/account/profile", {
         method: "GET",
@@ -45,24 +47,31 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
       if (profileData.fullName) {
         setProfileName(profileData.fullName)
       }
+
+      // Set the user role from the profile data
+      if (profileData.role) {
+        setUserRoleState(profileData.role)
+      }
     } catch (error) {
       console.error("Ошибка при получении данных профиля:", error)
+      setUserRoleState("guest")
     }
   }
 
   useEffect(() => {
-    if (userRole !== "guest") {
-      fetchUserProfile()
+    if (userRole && userRole !== "guest") {
+      setUserRoleState(userRole)
     }
+    fetchUserProfile()
   }, [userRole])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        isMenuOpen && 
-        menuRef.current && 
+        isMenuOpen &&
+        menuRef.current &&
         !menuRef.current.contains(event.target as Node) &&
-        menuButtonRef.current && 
+        menuButtonRef.current &&
         !menuButtonRef.current.contains(event.target as Node)
       ) {
         setIsMenuOpen(false)
@@ -135,7 +144,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
       </div>
 
       <div className="nav-right">
-        {userRole === "guest" ? (
+        {userRoleState === "guest" ? (
           <>
             <Link to="/register" className="nav-button">
               Регистрация
@@ -146,7 +155,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
           </>
         ) : (
           <>
-            {userRole === "admin" && (
+            {(userRoleState === "DeansEmployee" || userRoleState === "Admin") && (
               <Link to="/users" className="nav-link">
                 Список пользователей
               </Link>
@@ -154,21 +163,17 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
             <Link to="/passes" className="nav-link">
               Список пропусков
             </Link>
-            
+
             <button className="nav-profile" onClick={handleProfileClick}>
               <User size={18} />
               <span>{displayName}</span>
             </button>
-            
+
             <div className="menu-container">
-              <button 
-                className="nav-menu-button" 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                ref={menuButtonRef}
-              >
+              <button className="nav-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)} ref={menuButtonRef}>
                 <ChevronDown size={20} />
               </button>
-              
+
               {isMenuOpen && (
                 <div className="nav-dropdown-menu" ref={menuRef}>
                   <button className="dropdown-item" onClick={handleSessionsClick}>
@@ -187,17 +192,11 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
       </div>
 
       {isProfileModalOpen && (
-        <ProfileModal 
-          onClose={() => setIsProfileModalOpen(false)} 
-          onProfileUpdated={fetchUserProfile}
-        />
+        <ProfileModal onClose={() => setIsProfileModalOpen(false)} onProfileUpdated={fetchUserProfile} />
       )}
 
-      {isSessionsModalOpen && (
-        <SessionsModal 
-          onClose={() => setIsSessionsModalOpen(false)} 
-        />
-      )}
+      {isSessionsModalOpen && <SessionsModal onClose={() => setIsSessionsModalOpen(false)} />}
     </nav>
   )
 }
+

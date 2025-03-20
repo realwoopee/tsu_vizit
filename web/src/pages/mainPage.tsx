@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "../styles/main.css";
 import React, { useState, useRef, useEffect } from "react";
 import axios from 'axios';
-import { DateElement } from "../components/date-element";
+
 
 export const MainPage = () => {
 
@@ -48,20 +48,6 @@ export const MainPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchPasses = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}absence`);
-        setPasses(response.data);
-      } catch (error) {
-        console.error("Ошибка при загрузке пропусков:", error);
-        setError("Не удалось загрузить список пропусков.");
-      }
-    };
-
-    fetchPasses();
-  }, []);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
@@ -84,13 +70,74 @@ export const MainPage = () => {
     setNewPass({ ...newPass, [name]: value });
   };
 
-  const handleDateChange = (name: 'startDate' | 'endDate', value: string) => {
-    setNewPass({ ...newPass, [name]: value });
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, name: 'startDate' | 'endDate') => {
+    console.log(e.target.value)
+    setNewPass({ ...newPass, [name]: e.target.value });
   };
 
   const handleReasonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
     setNewPass({ ...newPass, reason: value });
+  };
+
+  const handleCreatePass = async () => {
+    console.log(newPass.fullName, newPass.reason, newPass.startDate, newPass.endDate, files.length)
+    if (newPass.reason && newPass.startDate && newPass.endDate) {
+      try {
+        const formData = {
+          absencePeriodStart: newPass.startDate,
+          absencePeriodFinish: newPass.endDate,
+          reason: newPass.reason,
+        };
+
+        console.log(formData)
+
+        const response = await axios.post(`${baseUrl}absence`, formData, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json"
+          },
+        });
+        console.log(response)
+        const createdPass = response.data;
+
+        for (const file of files) {
+          const fileFormData = new FormData();
+          fileFormData.append("file", file);
+          await axios.post(`${baseUrl}absence/${createdPass.id}/attach`, fileFormData, {
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "multipart/form-data"
+            },
+          });
+        }
+
+        setPasses([...passes, {
+          id: createdPass.id,
+          fullName: newPass.fullName,
+          reason: createdPass.reason,
+          startDate: createdPass.absencePeriodStart,
+          endDate: createdPass.absencePeriodFinish,
+          status: "На проверке"
+        }]);
+
+        setNewPass({
+          fullName: "",
+          reason: "",
+          startDate: "",
+          endDate: "",
+          status: "На проверке"
+        });
+        setFiles([]);
+        setError(null);
+        alert("Пропуск успешно создан!");
+      } catch (error) {
+        console.error("Ошибка при создании пропуска:", error);
+        setError("Произошла ошибка при создании пропуска. Пожалуйста, попробуйте снова.");
+      }
+    } else {
+      setError("Пожалуйста, заполните все поля и добавьте файлы.");
+    }
   };
 
   return (
@@ -100,13 +147,6 @@ export const MainPage = () => {
         <div className="row">
           <div className="col">
             <div className="pass-form">
-              <input
-                type="text"
-                name="fullName"
-                placeholder="ФИО"
-                value={newPass.fullName}
-                onChange={handleInputChange}
-              />
               <select
                 name="reason"
                 value={newPass.reason}
@@ -114,12 +154,26 @@ export const MainPage = () => {
                 className="form-select"
               >
                 <option value="" disabled>Выберите причину</option>
-                <option value="Болезнь">Болезнь</option>
-                <option value="Семейные обстоятельства">Семейные обстоятельства</option>
-                <option value="Учебная деятельность">Учебная деятельность</option>
+                <option value="Sick">Болезнь</option>
+                <option value="Family">Семейные обстоятельства</option>
+                <option value="Personal">Учебная деятельность</option>
               </select>
-              <DateElement endDate="" placeholderVal="Дата начала" onChange={(value) => handleDateChange('startDate', value)} />
-              <DateElement endDate="" placeholderVal="Дата окончания" onChange={(value) => handleDateChange('endDate', value)}/>
+              <input
+                type="date"
+                name="startDate"
+                value={newPass.startDate}
+                onChange={(e) => handleDateChange(e, 'startDate',)}
+                placeholder="Дата начала"
+                className="form-control"
+              />
+              <input
+                type="date"
+                name="endDate"
+                value={newPass.endDate}
+                onChange={(e) => handleDateChange(e, 'endDate')}
+                placeholder="Дата окончания"
+                className="form-control"
+              />
               <input type="file" onChange={handleFileChange} multiple />
               {showFiles && (
                 <div className="file-list" ref={fileListRef}>
@@ -131,13 +185,8 @@ export const MainPage = () => {
                   ))}
                 </div>
               )}
+              <button onClick={handleCreatePass}>Создать пропуск</button>
               {error && <div className="error-message">{error}</div>}
-            </div>
-            <div className="pass-list">
-              <h3>Список пропусков</h3>
-              {passes.map(pass => (
-                <PassListItem key={pass.id} pass={pass} />
-              ))}
             </div>
           </div>
         </div>

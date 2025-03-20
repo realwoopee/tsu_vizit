@@ -11,30 +11,29 @@ import "../styles/pass-list-item.css"
 type PassStatus = "На проверке" | "Принято" | "Отклонено"
 type UserRole = "student" | "teacher" | "admin"
 
-interface Pass {
-  id: string;
-  fullName: string;
-  reason: string;
-  startDate: string;
-  endDate: string;
-  status: PassStatus;
-}
-
 interface PassListItemProps {
-  pass: Pass;
-  isEditable?: boolean;
-  userRole?: UserRole;
+  status: PassStatus
+  fullName: string
+  reason: string
+  startDate: string
+  endDate: string
+  isEditable?: boolean
+  userRole?: UserRole
 }
 
 export const PassListItem = ({
-  pass,
+  status,
+  fullName,
+  reason,
+  startDate,
+  endDate,
   isEditable = true,
   userRole = "student",
 }: PassListItemProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [currentEndDate, setCurrentEndDate] = useState(pass.endDate)
-  const [inputValue, setInputValue] = useState(pass.endDate)
+  const [currentEndDate, setCurrentEndDate] = useState(endDate)
+  const [inputValue, setInputValue] = useState(endDate)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isFileListOpen, setIsFileListOpen] = useState(false)
   const fileButtonRef = useRef<HTMLButtonElement | null>(null);

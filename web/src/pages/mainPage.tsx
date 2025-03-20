@@ -1,47 +1,121 @@
-import { PassListItem } from "../components/pass-list-item";
+import { PassListItem , type  Pass, type PassReason } from "../components/pass-list-item";
 import { NavBar } from "../components/navigation/nav-bar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "../styles/main.css";
-import { FileDown } from "lucide-react"
+import { FileDown, ChevronDown, Search, AlertCircle } from "lucide-react"
 import React, { useState, useRef, useEffect } from "react";
 import axios from 'axios';
-import { fetchAndSavePermissions } from "../services/profileData";
 import { ExportService } from "../services/ExportService";
+import { Pagination } from "../components/users-pagination"
+import { GettingPasses, type SearchParams } from "../services/gettingPasses"
+import { PassList } from "../components/pass-list";
 
 
 
 export const MainPage = () => {
 
-  useEffect(() => {
-   fetchAndSavePermissions();
-  }, []);
+  const [formInputs, setFormInputs] = useState<SearchParams>({
+    "Pagination.Offset": 0,
+    "Pagination.Limit": 10,
+  })
 
-  const baseUrl = 'https://vizit.90.188.95.63.sslip.io/api/';
-
-  type PassStatus = "На проверке" | "Принято" | "Отклонено";
-
-  interface Pass {
-    id: string;
-    fullName: string;
-    reason: string;
-    startDate: string;
-    endDate: string;
-    status: PassStatus;
-  }
-
-  const [passes, setPasses] = useState<Pass[]>([]);
-  const [newPass, setNewPass] = useState<Omit<Pass, 'id'>>({
-    fullName: "",
-    reason: "",
-    startDate: "",
-    endDate: "",
-    status: "На проверке"
-  });
-
-  const [error, setError] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    "Pagination.Offset": 0,
+    "Pagination.Limit": 10,
+  })
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const [passes, setPasses] = useState<Pass[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [showFilters, setShowFilters] = useState(false)
+  const [fetchTrigger, setFetchTrigger] = useState(0)
   const [files, setFiles] = useState<File[]>([]);
   const [showFiles, setShowFiles] = useState<boolean>(false);
   const fileListRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const getPasses = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const response = await GettingPasses(searchParams)
+        setPasses(response.passes)
+        console.log(response)
+        setTotalCount(response.totalCount)
+      } catch (err) {
+        if  (err instanceof Error && err.message.includes("401")){
+          setError("Ошибка авторизации. У Вас нет доступа к списку пользователей.")
+          setPasses([])
+        }
+        else{
+        setError("Не удалось загрузить список пользователей. Пожалуйста, попробуйте позже.")
+        }
+        console.error(err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    getPasses()
+  }, [fetchTrigger])
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault()
+    }
+
+    setCurrentPage(1)
+
+    setSearchParams({
+      ...formInputs,
+      "Pagination.Offset": 0,
+    })
+
+    setFetchTrigger((prev) => prev + 1)
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+
+    const offset = (page - 1) * (searchParams["Pagination.Limit"] || 10)
+
+    setSearchParams((prev) => ({
+      ...prev,
+      offset,
+    }))
+
+    setFetchTrigger((prev) => prev + 1)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleSearch()
+    }
+  }
+
+  const updateFormInput = (param: keyof SearchParams, value: string | number) => {
+    setFormInputs((prev) => ({
+      ...prev,
+      [param]: value || undefined,
+    }))
+  }
+  const baseUrl = 'https://vizit.90.188.95.63.sslip.io/api/';
+
+
+
+  const [newPass, setNewPass] = useState<Omit<Pass, 'id'>>({
+  abscencePeriodStart: "",
+  abscencePeriodFinish: "",
+  timeCreated: "",
+  timeFinalised: "",
+  createdById: "",
+  createdBy: "",
+  finalStatus: "Unknown",
+  reason: "Family",
+  attachments: []
+  });
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,23 +152,23 @@ export const MainPage = () => {
     setNewPass({ ...newPass, [name]: value });
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, name: 'startDate' | 'endDate') => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, name: 'abscencePeriodStart' | 'abscencePeriodFinish') => {
     console.log(e.target.value)
     setNewPass({ ...newPass, [name]: e.target.value });
   };
-
   const handleReasonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
-    setNewPass({ ...newPass, reason: value });
+    let tempValue: PassReason = value as PassReason;
+    setNewPass({ ...newPass, reason: tempValue});
   };
 
   const handleCreatePass = async () => {
-    console.log(newPass.fullName, newPass.reason, newPass.startDate, newPass.endDate, files.length)
-    if (newPass.reason && newPass.startDate && newPass.endDate) {
+    console.log(newPass.createdBy, newPass.reason, newPass.abscencePeriodStart, newPass.abscencePeriodFinish, files.length)
+    if (newPass.reason && newPass.abscencePeriodStart && newPass.abscencePeriodFinish) {
       try {
         const formData = {
-          absencePeriodStart: newPass.startDate,
-          absencePeriodFinish: newPass.endDate,
+          absencePeriodStart: newPass.abscencePeriodStart,
+          absencePeriodFinish: newPass.abscencePeriodFinish,
           reason: newPass.reason,
         };
 
@@ -122,19 +196,26 @@ export const MainPage = () => {
 
         setPasses([...passes, {
           id: createdPass.id,
-          fullName: newPass.fullName,
+          abscencePeriodStart: createdPass.absencePeriodStart,
+          abscencePeriodFinish: createdPass.absencePeriodFinish,
+          timeCreated: createdPass.timeCreated,
+          timeFinalised: createdPass.timeFinalisez,
+          createdById: createdPass.createdById,
+          createdBy: newPass.createdBy,
+          finalStatus: "Unknown",
           reason: createdPass.reason,
-          startDate: createdPass.absencePeriodStart,
-          endDate: createdPass.absencePeriodFinish,
-          status: "На проверке"
+          attachments: createdPass.attachments
         }]);
-
         setNewPass({
-          fullName: "",
-          reason: "",
-          startDate: "",
-          endDate: "",
-          status: "На проверке"
+          abscencePeriodStart: "",
+          abscencePeriodFinish: "",
+          timeCreated: "",
+          timeFinalised: "",
+          createdById: "",
+          createdBy: "",
+          finalStatus: "Unknown",
+          reason: "Family",
+          attachments: []
         });
         setFiles([]);
         setError(null);
@@ -182,17 +263,17 @@ export const MainPage = () => {
               </select>
               <input
                 type="date"
-                name="startDate"
-                value={newPass.startDate}
-                onChange={(e) => handleDateChange(e, 'startDate',)}
+                name="abscencePeriodStart"
+                value={newPass.abscencePeriodStart}
+                onChange={(e) => handleDateChange(e, 'abscencePeriodStart',)}
                 placeholder="Дата начала"
                 className="form-control"
               />
               <input
                 type="date"
-                name="endDate"
-                value={newPass.endDate}
-                onChange={(e) => handleDateChange(e, 'endDate')}
+                name="abscencePeriodFinish"
+                value={newPass.abscencePeriodFinish}
+                onChange={(e) => handleDateChange(e, 'abscencePeriodFinish')}
                 placeholder="Дата окончания"
                 className="form-control"
               />
@@ -214,6 +295,90 @@ export const MainPage = () => {
               <span>Экспортировать пропуски</span>
               <FileDown></FileDown>
             </button>
+            <div className="passes-container">
+        <h1 className="passes-title">Список пользователей</h1>
+
+        <div className="search-section">
+          <div className="search-header">
+            <div className="search-main">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Поиск по ФИО"
+                value={formInputs.CreatedBy || ""}
+                onChange={(e) => updateFormInput("CreatedBy", e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+              <button className="search-button" onClick={() => handleSearch()}>
+                <Search size={20} />
+              </button>
+            </div>
+
+            <div className="items-per-page">
+              <label htmlFor="limit">На странице:</label>
+              <input
+                id="limit"
+                type="number"
+                min="1"
+                max="100"
+                className="limit-input"
+                value={formInputs["Pagination.Limit"] || 10}
+                onChange={(e) => updateFormInput("Pagination.Limit", Number.parseInt(e.target.value) || 10)}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+
+            <button className="filters-toggle" onClick={() => setShowFilters(!showFilters)}>
+              Фильтры
+              <ChevronDown size={20} className={`chevron ${showFilters ? "rotated" : ""}`} />
+            </button>
+          </div>
+
+          {showFilters && (
+            <form className="filters-panel" onSubmit={handleSearch}>
+              <div className="filters-grid">
+
+
+                <div className="filter-group">
+                  <label>Сортировка:</label>
+                  <select value={formInputs.Sorting || ""} onChange={(e) => updateFormInput("Sorting", e.target.value)}>
+                    <option value="">По умолчанию</option>
+                    <option value="NameAsc">По имени (А-Я)</option>
+                    <option value="NameDesc">По имени (Я-А)</option>
+                    <option value="RoleAsc">По роли (А-Я)</option>
+                    <option value="RoleDesc">По роли (Я-А)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="filters-footer">
+                <button type="submit" className="apply-filters">
+                  Применить фильтры
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {error && (
+          <div className="error-message">
+            <AlertCircle size={20} />
+            <span>{error}</span>
+          </div>
+        )}
+        
+        {isLoading ? (
+          <div className="loading-indicator">Загрузка...</div>
+
+        ) : !isLoading ? (
+          <>
+            <PassList passes={passes} />
+            <Pagination currentPage={currentPage} totalPages={totalCount} onPageChange={handlePageChange} />
+          </>
+        ) : (
+          <div className="no-results">Пользователи не найдены</div>
+        )}
+      </div>
           </div>
         </div>
       </div>
@@ -221,4 +386,4 @@ export const MainPage = () => {
   );
 }
 
-export default MainPage;
+export default MainPage

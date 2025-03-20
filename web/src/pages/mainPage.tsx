@@ -2,9 +2,12 @@ import { PassListItem } from "../components/pass-list-item";
 import { NavBar } from "../components/navigation/nav-bar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "../styles/main.css";
+import { FileDown } from "lucide-react"
 import React, { useState, useRef, useEffect } from "react";
 import axios from 'axios';
 import { fetchAndSavePermissions } from "../services/profileData";
+import { ExportService } from "../services/ExportService";
+
 
 
 export const MainPage = () => {
@@ -145,6 +148,20 @@ export const MainPage = () => {
     }
   };
 
+  // Тестовые параметры фильтрации для экспорта
+  const testExportFilters = {
+    Reason: "Family",
+    FinalStatus: "Approved",
+    "Pagination.Limit": 100,
+    "Pagination.Offset": 0,
+    Sorting: "TimeCreatedAsc"
+  }
+
+  //Вставить потом сюда фильтры когда появятся
+  const handleExportAbscences = () => {
+    ExportService.exportAbsenceRecords(testExportFilters)
+  }
+
   return (
     <>
       <NavBar userRole="admin" />
@@ -193,6 +210,10 @@ export const MainPage = () => {
               <button onClick={handleCreatePass}>Создать пропуск</button>
               {error && <div className="error-message">{error}</div>}
             </div>
+            <button className="pass-export-button" onClick={handleExportAbscences}>
+              <span>Экспортировать пропуски</span>
+              <FileDown></FileDown>
+            </button>
           </div>
         </div>
       </div>

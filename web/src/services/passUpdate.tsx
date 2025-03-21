@@ -91,8 +91,8 @@ export const getPassAttachments = async (id: string): Promise<Attachment[]> => {
   }
 }
 
-// Download attachment directly as a blob
-export const downloadAttachment = async (attachmentId: string): Promise<Blob> => {
+// Update the downloadAttachment function to properly handle the binary attachment
+export const downloadAttachment = async (attachmentId: string): Promise<void> => {
   try {
     const token = localStorage.getItem("token")
 
@@ -100,15 +100,39 @@ export const downloadAttachment = async (attachmentId: string): Promise<Blob> =>
       throw new Error("Отсутствует токен авторизации")
     }
 
-    // Get the file content directly as a blob
+    // Get the document with binary attachment
     const response = await axios.get(`${baseUrl}document/${attachmentId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      responseType: "blob",
     })
 
-    return response.data
+    // Extract the title and binary data from the response
+    const { title, attachment } = response.data
+
+    // Convert the binary string to a Blob
+    // The attachment is a base64 string, so we need to decode it
+    const byteCharacters = atob(attachment)
+    const byteNumbers = new Array(byteCharacters.length)
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i)
+    }
+
+    const byteArray = new Uint8Array(byteNumbers)
+    const blob = new Blob([byteArray])
+
+    // Create a download link
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = title || `file-${attachmentId}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    // Clean up
+    URL.revokeObjectURL(url)
   } catch (error) {
     console.error("Ошибка при скачивании вложения:", error)
     throw error

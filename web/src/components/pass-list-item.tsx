@@ -94,17 +94,7 @@ export const PassListItem = ({ pass, onPassUpdated }: PassListItemProps) => {
   const handleDownloadAttachment = async (attachmentId: string, fileName: string) => {
     try {
       setIsLoading(true)
-      const blob = await downloadAttachment(attachmentId)
-
-      // Create a download link
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = fileName || `file-${attachmentId}.bin`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
+      await downloadAttachment(attachmentId)
     } catch (error) {
       console.error("Error downloading attachment:", error)
       setError("Не удалось скачать файл")

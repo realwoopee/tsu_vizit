@@ -1,6 +1,6 @@
 .test-container {
   width: 100%;
-  position:fixed;
+  position:absolute;
   left:10vw;
   min-width: 20rem;
   max-width:80vw;

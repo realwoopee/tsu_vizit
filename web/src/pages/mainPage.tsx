@@ -4,7 +4,7 @@ import type { Pass, PassReason } from "../components/pass-list-item"
 import { NavBar } from "../components/nav-bar"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../styles/main.css"
-import { FileDown, ChevronDown, Search, AlertCircle } from "lucide-react"
+import { FileDown, ChevronDown, Search, AlertCircle } from 'lucide-react'
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import axios from "axios"
@@ -65,7 +65,7 @@ export const MainPage = () => {
 
     getPasses()
   }, [fetchTrigger])
-console.log(totalCount,totalPages)
+
   const handleSearch = (e?: React.FormEvent) => {
     if (e) {
       e.preventDefault()
@@ -256,6 +256,11 @@ console.log(totalCount,totalPages)
     ExportService.exportAbsenceRecords(exportFilters)
   }
 
+  // Handler for when a pass is updated (status, date, etc.)
+  const handlePassUpdated = () => {
+    setFetchTrigger((prev) => prev + 1); // Refresh the list
+  };
+
   return (
     <>
       <NavBar />
@@ -439,7 +444,7 @@ console.log(totalCount,totalPages)
                 <div className="loading-indicator">Загрузка...</div>
               ) : passes.length > 0 ? (
                 <>
-                  <PassList passes={passes} />
+                  <PassList passes={passes} onPassUpdated={handlePassUpdated} />
                   <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
                 </>
               ) : (
@@ -454,4 +459,3 @@ console.log(totalCount,totalPages)
 }
 
 export default MainPage
-

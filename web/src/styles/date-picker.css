@@ -23,7 +23,7 @@
     border: none;
     cursor: pointer;
     font-size: 16px;
-    padding: 4px 8px;
+    padding: 8px 16px;
     color: #666;
     display: flex;
     align-items: center;
@@ -54,9 +54,9 @@
   .date-picker-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    padding: 8px 12px 12px;
+    padding: 8px 6px 12px;
     color: #1e1e1e;
-    gap: 4px;
+    gap: 0px;
   }
   
   .date-day {

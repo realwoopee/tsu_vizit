@@ -1,20 +1,30 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
-import { Check, FileUp, Trash2, X } from "lucide-react"
+import { Check, FileUp, Trash2, X, Save } from 'lucide-react'
 import { Dropdown } from "react-bootstrap"
 
 type UserRole = "student" | "teacher" | "admin"
-
 
 interface DropdownMenuProps {
   isOpen: boolean
   onClose: () => void
   toggleRef?: React.RefObject<HTMLButtonElement>
   onFilesSelected: (files: File[]) => void
+  onSaveDate?: () => void
+  onApprove?: () => void
+  onReject?: () => void
 }
 
-export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: DropdownMenuProps) => {
+export const DropdownMenu = ({ 
+  isOpen, 
+  onClose, 
+  toggleRef, 
+  onFilesSelected,
+  onSaveDate,
+  onApprove,
+  onReject
+}: DropdownMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -57,33 +67,43 @@ export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: Dr
     console.log("Попытка открыть выбор файла")
     if (fileInputRef.current) {
       console.log("fileInputRef.current найден:", fileInputRef.current) 
-    fileInputRef.current.value = "";
-    fileInputRef.current.click()
-  } else {
-    console.log("fileInputRef.current == null")
+      fileInputRef.current.value = ""
+      fileInputRef.current.click()
+    } else {
+      console.log("fileInputRef.current == null")
+    }
   }
-}
-
-  if (!isOpen) return null
 
   const handleAction = (action: string) => {
     if (action === "attach") {
       handleAttachFile()
-    }else if (action === "delete-file") {
+    } else if (action === "delete-file") {
       setSelectedFiles([]) // Очистка списка файлов в локальном состоянии
       onFilesSelected([]) // Обновляем родительский компонент
+      onClose()
+    } else if (action === "save-date") {
+      if (onSaveDate) onSaveDate()
+      onClose()
+    } else if (action === "confirm") {
+      if (onApprove) onApprove()
+      onClose()
+    } else if (action === "reject") {
+      if (onReject) onReject()
       onClose()
     } else {
       console.log(`Action: ${action}`)
       onClose()
     }
-   
   }
 
-  const renderMenuItems = () => {
-    if(localStorage.getItem("canCreate")==="true"){
-      return (
+  return (
+    <Dropdown.Menu show={isOpen} ref={menuRef} className="dropdown-menu">
+      {localStorage.getItem("canCreate") === "true" && (
         <>
+          <Dropdown.Item onClick={() => handleAction("save-date")}>
+            <span>Сохранить дату</span>
+            <Save size={16} className="icon-right" />
+          </Dropdown.Item>
           <Dropdown.Item onClick={() => handleAction("attach")}>
             <span>Прикрепить файл</span>
             <FileUp size={16} className="icon-right" />
@@ -93,11 +113,8 @@ export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: Dr
             <Trash2 size={16} className="icon-right" />
           </Dropdown.Item>
         </>
-      )
-    }
-    
-    if(localStorage.getItem("canApprove")==="true"){
-      return (
+      )}
+      {localStorage.getItem("canApprove") === "true" && (
         <>
           <Dropdown.Item onClick={() => handleAction("confirm")}>
             <span>Подтвердить</span>
@@ -108,30 +125,14 @@ export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: Dr
             <X size={16} className="icon-right" />
           </Dropdown.Item>
         </>
-      )
-    }
-    if(localStorage.getItem("isAdmin")==="true"){
-      return (
-        <>
-          <Dropdown.Item onClick={() => handleAction("confirm")}>
-            <span>Подтвердить</span>
-            <Check size={16} className="icon-right" />
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => handleAction("reject")}>
-            <span>Отклонить</span>
-            <X size={16} className="icon-right" />
-          </Dropdown.Item>
-          <Dropdown.Item onClick={() => handleAction("delete-record")} className="delete">
-            <span>Удалить запись</span>
-            <Trash2 size={16} className="icon-right" />
-          </Dropdown.Item>
-        </>
-        )
-      }
-    } /*если не работает return null*/
-  return (
-    <Dropdown.Menu show={isOpen} ref={menuRef} className="dropdown-menu">
-      {renderMenuItems()}
+      )}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+        multiple
+      />
     </Dropdown.Menu>
   )
 }

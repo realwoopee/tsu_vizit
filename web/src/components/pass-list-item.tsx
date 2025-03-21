@@ -3,14 +3,22 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import { Calendar, File, Menu } from "lucide-react"
+import { Calendar, File, Menu, Check, X } from 'lucide-react'
 import { DatePicker } from "./date-picker"
 import { DropdownMenu } from "./dropdown-menu"
 import "../styles/pass-list-item.css"
 import { deletePass } from "../services/passDelete"
+import { updatePassEndDate, updatePassStatus, getPassAttachments, downloadAttachment } from "../services/passUpdate"
+import ConfirmationModal from "./confirmation-modal"
 
-export type PassStatus = "Unknown" | "Approved" | "Denied"
+export type PassStatus = "Unknown" | "Approved" | "Declined"
 export type PassReason = "Personal" | "Family" | "Sick"
+
+export interface Attachment {
+  id: string
+  fileName: string
+  contentType: string
+}
 
 export interface Pass{
   id: string
@@ -27,37 +35,77 @@ export interface Pass{
 
 interface PassListItemProps {
   pass: Pass
+  onPassUpdated: () => void
 }
 
 export const PassListItem = ({
-  pass}: PassListItemProps) => {
+  pass, onPassUpdated}: PassListItemProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentEndDate, setCurrentEndDate] = useState(pass.absencePeriodFinish)
   const [inputValue, setInputValue] = useState(pass.absencePeriodFinish)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isFileListOpen, setIsFileListOpen] = useState(false)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [confirmAction, setConfirmAction] = useState<{
+    title: string;
+    message: string;
+    action: () => Promise<void>;
+  } | null>(null)
+  
   const fileButtonRef = useRef<HTMLButtonElement | null>(null);
   const fileListRef = useRef<HTMLDivElement | null>(null);
   
+  // Fetch attachments when component mounts or when pass changes
+  useEffect(() => {
+    const fetchAttachments = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getPassAttachments(pass.id);
+        setAttachments(data);
+      } catch (error) {
+        console.error("Failed to fetch attachments:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAttachments();
+  }, [pass.id]);
+
   const toggleFileList = () => {
     setIsFileListOpen(!isFileListOpen)
   }
+  
   const handleFilesSelected = (files: File[]) => {
     console.log("Выбранные файлы:", files)
     setSelectedFiles(files)
   }
 
-  const handleDownloadFile = (file: File) => {
-    const url = URL.createObjectURL(file)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = file.name
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }
+  const handleDownloadAttachment = async (attachmentId: string, fileName: string) => {
+    try {
+      setIsLoading(true);
+      const blob = await downloadAttachment(pass.id, attachmentId);
+      
+      // Create a download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading attachment:", error);
+      setError("Не удалось скачать файл");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -139,6 +187,14 @@ export const PassListItem = ({
     return true
   }
 
+  // Convert date from DD.MM.YYYY to YYYY-MM-DD format for API
+  const formatDateForApi = (dateString: string): string => {
+    if (!isValidDate(dateString)) return "";
+    
+    const [day, month, year] = dateString.split(".").map(Number);
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  };
+
   // Обновляем currentEndDate при изменении inputValue, если дата валидна
   useEffect(() => {
     if (isValidDate(inputValue)) {
@@ -152,7 +208,7 @@ export const PassListItem = ({
         return "status-review"
       case "Approved":
         return "status-accepted"
-      case "Denied":
+      case "Declined":
         return "status-rejected"
       default:
         return ""
@@ -164,7 +220,7 @@ export const PassListItem = ({
         return "На проверке"
       case "Approved":
         return "Принято"
-      case "Denied":
+      case "Declined":
         return "Отклонено"
       default:
         return ""
@@ -204,13 +260,78 @@ export const PassListItem = ({
   }
 
   const handleDeletePass = async (passId: string) => {
-    const confirmDelete = window.confirm("Вы уверены, что хотите удалить этот пропуск?")
-    if (confirmDelete){
-      deletePass(passId)
-      
+    setConfirmAction({
+      title: "Подтверждение удаления",
+      message: "Вы уверены, что хотите удалить этот пропуск?",
+      action: async () => {
+        try {
+          await deletePass(passId);
+          onPassUpdated();
+        } catch (error) {
+          console.error("Ошибка при удалении пропуска:", error);
+          setError("Не удалось удалить пропуск");
+        }
+      }
+    });
+    setShowConfirmModal(true);
+  };
+
+  const handleSaveDate = async () => {
+    if (!isValidDate(inputValue)) {
+      setError("Пожалуйста, введите корректную дату");
+      return;
     }
-    else return null;
-}
+
+    setConfirmAction({
+      title: "Подтверждение изменения даты",
+      message: "Вы уверены, что хотите изменить дату окончания пропуска?",
+      action: async () => {
+        try {
+          const formattedDate = formatDateForApi(inputValue);
+          await updatePassEndDate(pass.id, formattedDate, pass.reason);
+          onPassUpdated();
+        } catch (error) {
+          console.error("Ошибка при сохранении даты:", error);
+          setError("Не удалось сохранить дату");
+        }
+      }
+    });
+    setShowConfirmModal(true);
+  };
+
+  const handleApprovePass = async () => {
+    setConfirmAction({
+      title: "Подтверждение пропуска",
+      message: "Вы уверены, что хотите подтвердить этот пропуск?",
+      action: async () => {
+        try {
+          await updatePassStatus(pass.id, "Approved");
+          onPassUpdated();
+        } catch (error) {
+          console.error("Ошибка при подтверждении пропуска:", error);
+          setError("Не удалось подтвердить пропуск");
+        }
+      }
+    });
+    setShowConfirmModal(true);
+  };
+
+  const handleRejectPass = async () => {
+    setConfirmAction({
+      title: "Отклонение пропуска",
+      message: "Вы уверены, что хотите отклонить этот пропуск?",
+      action: async () => {
+        try {
+          await updatePassStatus(pass.id, "Declined");
+          onPassUpdated();
+        } catch (error) {
+          console.error("Ошибка при отклонении пропуска:", error);
+          setError("Не удалось отклонить пропуск");
+        }
+      }
+    });
+    setShowConfirmModal(true);
+  };
 
   return (
     <div className="pass-list-item">
@@ -250,13 +371,21 @@ export const PassListItem = ({
 
         <button ref={fileButtonRef} className="pass-file-button" onClick={toggleFileList}>
           <File size={20} />
-          {selectedFiles.length > 0 && isFileListOpen &&  (
+          {isFileListOpen && attachments.length > 0 && (
             <div ref={fileListRef} className="file-list">
-              {selectedFiles.map((file, index) => (
-                <div key={index} className="file-item" onClick={() => handleDownloadFile(file)}>
-                  {file.name}
-                </div>
-              ))}
+              {isLoading ? (
+                <div className="file-item loading">Загрузка...</div>
+              ) : (
+                attachments.map((attachment) => (
+                  <div 
+                    key={attachment.id} 
+                    className="file-item" 
+                    onClick={() => handleDownloadAttachment(attachment.id, attachment.fileName)}
+                  >
+                    {attachment.fileName}
+                  </div>
+                ))
+              )}
             </div>
           )}
         </button>
@@ -264,14 +393,38 @@ export const PassListItem = ({
           <button className="pass-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <Menu size={20} />
           </button>
-          <DropdownMenu isOpen={isMenuOpen}
+          <DropdownMenu 
+            isOpen={isMenuOpen}
             onClose={() => setIsMenuOpen(false)}
-            onFilesSelected={handleFilesSelected} />
+            onFilesSelected={handleFilesSelected}
+            onSaveDate={handleSaveDate}
+            onApprove={handleApprovePass}
+            onReject={handleRejectPass}
+          />
         </div>
-        <button className="pass-delete-button" onClick={() => handleDeletePass(pass.id)}>
+        {localStorage.getItem("canCreate")==="true" ? (<button className="pass-delete-button" onClick={() => handleDeletePass(pass.id)}>
           Удалить
-        </button>
+        </button>) : ""}
       </div>
+
+      {showConfirmModal && confirmAction && (
+        <ConfirmationModal
+          isOpen={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={confirmAction.action}
+          title={confirmAction.title}
+          message={confirmAction.message}
+          confirmText="Подтвердить"
+          cancelText="Отмена"
+        />
+      )}
+
+      {error && (
+        <div className="error-message">
+          {error}
+          <button onClick={() => setError(null)} className="close-error">×</button>
+        </div>
+      )}
     </div>
   )
 }

@@ -3,9 +3,10 @@ import "../styles/pass-list.css"
 
 interface PassListProps {
   passes: Pass[]
+  onPassUpdated: () => void
 }
 
-export const PassList = ({ passes }: PassListProps) => {
+export const PassList = ({ passes, onPassUpdated }: PassListProps) => {
   if (passes.length === 0) {
     return <div className="pass-list-empty">Пользователи не найдены</div>
   }
@@ -13,7 +14,7 @@ export const PassList = ({ passes }: PassListProps) => {
   return (
     <div className="pass-list">
       {passes.map((pass) => (
-        <PassListItem key={pass.toString()} pass={pass} />
+        <PassListItem key={pass.id} pass={pass} onPassUpdated={onPassUpdated} />
       ))}
     </div>
   )

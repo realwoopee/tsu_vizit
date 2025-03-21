@@ -14,18 +14,18 @@ interface NavBarProps {
   userName?: string
 }
 
-export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
+export const NavBar = ({ userName }: NavBarProps) => {
   const navigate = useNavigate()
   const [profileName, setProfileName] = useState<string | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSessionsModalOpen, setIsSessionsModalOpen] = useState(false)
-  const [userRoleState, setUserRoleState] = useState<UserRole>(userRole || "guest")
 
   const menuRef = useRef<HTMLDivElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const fetchUserProfile = async () => {
+    console.log(localStorage)
     try {
       // Заглушка для Bearer токена
       const token = localStorage.getItem("token")
@@ -44,25 +44,16 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
 
       const profileData = await profileResponse.json()
       if (profileData.fullName) {
-        setProfileName(profileData.fullName)
-      }
-
-      // Set the user role from the profile data
-      if (profileData.role) {
-        setUserRoleState(profileData.role)
+        localStorage.setItem("fullName", profileData.fullName)
       }
     } catch (error) {
       console.error("Ошибка при получении данных профиля:", error)
-      setUserRoleState("guest")
     }
   }
 
-  useEffect(() => {
-    if (userRole && userRole !== "guest") {
-      setUserRoleState(userRole)
-    }
+  if (localStorage.getItem("fullName")===null){
     fetchUserProfile()
-  }, [userRole])
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -86,7 +77,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
   const handleLogout = async () => {
     try {
       // Заглушка для Bearer токена
-      const token = "example_bearer_token"
+      const token = localStorage.getItem("token")
 
       const sessionResponse = await fetch("https://vizit.90.188.95.63.sslip.io/api/session/current", {
         method: "GET",
@@ -122,7 +113,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
     }
   }
 
-  const displayName = profileName || userName || "Профиль"
+  const displayName = localStorage.getItem("fullName") || "Профиль"
 
   const handleProfileClick = () => {
     setIsProfileModalOpen(true)
@@ -143,7 +134,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
       </div>
 
       <div className="nav-right">
-        {userRoleState === "guest" ? (
+        {localStorage.getItem('canCheck')===null ? (
           <>
             <Link to="/register" className="nav-button">
               Регистрация
@@ -154,18 +145,18 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
           </>
         ) : (
           <>
-            {(userRoleState === "DeansEmployee" || userRoleState === "Admin") && (
+            {localStorage.getItem("canApprove") && (
               <Link to="/users" className="nav-link">
                 Список пользователей
               </Link>
             )}
-            <Link to="/passes" className="nav-link">
+            <Link to="/main" className="nav-link">
               Список пропусков
             </Link>
 
             <button className="nav-profile" onClick={handleProfileClick}>
               <User size={18} />
-              <span>{displayName}</span>
+              <span>{localStorage.getItem("fullName")}</span>
             </button>
 
             <div className="menu-container">

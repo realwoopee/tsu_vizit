@@ -33,7 +33,6 @@ const ProfileModal = ({ onClose, onProfileUpdated }: ProfileModalProps) => {
 
   const [isSaving, setIsSaving] = useState(false)
 
-  // Заглушка для Bearer токена
   const token = localStorage.getItem("token")
   const fetchProfile = async () => {
     try {

@@ -110,7 +110,7 @@ export const UsersPage = () => {
 
   return (
     <div className="users-page">
-      <NavBar userRole="admin" userName="Администратор" />
+      <NavBar />
 
       <div className="users-container">
         <h1 className="users-title">Список пользователей</h1>

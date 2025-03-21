@@ -66,7 +66,7 @@ export const GettingPasses = async (params: SearchParams): Promise<PassesRespons
         });
         
         return {passes: response.data.absenceRequests,
-            totalCount: response.data.totalCount,
+            totalCount: response.data.totalCount
         }
     } catch (error) {
         console.error("Error fetching passes:", error); 

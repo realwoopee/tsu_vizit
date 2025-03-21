@@ -140,7 +140,7 @@ export class ExportService {
   }
 
   public static exportAbsenceRecords(
-    filters?: Record<string, string | number | boolean | null>,
+    filters?: Record<string, string | number | boolean | null |undefined>,
     options: ExportOptions = {},
   ): Promise<void> {
     // Объект для сохранения фильтров

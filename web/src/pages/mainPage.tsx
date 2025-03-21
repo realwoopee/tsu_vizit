@@ -169,14 +169,8 @@ console.log(totalCount,totalPages)
   }
 
   const handleCreatePass = async () => {
-    console.log(
-      newPass.createdBy,
-      newPass.reason,
-      newPass.abscencePeriodStart,
-      newPass.abscencePeriodFinish,
-      files.length,
-    )
-    if (newPass.reason && newPass.abscencePeriodStart && newPass.abscencePeriodFinish) {
+    console.log(newPass.createdBy, newPass.reason, newPass.abscencePeriodStart, newPass.abscencePeriodFinish, files.length)
+    if (newPass.reason && newPass.abscencePeriodStart && newPass.abscencePeriodFinish && files.length>0) {
       try {
         const formData = {
           absencePeriodStart: newPass.abscencePeriodStart,
@@ -307,10 +301,12 @@ console.log(totalCount,totalPages)
               <button onClick={handleCreatePass}>Создать пропуск</button>
               {error && <div className="error-message">{error}</div>}
             </div>
+            {localStorage.getItem("canExportAll") && 
             <button className="pass-export-button" onClick={handleExportAbscences}>
               <span>Экспортировать пропуски</span>
               <FileDown></FileDown>
-            </button>
+            </button>}
+            
             <div className="passes-container">
               <h1 className="passes-title">Список пропусков</h1>
 

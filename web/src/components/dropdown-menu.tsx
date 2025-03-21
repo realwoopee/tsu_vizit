@@ -81,7 +81,7 @@ export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: Dr
   }
 
   const renderMenuItems = () => {
-    if(localStorage.getItem("canCreate")){
+    if(localStorage.getItem("canCreate")==="true"){
       return (
         <>
           <Dropdown.Item onClick={() => handleAction("attach")}>
@@ -96,7 +96,7 @@ export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: Dr
       )
     }
     
-    if(localStorage.getItem("canApprove")){
+    if(localStorage.getItem("canApprove")==="true"){
       return (
         <>
           <Dropdown.Item onClick={() => handleAction("confirm")}>
@@ -110,7 +110,7 @@ export const DropdownMenu = ({ isOpen, onClose, toggleRef, onFilesSelected }: Dr
         </>
       )
     }
-    if(localStorage.getItem("isAdmin")){
+    if(localStorage.getItem("isAdmin")==="true"){
       return (
         <>
           <Dropdown.Item onClick={() => handleAction("confirm")}>

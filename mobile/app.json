@@ -14,9 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.example.tsuVizitMobile"
+      "bundleIdentifier": "com.example.tsuVizitMobile",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Это приложение требует доступ к вашей фотогалерее для загрузки и сохранения файлов.",
+        "NSFileProviderPresenceUsageDescription": "Это приложение требует доступ к файловой системе для загрузки и сохранения файлов."
+      }
     },
     "android": {
+      "package": "com.aqxzw.tsu_vizit_mobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -24,6 +29,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

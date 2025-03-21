@@ -2,10 +2,14 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { Feather, FontAwesome6 } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Dimensions } from 'react-native';
+
+const screenHeight = Dimensions.get('window').height;
 
 type RootStackParamList = {
     Профиль: undefined;
     Пропуски: undefined;
+    Вход: undefined;
 };
   
 type MenuProps = {
@@ -24,12 +28,13 @@ export default function Menu({navigation} : MenuProps) {
     
     return (
     <View style={styles.container}>
-        <TouchableOpacity onPress={loadAbsences}>
-            <FontAwesome6 name="id-card" size={40} color="#3478F6" />
-        </TouchableOpacity>
 
         <TouchableOpacity onPress={loadProfile}>
             <Feather name="user" size={40} color="#3478F6" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={loadAbsences}>
+            <FontAwesome6 name="id-card" size={40} color="#3478F6" />
         </TouchableOpacity>
     </View>
     );
@@ -38,7 +43,7 @@ export default function Menu({navigation} : MenuProps) {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        top: '100%',
+        top: screenHeight * 0.9,
         alignSelf: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',

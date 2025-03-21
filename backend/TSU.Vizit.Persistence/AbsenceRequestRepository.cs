@@ -70,6 +70,8 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
             null => query,
             _ => throw new ArgumentOutOfRangeException(nameof(sorting), sorting, $"Invalid sorting value: {sorting}")
         };
+        
+        var totalCount = await query.CountAsync();
 
         if (pagination is not null)
             query = query
@@ -78,7 +80,7 @@ public class AbsenceRequestRepository(VizitDbContext dbContext) : IAbsenceReques
 
         return new AbsenceRequestPagedList
         {
-            TotalCount = await query.CountAsync(),
+            TotalCount = totalCount,
             AbsenceRequests = await query.ToListAsync()
         };
     }

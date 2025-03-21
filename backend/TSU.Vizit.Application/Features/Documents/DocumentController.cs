@@ -22,6 +22,7 @@ public class DocumentController(DocumentService _documentService, UserAccessor _
             .ToActionResult();
     }
     
+    [RequestSizeLimit(100_000_000)]
     [HttpPost("/api/absence/{absenceId}/attach")]
     public async Task<ActionResult<DocumentDto>> AttachDocument(Guid absenceId, IFormFile file)
     {

@@ -22,6 +22,7 @@ public class DocumentController(DocumentService _documentService, UserAccessor _
             .ToActionResult();
     }
     
+    [RequestSizeLimit(100_000_000)]
     [HttpPost("/api/absence/{absenceId}/attach")]
     public async Task<ActionResult<DocumentDto>> AttachDocument(Guid absenceId, IFormFile file)
     {
@@ -29,7 +30,14 @@ public class DocumentController(DocumentService _documentService, UserAccessor _
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream);
 
-        return await _documentService.CreateDocument(absenceId, memoryStream.ToArray(), curUserId.Value)
+        var documentDto = new CreateDocumentDto
+        {
+            Title = file.FileName,
+            AbsenceRequestId = absenceId,
+            Attachment = memoryStream.ToArray()
+        };
+
+        return await _documentService.CreateDocument(documentDto, curUserId.Value)
             .ToActionResult();
     }
 

@@ -21,13 +21,11 @@ public class AbsenceRequestService(
     public async Task<Result<AbsenceRequestDto>> GetAbsenceRequest(Guid id, Guid curUserId)
     {
         var userPermissions = await _userService.GetUserPermissions(curUserId);
-        if (userPermissions.IsFailed)
-            return Result.Fail(userPermissions.Errors);
 
         var result = await _absenceRequestRepository.GetAbsenceRequestById(id)
             .Bind(Result<AbsenceRequestDto> (ar) => ar.ToDto());
-
-        if (result.Value.CreatedById != curUserId && !userPermissions.Value.CanCheck)
+        
+        if (result.IsSuccess && result.Value.CreatedById != curUserId && !userPermissions.Value.CanCheck)
             return CustomErrors.Forbidden("User does not have permission to retrieve this absence request.");
 
         return result;
@@ -102,6 +100,7 @@ public class AbsenceRequestService(
         absenceRequest.Reason = model.Reason;
         absenceRequest.AbsencePeriodStart = model.AbsencePeriodStart;
         absenceRequest.AbsencePeriodFinish = model.AbsencePeriodFinish;
+        absenceRequest.FinalStatus = AbsenceRequestResult.Unknown;
 
         return await _absenceRequestRepository.EditAbsenceRequest(absenceRequest)
             .Map(ar => ar.ToDto());

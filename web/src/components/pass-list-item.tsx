@@ -8,15 +8,14 @@ import { DatePicker } from "./date-picker"
 import { DropdownMenu } from "./dropdown-menu"
 import "../styles/pass-list-item.css"
 import { deletePass } from "../services/passDelete"
-import MainPage from "../pages/mainPage"
 
 export type PassStatus = "Unknown" | "Approved" | "Denied"
 export type PassReason = "Personal" | "Family" | "Sick"
 
 export interface Pass{
   id: string
-  abscencePeriodStart: string
-  abscencePeriodFinish: string
+  absencePeriodStart: string
+  absencePeriodFinish: string
   timeCreated: string
   timeFinalised: string
   createdById: string
@@ -34,8 +33,8 @@ export const PassListItem = ({
   pass}: PassListItemProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [currentEndDate, setCurrentEndDate] = useState(pass.abscencePeriodFinish)
-  const [inputValue, setInputValue] = useState(pass.abscencePeriodFinish)
+  const [currentEndDate, setCurrentEndDate] = useState(pass.absencePeriodFinish)
+  const [inputValue, setInputValue] = useState(pass.absencePeriodFinish)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isFileListOpen, setIsFileListOpen] = useState(false)
   const fileButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -222,11 +221,11 @@ export const PassListItem = ({
 
       <div className="pass-right-section">
         <div className="pass-reason">{getReasonDisplay(pass.reason)}</div>
-        <div className="pass-date">{pass.abscencePeriodFinish}</div>
+        <div className="pass-date">{pass.absencePeriodStart}</div>
         <div className="pass-date-separator">—</div>
 
         
-          <div className="pass-end-date-container">
+          {localStorage.getItem("canCreate")==="false" ? (<div className="pass-date">{pass.absencePeriodFinish}</div>) : (<div className="pass-end-date-container">
             <div className="pass-end-date" onClick={toggleCalendar}>
               <input
                 type="text"
@@ -247,7 +246,7 @@ export const PassListItem = ({
               isOpen={isCalendarOpen}
               onClose={() => setIsCalendarOpen(false)}
             />
-          </div>
+          </div>)}
 
         <button ref={fileButtonRef} className="pass-file-button" onClick={toggleFileList}>
           <File size={20} />

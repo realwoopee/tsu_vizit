@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, useNavigate  } from 'react-router-dom';
+import { fetchAndSavePermissions } from '../services/profileData';
 
 const LoginPage = () => {
   const baseUrl = 'https://vizit.90.188.95.63.sslip.io/api/'
@@ -26,6 +27,7 @@ const LoginPage = () => {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('refreshToken', data.refreshToken);
+                await fetchAndSavePermissions()
                 navigate('/main'); 
             } else {
                 const errorData = await response.json();

@@ -76,7 +76,8 @@ export const NavBar = ({ userName }: NavBarProps) => {
 
   const handleLogout = async () => {
     try {
-      // Заглушка для Bearer токена
+      localStorage.clear()
+
       const token = localStorage.getItem("token")
 
       const sessionResponse = await fetch("https://vizit.90.188.95.63.sslip.io/api/session/current", {
@@ -105,7 +106,6 @@ export const NavBar = ({ userName }: NavBarProps) => {
       if (!logoutResponse.ok) {
         throw new Error("Не удалось выйти из системы")
       }
-
       navigate("/login")
     } catch (error) {
       console.error("Ошибка при выходе из системы:", error)
@@ -145,7 +145,7 @@ export const NavBar = ({ userName }: NavBarProps) => {
           </>
         ) : (
           <>
-            {localStorage.getItem("canApprove") && (
+            {localStorage.getItem("canApprove")==="true" && (
               <Link to="/users" className="nav-link">
                 Список пользователей
               </Link>

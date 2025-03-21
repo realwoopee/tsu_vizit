@@ -44,24 +44,8 @@
   appearance: none; /* Removes the default appearance */
   -webkit-appearance: none; /* For Safari */
   position: relative;
-  padding: 10px 40px 10px 10px; /* Adds padding to make room for the icon */
-  background-color: #000; /* Ensures the input's background matches */
-  color: #fff; /* White text color */
-  border: 1px solid #fff; /* White border */
   border-radius: 5px;
 }
-
-/* This makes the original calendar icon invisible while keeping it clickable */
-.form-control::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  display: block;
-  position: absolute;
-  right: 10px;
-  width: 20px;
-  height: 100%;
-  cursor: pointer;
-}
-
 /* Custom white icon overlay */
 .form-control:before {
   content: '📅';

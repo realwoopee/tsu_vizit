@@ -13,6 +13,8 @@ import { Pagination } from "../components/users-pagination"
 import { GettingPasses, type SearchParams } from "../services/gettingPasses"
 import { PassList } from "../components/pass-list"
 import "../styles/users.css"
+import "../styles/date-picker.css"
+
 
 // Заменим содержимое функции MainPage, добавив новые фильтры и исправив пагинацию
 export const MainPage = () => {
@@ -108,8 +110,8 @@ console.log(totalCount,totalPages)
   const baseUrl = "https://vizit.90.188.95.63.sslip.io/api/"
 
   const [newPass, setNewPass] = useState<Omit<Pass, "id">>({
-    abscencePeriodStart: "",
-    abscencePeriodFinish: "",
+    absencePeriodStart: "",
+    absencePeriodFinish: "",
     timeCreated: "",
     timeFinalised: "",
     createdById: "",
@@ -156,7 +158,7 @@ console.log(totalCount,totalPages)
 
   const handleDateChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    name: "abscencePeriodStart" | "abscencePeriodFinish",
+    name: "absencePeriodStart" | "absencePeriodFinish",
   ) => {
     console.log(e.target.value)
     setNewPass({ ...newPass, [name]: e.target.value })
@@ -169,12 +171,12 @@ console.log(totalCount,totalPages)
   }
 
   const handleCreatePass = async () => {
-    console.log(newPass.createdBy, newPass.reason, newPass.abscencePeriodStart, newPass.abscencePeriodFinish, files.length)
-    if (newPass.reason && newPass.abscencePeriodStart && newPass.abscencePeriodFinish && files.length>0) {
+    console.log(newPass.createdBy, newPass.reason, newPass.absencePeriodStart, newPass.absencePeriodFinish, files.length)
+    if (newPass.reason && newPass.absencePeriodStart && newPass.absencePeriodFinish && files.length>0) {
       try {
         const formData = {
-          absencePeriodStart: newPass.abscencePeriodStart,
-          absencePeriodFinish: newPass.abscencePeriodFinish,
+          absencePeriodStart: newPass.absencePeriodStart,
+          absencePeriodFinish: newPass.absencePeriodFinish,
           reason: newPass.reason,
         }
 
@@ -204,8 +206,8 @@ console.log(totalCount,totalPages)
           ...passes,
           {
             id: createdPass.id,
-            abscencePeriodStart: createdPass.absencePeriodStart,
-            abscencePeriodFinish: createdPass.absencePeriodFinish,
+            absencePeriodStart: createdPass.absencePeriodStart,
+            absencePeriodFinish: createdPass.absencePeriodFinish,
             timeCreated: createdPass.timeCreated,
             timeFinalised: createdPass.timeFinalisez,
             createdById: createdPass.createdById,
@@ -216,8 +218,8 @@ console.log(totalCount,totalPages)
           },
         ])
         setNewPass({
-          abscencePeriodStart: "",
-          abscencePeriodFinish: "",
+          absencePeriodStart: "",
+          absencePeriodFinish: "",
           timeCreated: "",
           timeFinalised: "",
           createdById: "",
@@ -240,14 +242,14 @@ console.log(totalCount,totalPages)
   }
 
   // Функция для экспорта пропусков с учетом текущих фильтров
-  const handleExportAbscences = () => {
+  const handleExportAbsences = () => {
     // Создаем объект с текущими фильтрами для экспорта
     const exportFilters = {
       CreatedBy: formInputs.CreatedBy,
       FinalStatus: formInputs.FinalStatus,
       Reason: formInputs.Reason,
-      "Pagination.Limit": 1000, // Увеличиваем лимит для экспорта
-      "Pagination.Offset": 0,
+      "Pagination.Limit": formInputs["Pagination.Limit"], // Увеличиваем лимит для экспорта
+      "Pagination.Offset": formInputs["Pagination.Offset"],
       Sorting: formInputs.Sorting,
     }
 
@@ -260,7 +262,7 @@ console.log(totalCount,totalPages)
       <div className="test-container">
         <div className="row">
           <div className="col">
-            <div className="pass-form">
+            { localStorage.getItem("canCreate")==="true" ? (<div className="pass-form">
               <select name="reason" value={newPass.reason} onChange={handleReasonChange} className="form-select">
                 <option value="" disabled>
                   Выберите причину
@@ -271,17 +273,17 @@ console.log(totalCount,totalPages)
               </select>
               <input
                 type="date"
-                name="abscencePeriodStart"
-                value={newPass.abscencePeriodStart}
-                onChange={(e) => handleDateChange(e, "abscencePeriodStart")}
+                name="absencePeriodStart"
+                value={newPass.absencePeriodStart}
+                onChange={(e) => handleDateChange(e, "absencePeriodStart")}
                 placeholder="Дата начала"
                 className="form-control"
               />
               <input
                 type="date"
-                name="abscencePeriodFinish"
-                value={newPass.abscencePeriodFinish}
-                onChange={(e) => handleDateChange(e, "abscencePeriodFinish")}
+                name="absencePeriodFinish"
+                value={newPass.absencePeriodFinish}
+                onChange={(e) => handleDateChange(e, "absencePeriodFinish")}
                 placeholder="Дата окончания"
                 className="form-control"
               />
@@ -300,9 +302,9 @@ console.log(totalCount,totalPages)
               )}
               <button onClick={handleCreatePass}>Создать пропуск</button>
               {error && <div className="error-message">{error}</div>}
-            </div>
-            {localStorage.getItem("canExportAll") && 
-            <button className="pass-export-button" onClick={handleExportAbscences}>
+            </div>) : ("")}
+            {localStorage.getItem("canExportAll")==="true" && 
+            <button className="pass-export-button" onClick={handleExportAbsences}>
               <span>Экспортировать пропуски</span>
               <FileDown></FileDown>
             </button>}

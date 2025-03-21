@@ -4,7 +4,7 @@ import type { Pass, PassReason } from "../components/pass-list-item"
 import { NavBar } from "../components/nav-bar"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../styles/main.css"
-import { FileDown, ChevronDown, Search, AlertCircle } from 'lucide-react'
+import { FileDown, ChevronDown, Search, AlertCircle } from "lucide-react"
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import axios from "axios"
@@ -14,7 +14,6 @@ import { GettingPasses, type SearchParams } from "../services/gettingPasses"
 import { PassList } from "../components/pass-list"
 import "../styles/users.css"
 import "../styles/date-picker.css"
-
 
 // Заменим содержимое функции MainPage, добавив новые фильтры и исправив пагинацию
 export const MainPage = () => {
@@ -49,7 +48,6 @@ export const MainPage = () => {
         const temp = await response.totalCount
         await setTotalCount(temp)
         setTotalPages(Math.ceil(temp / (searchParams["Pagination.Limit"] || 10)))
-
       } catch (err) {
         if (err instanceof Error && err.message.includes("401")) {
           setError("Ошибка авторизации. У Вас нет доступа к списку пропусков.")
@@ -134,6 +132,7 @@ export const MainPage = () => {
     }
   }, [])
 
+  // Update the handleFileChange function to handle file uploads
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files)
@@ -170,9 +169,11 @@ export const MainPage = () => {
     setNewPass({ ...newPass, reason: tempValue })
   }
 
+  // Update the handleCreatePass function to properly upload files
+
   const handleCreatePass = async () => {
-    console.log(newPass.createdBy, newPass.reason, newPass.absencePeriodStart, newPass.absencePeriodFinish, files.length)
-    if (newPass.reason && newPass.absencePeriodStart && newPass.absencePeriodFinish && files.length>0) {
+    console.log(newPass.reason, newPass.absencePeriodStart, newPass.absencePeriodFinish, files.length)
+    if (newPass.reason && newPass.absencePeriodStart && newPass.absencePeriodFinish) {
       try {
         const formData = {
           absencePeriodStart: newPass.absencePeriodStart,
@@ -188,35 +189,31 @@ export const MainPage = () => {
             "Content-Type": "application/json",
           },
         })
-        console.log(response.data.id)
-        const createdPass = response.data
 
-        for (const file of files) {
-          const fileFormData = new FormData()
-          fileFormData.append("file", file)
-          await axios.post(`${baseUrl}absence/${createdPass.id}/attach`, fileFormData, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
+        const createdPass = response.data
+        console.log("Created pass:", createdPass)
+
+        // Upload each file individually if there are any
+        if (files.length > 0) {
+          for (const file of files) {
+            const fileFormData = new FormData()
+            fileFormData.append("file", file)
+
+            try {
+              await axios.post(`${baseUrl}absence/${createdPass.id}/attach`, fileFormData, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  "Content-Type": "multipart/form-data",
+                },
+              })
+              console.log(`File ${file.name} uploaded successfully`)
+            } catch (fileError) {
+              console.error(`Error uploading file ${file.name}:`, fileError)
+            }
+          }
         }
 
-        setPasses([
-          ...passes,
-          {
-            id: createdPass.id,
-            absencePeriodStart: createdPass.absencePeriodStart,
-            absencePeriodFinish: createdPass.absencePeriodFinish,
-            timeCreated: createdPass.timeCreated,
-            timeFinalised: createdPass.timeFinalisez,
-            createdById: createdPass.createdById,
-            createdBy: newPass.createdBy,
-            finalStatus: "Unknown",
-            reason: createdPass.reason,
-            attachments: createdPass.attachments,
-          },
-        ])
+        // Reset form and refresh the list
         setNewPass({
           absencePeriodStart: "",
           absencePeriodFinish: "",
@@ -237,7 +234,7 @@ export const MainPage = () => {
         setError("Произошла ошибка при создании пропуска. Пожалуйста, попробуйте снова.")
       }
     } else {
-      setError("Пожалуйста, заполните все поля и добавьте файлы.")
+      setError("Пожалуйста, заполните все обязательные поля.")
     }
   }
 
@@ -258,8 +255,8 @@ export const MainPage = () => {
 
   // Handler for when a pass is updated (status, date, etc.)
   const handlePassUpdated = () => {
-    setFetchTrigger((prev) => prev + 1); // Refresh the list
-  };
+    setFetchTrigger((prev) => prev + 1) // Refresh the list
+  }
 
   return (
     <>
@@ -267,53 +264,58 @@ export const MainPage = () => {
       <div className="test-container">
         <div className="row">
           <div className="col">
-            { localStorage.getItem("canCreate")==="true" ? (<div className="pass-form">
-              <select name="reason" value={newPass.reason} onChange={handleReasonChange} className="form-select">
-                <option value="" disabled>
-                  Выберите причину
-                </option>
-                <option value="Sick">Болезнь</option>
-                <option value="Family">Семейные обстоятельства</option>
-                <option value="Personal">Учебная деятельность</option>
-              </select>
-              <input
-                type="date"
-                name="absencePeriodStart"
-                value={newPass.absencePeriodStart}
-                onChange={(e) => handleDateChange(e, "absencePeriodStart")}
-                placeholder="Дата начала"
-                className="form-control"
-              />
-              <input
-                type="date"
-                name="absencePeriodFinish"
-                value={newPass.absencePeriodFinish}
-                onChange={(e) => handleDateChange(e, "absencePeriodFinish")}
-                placeholder="Дата окончания"
-                className="form-control"
-              />
-              <input type="file" onChange={handleFileChange} multiple />
-              {showFiles && (
-                <div className="file-list" ref={fileListRef}>
-                  {files.map((file, index) => (
-                    <div key={index} className="file-item">
-                      <a href={URL.createObjectURL(file)} download={file.name}>
-                        {file.name}
-                      </a>
-                      <button onClick={() => handleRemoveFile(index)}>Удалить</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <button onClick={handleCreatePass}>Создать пропуск</button>
-              {error && <div className="error-message">{error}</div>}
-            </div>) : ("")}
-            {localStorage.getItem("canExportAll")==="true" && 
-            <button className="pass-export-button" onClick={handleExportAbsences}>
-              <span>Экспортировать пропуски</span>
-              <FileDown></FileDown>
-            </button>}
-            
+            {localStorage.getItem("canCreate") === "true" ? (
+              <div className="pass-form">
+                <select name="reason" value={newPass.reason} onChange={handleReasonChange} className="form-select">
+                  <option value="" disabled>
+                    Выберите причину
+                  </option>
+                  <option value="Sick">Болезнь</option>
+                  <option value="Family">Семейные обстоятельства</option>
+                  <option value="Personal">Учебная деятельность</option>
+                </select>
+                <input
+                  type="date"
+                  name="absencePeriodStart"
+                  value={newPass.absencePeriodStart}
+                  onChange={(e) => handleDateChange(e, "absencePeriodStart")}
+                  placeholder="Дата начала"
+                  className="form-control"
+                />
+                <input
+                  type="date"
+                  name="absencePeriodFinish"
+                  value={newPass.absencePeriodFinish}
+                  onChange={(e) => handleDateChange(e, "absencePeriodFinish")}
+                  placeholder="Дата окончания"
+                  className="form-control"
+                />
+                <input type="file" onChange={handleFileChange} multiple />
+                {showFiles && (
+                  <div className="file-list" ref={fileListRef}>
+                    {files.map((file, index) => (
+                      <div key={index} className="file-item">
+                        <a href={URL.createObjectURL(file)} download={file.name}>
+                          {file.name}
+                        </a>
+                        <button onClick={() => handleRemoveFile(index)}>Удалить</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <button onClick={handleCreatePass}>Создать пропуск</button>
+                {error && <div className="error-message">{error}</div>}
+              </div>
+            ) : (
+              ""
+            )}
+            {localStorage.getItem("canExportAll") === "true" && (
+              <button className="pass-export-button" onClick={handleExportAbsences}>
+                <span>Экспортировать пропуски</span>
+                <FileDown></FileDown>
+              </button>
+            )}
+
             <div className="passes-container">
               <h1 className="passes-title">Список пропусков</h1>
 
@@ -413,15 +415,15 @@ export const MainPage = () => {
                           onKeyDown={handleKeyDown}
                         />
                       </div>
-                        <div className="filter-group">
-                          <label>Id проверяющего</label>
-                          <input
-                            value={formInputs.FinalisedById || ""}
-                            onChange={(e) => updateFormInput("FinalisedById", e.target.value)}
-                            placeholder="Введите Id проверяющего заявки"
-                            onKeyDown={handleKeyDown}
-                          />
-                        </div>
+                      <div className="filter-group">
+                        <label>Id проверяющего</label>
+                        <input
+                          value={formInputs.FinalisedById || ""}
+                          onChange={(e) => updateFormInput("FinalisedById", e.target.value)}
+                          placeholder="Введите Id проверяющего заявки"
+                          onKeyDown={handleKeyDown}
+                        />
+                      </div>
                     </div>
 
                     <div className="filters-footer">
@@ -459,3 +461,4 @@ export const MainPage = () => {
 }
 
 export default MainPage
+

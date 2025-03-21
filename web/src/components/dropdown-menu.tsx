@@ -108,10 +108,6 @@ export const DropdownMenu = ({
             <span>Прикрепить файл</span>
             <FileUp size={16} className="icon-right" />
           </Dropdown.Item>
-          <Dropdown.Item onClick={() => handleAction("delete-file")} className="delete">
-            <span>Удалить файл</span>
-            <Trash2 size={16} className="icon-right" />
-          </Dropdown.Item>
         </>
       )}
       {localStorage.getItem("canApprove") === "true" && (

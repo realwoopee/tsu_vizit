@@ -137,11 +137,27 @@
   color: #1e1e1e;
   padding: 6px;
   border-radius: 4px;
+  position: relative;
 }
 
 .pass-file-button:hover,
 .pass-menu-button:hover {
   background-color: #f5f5f5;
+}
+
+.file-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu-container {
@@ -150,6 +166,8 @@
 
 .file-list {
   position: absolute;
+  top: 100%;
+  right: 0;
   background: white;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -157,16 +175,56 @@
   margin-top: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.file-item-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.file-item-container:last-child {
+  border-bottom: none;
 }
 
 .file-item {
-  padding: 4px 8px;
+  padding: 8px 12px;
   cursor: pointer;
   color: #007bff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }
 
-.file-item:hover {
-  text-decoration: underline;
+.file-delete-button {
+  background: none;
+  border: none;
+  color: #ff3b30;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-delete-button:hover {
+  background-color: #ffeeee;
+}
+
+.file-item.loading {
+  color: #666;
+  cursor: default;
+  text-align: center;
+}
+
+.file-item.loading:hover {
+  background-color: transparent;
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {
@@ -178,29 +236,29 @@
 
   .pass-left-section,
   .pass-right-section {
-    width: 100%; 
-    justify-content: flex-start; 
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .pass-fullname {
-    max-width: 100%; 
+    max-width: 100%;
   }
 
   .pass-reason {
-    text-align: left; 
+    text-align: left;
   }
 }
 
 @media (max-width: 620px) {
   .pass-status {
     min-width: 80px;
-    font-size: 12px; 
+    font-size: 12px;
   }
 
   .pass-fullname,
   .pass-reason,
   .pass-date {
-    font-size: 12px; 
+    font-size: 12px;
   }
 
   .pass-right-section {
@@ -235,3 +293,4 @@
     gap: 5px;
   }
 }
+

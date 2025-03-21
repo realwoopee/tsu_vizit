@@ -7,6 +7,8 @@ import { Calendar, File, Menu } from "lucide-react"
 import { DatePicker } from "./date-picker"
 import { DropdownMenu } from "./dropdown-menu"
 import "../styles/pass-list-item.css"
+import { deletePass } from "../services/passDelete"
+import MainPage from "../pages/mainPage"
 
 export type PassStatus = "Unknown" | "Approved" | "Denied"
 export type PassReason = "Personal" | "Family" | "Sick"
@@ -202,6 +204,15 @@ export const PassListItem = ({
     }
   }
 
+  const handleDeletePass = async (passId: string) => {
+    const confirmDelete = window.confirm("Вы уверены, что хотите удалить этот пропуск?")
+    if (confirmDelete){
+      deletePass(passId)
+      
+    }
+    else return null;
+}
+
   return (
     <div className="pass-list-item">
       <div className="pass-left-section">
@@ -258,6 +269,9 @@ export const PassListItem = ({
             onClose={() => setIsMenuOpen(false)}
             onFilesSelected={handleFilesSelected} />
         </div>
+        <button className="pass-delete-button" onClick={() => handleDeletePass(pass.id)}>
+          Удалить
+        </button>
       </div>
     </div>
   )

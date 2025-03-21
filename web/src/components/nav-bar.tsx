@@ -159,7 +159,7 @@ export const NavBar = ({ userRole = "guest", userName }: NavBarProps) => {
                 Список пользователей
               </Link>
             )}
-            <Link to="/passes" className="nav-link">
+            <Link to="/main" className="nav-link">
               Список пропусков
             </Link>
 

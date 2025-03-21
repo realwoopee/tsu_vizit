@@ -8,6 +8,19 @@
   flex-wrap: wrap;
 }
 
+.pass-delete-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4f; /* Красный цвет (ошибка/удаление) */
+  transition: color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 6;
+}
+
 .pass-left-section {
   display: flex;
   align-items: center;
